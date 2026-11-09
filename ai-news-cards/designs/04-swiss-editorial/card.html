@@ -22,8 +22,8 @@
       --fg: #111111;              /* ink */
       --accent: #1F3BFF;          /* cobalt, the only accent */
       --muted: #5C5952;           /* labels: 6.1:1 on paper */
-      --rule: #111111;
-      --guide: rgba(17, 17, 17, 0.065);
+      --rule: var(--fg);
+      --guide: color-mix(in srgb, var(--fg) 6.5%, transparent);
       --m: 80px;                  /* outer margin */
       --gut: 16px;
       --step: 156px;              /* column + gutter */
@@ -111,8 +111,9 @@
       margin-left: -0.04em;                  /* optical flush-left for the stems */
       padding-bottom: .14em;                 /* room for descenders under the tight leading */
       font-size: 120px; font-weight: 600; line-height: .94;
-      /* tracking tightens as the size grows: -0.025em at 64 px, -0.046em at 110, capped at -0.055em */
-      letter-spacing: clamp(-0.055em, calc(-0.075em + 3.2px), -0.02em);
+      /* tracking tightens as the size grows: -0.025em at 64 px to -0.036em from ~115 px
+         (any tighter and "rn" fuses into "m" in this face) */
+      letter-spacing: clamp(-0.036em, calc(-0.05em + 1.6px), -0.02em);
       text-wrap: pretty;
     }
     .headline .hl { color: var(--accent); }

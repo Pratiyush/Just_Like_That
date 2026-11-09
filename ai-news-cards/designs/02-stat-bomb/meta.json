@@ -1,0 +1,25 @@
+{
+  "id": "02-stat-bomb",
+  "name": "Stat Bomb",
+  "style": "One gigantic electric-lime number that is auto-fitted on Archivo's variable width axis to fill the frame edge to edge, on a near-black grid with film grain and a soft lime bloom, sitting on a measuring rule above a white headline that explains why it matters.",
+  "palette": ["#0B0B0F", "#C6FF00", "#FFFFFF"],
+  "fonts": ["Archivo", "JetBrains Mono"],
+  "bestFor": "Benchmarks, funding rounds, user counts, cost drops: any story where one number is the news. Shorter stats set bigger, so write \"$4.2B\" rather than \"$4,200,000,000\". Currency signs, %, ×, and unit letters (B, M, K, hrs) are automatically set smaller so the digits get the scale.",
+  "principles": [
+    {
+      "name": "Isolation (Von Restorff) effect",
+      "how": "von Restorff (1933): the item that differs from its surroundings is noticed and remembered. Everything on the card is white, grey or small, except the number, which is the only display-size element in lime and the only thing set in a 900-weight cut. The lime measuring bar beneath it is drawn to the number's exact ink width, so it frames the number instead of competing with it. The headline highlight reuses the lime at a much smaller size to connect the 'why' to the number without creating a second star."
+    },
+    {
+      "name": "Pre-attentive size contrast",
+      "how": "Treisman & Gelade (1980): size and colour are picked up before conscious reading. The number's cap height is several times the headline's, and a layout script solves font size and Archivo's width axis (62–125) together so the number always reaches the margins. Short values like \"10×\" or \"#1\" go wide and fat at the height cap, while long values like \"1,000,000\" switch to the condensed cut and stay as tall as the width allows. Because the number never shrinks to a timid size, the eye lands on it before any words are read."
+    },
+    {
+      "name": "Hick's law (one focal point)",
+      "how": "Hick (1952): fewer options mean a faster decision. The card gives the eye only one place to start, and the reading order is fixed top to bottom: a small label saying what was measured, the number, then one headline that says why it matters. Metadata (kicker chip, date, source, handle) is pushed to the edges in small monospace, and the grid, grain and glow are low-contrast textures rather than shapes, so nothing else asks to be looked at first."
+    }
+  ],
+  "hookFormula": "statLabel = what was measured (\"Raised by ___ in one ___\"); stat = the number, as short as possible; headline = \"[small or unexpected subject], [contrast], and [the so-what]\", e.g. \"11 people, no product, and the biggest seed check AI has ever seen\".",
+  "captionTip": "Open the caption with the comparison the card leaves out (what the number was a year ago, or what it equals in everyday terms) and close with a send prompt such as \"Send this to the friend who still thinks AI is a fad\"; the card carries one number and the caption carries the context.",
+  "fields": ["kicker", "stat", "statLabel", "headline", "highlight", "source", "date", "handle"]
+}

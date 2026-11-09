@@ -193,8 +193,8 @@
       padding-top: 18px;
       border-top: 1.5px solid var(--fg);
       display: grid;
-      grid-template-columns: 276px minmax(0, 1fr);
-      column-gap: 24px;
+      grid-template-columns: 258px minmax(0, 1fr);
+      column-gap: 22px;
     }
     #card.tight .lower { height: 340px; }
     #card.xtight .lower { height: 296px; }
@@ -230,22 +230,22 @@
     .cols {
       position: relative;
       display: flex; flex-direction: column; min-height: 0;
-      padding-left: 24px;
+      padding-left: 22px;
       border-left: 1.5px solid var(--fg);
     }
     .body {
       flex: 1 1 auto; min-height: 0; overflow: hidden;
       column-count: 2;
-      column-gap: 26px;
+      column-gap: 24px;
       column-rule: 1px solid rgba(20,20,20,.7);
       font: 400 27px/1.34 var(--serif);
-      hyphenate-limit-chars: 6 3 2;
+      hyphenate-limit-chars: 5 2 2;
+      letter-spacing: -.01em;
       text-align: justify;
       text-align-last: left;
       hyphens: auto;
       -webkit-hyphens: auto;
-      word-spacing: -.04em;
-      text-wrap: pretty;
+      word-spacing: -.05em;
     }
     .body::first-letter {
       float: left;
@@ -387,7 +387,7 @@
     "headline": "AI Builds Its Own Successor in 9 Days",
     "highlight": "Its Own Successor",
     "subhead": "Helix-3 wrote, trained and tested its replacement with zero human code. The new model beat it on all 14 benchmarks.",
-    "body": "**Nova City —** Nova Labs engineers came in Monday to find their jobs already done. Told only to “build a better version of yourself,” Helix-3 wrote 41,000 lines of training code, ran 2,300 experiments and shipped a successor. No human touched a line. “We’re still reading the logs,” one researcher said. What it changed on day three, nobody can explain.",
+    "body": "**Nova City —** Nova Labs engineers came in Monday to find their jobs already done. Told only to “build a better version of yourself,” Helix-3 wrote 41,000 lines of training code, ran 2,300 experiments and shipped its own successor. No human touched a line. “We’re still reading the logs,” one researcher said. What it changed on day three, nobody can explain.",
     "caption": "**Helix-4**, the first model no human wrote.",
     "cta": "Continued on slide 2",
     "source": "Source: Nova Labs technical report",
@@ -559,6 +559,62 @@
         '</svg>';
     }
 
+    /* Hand-compositor pass for narrow justified columns: find lines whose word gaps are
+       blown open and absorb part of the slack with a touch of letter-spacing on that line
+       only. Extra width never exceeds the line's own slack, so line breaks stay put. */
+    function compose(body) {
+      var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = walker.nextNode())) nodes.push(n);
+      nodes.forEach(function (t) {
+        var parts = t.nodeValue.split(/(\s+)/);
+        if (parts.length < 2 && !parts[0]) return;
+        var frag = document.createDocumentFragment();
+        parts.forEach(function (p) {
+          if (!p) return;
+          if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+          var w = document.createElement('span'); w.className = 'w'; w.textContent = p; frag.appendChild(w);
+        });
+        t.parentNode.replaceChild(frag, t);
+      });
+      var words = Array.prototype.slice.call(body.querySelectorAll('.w'));
+      if (words.length < 4) return;
+      var fs = parseFloat(getComputedStyle(body).fontSize);
+      // natural inter-word gap, measured in place
+      var probe = document.createElement('span');
+      probe.innerHTML = '<span class="w">x</span> <span class="w">x</span>';
+      body.appendChild(probe);
+      var pr = probe.querySelectorAll('.w');
+      var nat = pr[1].getBoundingClientRect().left - pr[0].getBoundingClientRect().right;
+      body.removeChild(probe);
+      var br = body.getBoundingClientRect();
+      var colW = (br.width - parseFloat(getComputedStyle(body).columnGap)) / 2;
+      var lines = {};
+      words.forEach(function (w, i) {
+        var rects = w.getClientRects();
+        if (rects.length !== 1 || i === 0) { w.__skip = true; }
+        Array.prototype.forEach.call(rects, function (r) {
+          if (r.left > br.right) return;                    // jumped (clipped) copy
+          var col = r.left < br.left + colW ? 0 : 1;
+          var key = col + ':' + Math.round(r.top / 4);
+          (lines[key] = lines[key] || { col: col, items: [] }).items.push({ w: w, r: r });
+        });
+      });
+      Object.keys(lines).forEach(function (k) {
+        var L = lines[k], it = L.items;
+        if (it.length < 2) return;
+        var colRight = br.left + (L.col ? br.width : colW);
+        var last = it[it.length - 1].r, first = it[0].r;
+        if (colRight - last.right > 3) return;              // ragged last line of a paragraph
+        var span = last.right - first.left, W = 0, chars = 0;
+        it.forEach(function (o) { W += o.r.width; if (!o.w.__skip) chars += o.w.textContent.length; });
+        var gaps = it.length - 1, gap = (span - W) / gaps;
+        if (gap < nat * 1.55 || !chars) return;
+        var want = (span - W) - gaps * nat * 1.35;
+        var ls = Math.min(want / chars, fs * 0.085);
+        it.forEach(function (o) { if (!o.w.__skip) o.w.style.letterSpacing = 'calc(-.01em + ' + ls.toFixed(2) + 'px)'; });
+      });
+    }
+
     function overflowing(el) {
       return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1;
     }
@@ -602,9 +658,10 @@
       // column two like a real front-page jump ("Continued on ..."), never mid-line.
       var body = card.querySelector('.body');
       if (!body.hidden) {
-        var size = 29;
+        var size = 28;
         body.style.fontSize = size + 'px';
         while (overflowing(body) && size > 26) { size -= 0.5; body.style.fontSize = size + 'px'; }
+        compose(body);
       }
 
       // With a full-width masthead the stamp lands on the lower part of the photo.

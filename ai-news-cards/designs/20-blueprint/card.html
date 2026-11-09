@@ -178,6 +178,13 @@
     }
     .tldr-text mark.hl { color: var(--accent); }
 
+    /* Tight mode (very long content): pull the blocks closer together. */
+    #card.tight .headline { margin-top: 20px; }
+    #card.tight .paper-ref { margin-top: 14px; }
+    #card.tight .tldr { margin-top: 32px; padding-top: 26px; padding-bottom: 20px; }
+    #card.tight .lower { margin-top: 26px; }
+    #card.tight .points { gap: 16px; }
+
     /* Lower zone: schematic + findings + title block. */
     .lower {
       flex: 0 0 470px;
@@ -271,9 +278,13 @@
     .tb-proj .pj { fill: none; stroke: var(--line); stroke-width: 1.6; }
     .tb-proj .pj-c { fill: none; stroke: var(--line); stroke-width: .9; stroke-dasharray: 6 2 1.5 2; opacity: .8; }
     .tb-proj span { font: 700 12px/1 var(--mono); letter-spacing: .16em; color: var(--muted); }
-    .tb-r2 .tb-cell { padding-bottom: 40px; }
+    .tb-r2 { flex-wrap: wrap; }
+    .tb-r2 .tb-cell { padding-bottom: 40px; }     /* keeps the last line of text >= 72px from the bottom edge */
     .tb-date { flex: 0 0 auto; }
-    .tb-by   { flex: 1; padding-right: 36px !important; }
+    .tb-by   { flex: 1 1 auto; padding-right: 36px; }
+    /* Long handle: DRAWN BY drops onto its own full-width row. */
+    .tb-r2.wrapped .tb-date { flex-grow: 1; padding-bottom: 12px; }
+    .tb-r2.wrapped .tb-by { flex-basis: 100%; border-left: 0; border-top: 1.5px solid rgba(205, 239, 255, .7); }
     .tb-by .tb-val { font: 700 26px/1.12 var(--mono); text-transform: none; letter-spacing: 0; }
     .tb-src .tb-val { padding-right: 0; }
 
@@ -315,7 +326,7 @@
         </div>
       </div>
 
-      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="128" data-fit-min="64"></h1>
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="168" data-fit-min="64"></h1>
 
       <div class="paper-ref" data-if="paper">
         <span class="tag">Ref.</span>
@@ -579,15 +590,68 @@
       });
     }
 
-    Card.onRender(function (data, card) {
+    function escapeHtml(t) {
+      return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* Decide how tall the lower zone (schematic + findings) can be while the headline stays big.
+       Runs before card.js fits text, so the fitter never meets an impossible box. */
+    function planLayout(card) {
+      var head = card.querySelector('.headline');
+      var lower = card.querySelector('.lower');
+      var pts = card.querySelector('.points');
+      var hasPts = card.classList.contains('has-points');
+
+      // Title block: does DRAWN BY need its own row?
+      var row2 = card.querySelector('.tb-r2'), date = card.querySelector('.tb-date'), by = card.querySelector('.tb-by');
+      row2.classList.remove('wrapped');
+      if (!date.hidden && !by.hidden && by.offsetTop > date.offsetTop + 2) row2.classList.add('wrapped');
+
+      var cands = hasPts ? [470, 450, 430, 410, 390, 370, 350, 330, 310] : [380, 350, 320, 290, 260, 240];
+      function headOK(size) {
+        if (head.hidden) return true;
+        head.style.fontSize = size + 'px';
+        return head.scrollHeight <= head.clientHeight + 1 && head.scrollWidth <= head.clientWidth + 1;
+      }
+      function ptsOK(size) {
+        if (!hasPts || pts.hidden) return true;
+        pts.style.fontSize = size + 'px';
+        return pts.scrollHeight <= pts.clientHeight + 1;
+      }
+      function pick(headSize, ptsSize) {
+        for (var i = 0; i < cands.length; i++) {
+          lower.style.flexBasis = cands[i] + 'px';
+          if (headOK(headSize) && ptsOK(ptsSize)) return cands[i];
+        }
+        return null;
+      }
+      var choice = null;
+      var tries = [[88, 34], [76, 34], [76, 32], [64, 32], [64, 30]];
+      for (var pass = 0; pass < 2 && choice === null; pass++) {
+        if (pass === 1) card.classList.add('tight');
+        for (var t = 0; t < tries.length && choice === null; t++) choice = pick(tries[t][0], tries[t][1]);
+      }
+      if (choice === null) choice = cands[cands.length - 1];
+      lower.style.flexBasis = choice + 'px';
+      head.style.fontSize = '';
+      pts.style.fontSize = '';
+    }
+
+    Card.onRender(async function (data, card) {
       var pts = Array.isArray(data.points) ? data.points.filter(function (p) { return p !== '' && p != null; }) : [];
       card.classList.toggle('has-points', pts.length > 0);
       card.classList.toggle('no-points', pts.length === 0);
+
       // The title block already says "Source", so drop a leading "Source:" from the value.
       var src = card.querySelector('.tb [data-field="source"]');
       if (src && !src.hidden) {
         var t = src.textContent.replace(/^\s*source\s*[:\-–—]\s*/i, '').trim();
         if (t) src.textContent = t;
+      }
+      // Long handles break after dots/underscores instead of mid-word.
+      var hd = card.querySelector('.tb [data-field="handle"]');
+      if (hd && !hd.hidden && hd.innerHTML.indexOf('<') === -1) {
+        hd.innerHTML = escapeHtml(hd.textContent).replace(/([._])/g, '$1<wbr>');
       }
       // Keep hyphenated words (e.g. "Long-Context") on one line in the paper title.
       var pt = card.querySelector('.paper-title');
@@ -595,6 +659,17 @@
         pt.innerHTML = pt.innerHTML.replace(/(\S*\w-\w\S*)/g, '<span class="nw">$1</span>');
       }
       drawZones(card);
+
+      // Measure with real fonts before planning the layout.
+      void card.offsetHeight;
+      try {
+        await Promise.all([
+          '700 100px "Barlow Condensed"', '500 35px "Barlow Semi Condensed"', 'italic 500 34px "Barlow Semi Condensed"',
+          '600 28px "Barlow Semi Condensed"', '700 25px "Space Mono"', '400 14px "Space Mono"'
+        ].map(function (fnt) { return document.fonts.load(fnt); }));
+        await document.fonts.ready;
+      } catch (e) { /* fall back to whatever is loaded */ }
+      planLayout(card);
     });
 
     Card.ready.then(function () {

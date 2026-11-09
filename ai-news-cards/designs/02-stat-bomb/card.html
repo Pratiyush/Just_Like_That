@@ -125,9 +125,6 @@
     .stat .u-x { font-size: .6em; }
     .stat .u-top { align-self: flex-start; }
     .stat .u-base { align-self: flex-end; }
-    .stat .u-pre { margin-right: .04em; }
-    .stat .u-suf { margin-left: .05em; }
-    .stat .u-suf.u-gap { margin-left: .16em; }
 
     /* Measuring rule under the number: ticks + a lime bar exactly as wide as the number's ink. */
     .axis {
@@ -270,7 +267,7 @@
         var s = document.createElement('span');
         s.className = cls; s.textContent = text; stat.appendChild(s); return s;
       };
-      if (p.pre) add('u u-top u-pre', p.pre);
+      if (p.pre) add('u u-pre ' + (/^[\u00d7x]$/i.test(p.pre) ? 'u-base u-x' : 'u-top'), p.pre);
       add('core', p.core);
       if (p.suf) {
         var top = /^[%°‰]+$/.test(p.suf);
@@ -349,6 +346,17 @@
       var ink = function (size, wdth) {
         stat.style.fontSize = size + 'px';
         stat.style.fontStretch = wdth + '%';
+        // Optical spacing between unit and number: fix the gap between INKS, not advance boxes,
+        // so "#1", "$4" and "10x" all get the same visual breathing room.
+        for (var j = 1; j < spans.length; j++) {
+          var a = spans[j - 1], b = spans[j];
+          var fa = px(getComputedStyle(a).fontSize), fb = px(getComputedStyle(b).fontSize);
+          var lsA = px(getComputedStyle(a).letterSpacing);
+          var gapEm = b.classList.contains('u-gap') ? 0.12 : (b.classList.contains('u-suf') ? 0.045 : 0.035);
+          var sideA = metrics(a.textContent.slice(-1), wdth).r * fa + lsA;
+          var sideB = metrics(b.textContent.charAt(0), wdth).l * fb;
+          b.style.marginLeft = (gapEm * size - sideA - sideB) + 'px';
+        }
         var r = stat.getBoundingClientRect();
         var fr = first.getBoundingClientRect(), lr = last.getBoundingClientRect();
         var f1 = px(getComputedStyle(first).fontSize), f2 = px(getComputedStyle(last).fontSize);

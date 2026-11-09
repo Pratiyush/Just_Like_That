@@ -1,0 +1,37 @@
+{
+  "id": "14-data-story",
+  "name": "Data Story",
+  "style": "Clean editorial data viz: light paper (#F7F9FC), navy ink, a bar chart drawn from the data with muted-teal bars and one coral bar, called out by an auto-placed annotation card and leader line; IBM Plex Sans with tabular figures, hairline gridlines and a solid zero baseline.",
+  "palette": ["#F7F9FC", "#0B1F3A", "#00B3A4", "#FF6B6B", "#4E5E76", "#DFE5EE", "#FFFFFF"],
+  "fonts": ["IBM Plex Sans"],
+  "bestFor": "Benchmark results, adoption trends, cost and price curves, latency or efficiency comparisons: any story where one number in a short series (4 to 8 values) is the news.",
+  "principles": [
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "The takeaway is encoded twice: in words (the headline states it as a number) and as a picture (the coral bar). The headline's highlighted phrase sits on a coral marker of the exact bar colour, so it works as the chart's legend and ties the verbal and visual memory traces together."
+    },
+    {
+      "name": "Pre-attentive processing (Treisman & Gelade, 1980)",
+      "how": "One coral bar among muted-teal bars is found by hue alone before any reading happens. Its value label is the only one set at display size (62 px bold navy against 30 px grey), which adds a size cue to the colour cue and stops the scroll on that bar even at thumbnail size."
+    },
+    {
+      "name": "Isolation (Von Restorff) effect (von Restorff, 1933)",
+      "how": "Exactly one data point differs in colour, label size and x-label weight, and the only raised white object on the canvas (the annotation card, with a coral edge) is placed next to it by an obstacle-avoiding layout. The one fact the reader should remember is the one that is isolated."
+    },
+    {
+      "name": "Authority: credibility of data (Cialdini, 1984)",
+      "how": "It reads like a newsroom chart, not an ad: an honest zero baseline, gridlines at round-number steps, a chart title that names the measure, every value labelled in tabular figures, and a source line plus date. Restraint signals that the numbers can carry the claim on their own."
+    }
+  ],
+  "hookFormula": "[Specific number] of [group the reader belongs to] now [do X]. The headline states the number, the annotation adds the contrast: 'Up from [old number] in [year]. Not doing it yet? You're the outlier now.'",
+  "captionTip": "Open the caption with the coral number and one line of method (who was measured, when, how many), then ask 'Which bar is your team on?' to invite comments and DM shares. Put the full source in the caption too.",
+  "fields": ["kicker", "headline", "highlight", "chartTitle", "chart", "chartUnit", "chartHighlight", "annotation", "source", "date", "handle"],
+  "fieldNotes": {
+    "chart": "Array of 4 to 8 { \"label\": \"\", \"value\": 0 }. Values can be numbers or numeric strings (\"1,250\"). Negatives and zeros work. Values of 100,000 or more show compact (152K, 2.45M). Labels wrap to two lines, and \\n forces a break.",
+    "chartHighlight": "0-based index of the coral bar. Defaults to the last bar; negative counts from the end (-1 = last).",
+    "chartUnit": "Currency symbols ($, €, £, ¥) become a prefix. Anything else is a suffix: %, ×, x, K, M attach directly, and word units (ms, pts, Wh) get a space. If labels run out of room, the unit stays only on the highlighted value.",
+    "annotation": "One or two short sentences; **bold** works. Placed automatically in free space with a leader to the coral bar, and dropped if a very long headline leaves no room for it.",
+    "chartTitle": "Optional design-specific field: names the measure shown (e.g. 'Price per 1M tokens, US$').",
+    "companions": "If you pass a new chart without chartTitle, chartUnit, chartHighlight or annotation, the sample's values for those fields are not reused."
+  }
+}

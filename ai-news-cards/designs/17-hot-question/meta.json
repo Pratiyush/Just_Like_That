@@ -1,0 +1,40 @@
+{
+  "id": "17-hot-question",
+  "name": "Hot Question",
+  "style": "Engagement poll card: a deep royal-purple gradient with a giant halftone chat bubble, a huge Bricolage Grotesque question whose key phrase is underlined by a yellow dry-brush swash, glassy quiz bars lettered A–D, and a yellow speech-bubble CTA that asks for a comment.",
+  "palette": ["#4C1D95", "#6D28D9", "#FDE047", "#FFFFFF", "#2E1065"],
+  "fonts": ["Bricolage Grotesque", "Lexend"],
+  "bestFor": "Ethical debates, predictions and \"would you...?\" prompts sparked by an AI news story: anything where people will happily pick a side in the comments.",
+  "principles": [
+    {
+      "name": "Self-reference effect (Rogers, Kuiper & Kirker, 1977)",
+      "how": "The question is aimed at the reader (\"Would you...\", \"your next raise\") and the options are written in the first person (\"I'd...\", \"me\"), so the viewer judges the news against their own life instead of filing it away as someone else's story, which makes it more memorable and more personal."
+    },
+    {
+      "name": "Commitment & consistency (Cialdini, 1984)",
+      "how": "The A–D bars, each with an empty answer ring, ask for one small, low-cost choice. Once a reader has silently picked a letter, typing that letter as a comment is the consistent next step, and the CTA bubble names exactly what to type."
+    },
+    {
+      "name": "Information-gap curiosity (Loewenstein, 1994)",
+      "how": "An open question with no answer shown, plus the 'typing…' dots in the big chat bubble, leaves a gap: what did everyone else pick? The only way to close it is to open the comments. The subhead gives just enough of the news to make the question feel real."
+    },
+    {
+      "name": "Comments as an engagement signal",
+      "how": "The whole card is built to produce one-letter comments: lettered options, a 'Comment A, B or C ↓' bubble with a comment icon and an arrow pointing at the comment field. Comments and replies show Instagram that people are interacting with the post, and debates make people come back to reply."
+    },
+    {
+      "name": "Isolation (Von Restorff) effect",
+      "how": "Yellow is used only for the brush swash under the key phrase and for the CTA, so the eye goes from the stakes ('negotiate your next raise') to the action. Everything else stays white on purple."
+    }
+  ],
+  "hookFormula": "Would you let [AI thing] [do something personal] ___? (+ context: [Fictional lab] says it [specific result])",
+  "captionTip": "Restate the question in the first caption line, give each option one line with its letter, and reply to the first comments to get a debate going. A pinned 'Tag the friend who'd pick B' adds DM sends.",
+  "fields": ["kicker", "question", "highlight", "subhead", "options", "cta", "handle"],
+  "fieldNotes": {
+    "question": "Aim for at most 12-15 words. It shrinks from 200px to fit (minimum 64px).",
+    "highlight": "The phrase inside the question to underline with the brush swash; '**word**' in the question works too.",
+    "options": "Array of 2-4 short strings, lettered A-D automatically. Keep each under about 40 characters so it stays on one line.",
+    "subhead": "One sentence with the news behind the question. Fixed at 35px and cut to fewer lines (with an ellipsis) only if the question needs the room.",
+    "cta": "Should name the letters, e.g. 'Comment A or B ↓'. Up to two lines."
+  }
+}

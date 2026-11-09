@@ -55,7 +55,7 @@
       letter-spacing: .2em; text-transform: uppercase;
       color: var(--muted);
     }
-    .kicker-rule { flex: 1 1 40px; min-width: 40px; height: 2px; background: rgba(255, 255, 255, .14); }
+    .kicker-rule { flex: 1 1 60px; min-width: 60px; height: 2px; background: rgba(255, 255, 255, .14); }
 
     .headline {
       margin-top: 22px;
@@ -94,7 +94,7 @@
     /* ---------- Myth (top panel) ---------- */
     .zone-myth {
       position: relative; z-index: 2;
-      flex: 1 1 0; min-height: 0;
+      flex: 1 1 auto; min-height: 0;   /* flex-grow is set from content in JS */
       display: flex; flex-direction: column;
       padding: 36px 0 40px;
     }
@@ -106,7 +106,7 @@
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
               mask-image: linear-gradient(to bottom, transparent, #000 55%);
     }
-    .myth-fit { font-size: 92px; }
+    .myth-fit { font-size: 88px; }   /* nominal size; data-fit-max lets short myths grow */
     .myth-copy {
       display: block; position: relative;
       margin-top: 28px;
@@ -114,7 +114,7 @@
       font-family: 'DM Serif Display', Georgia, serif;
       font-weight: 400; line-height: 1.1; letter-spacing: -0.005em;
       color: var(--myth-text);
-      text-wrap: pretty;
+      text-wrap: balance;
     }
     .myth-copy::before {
       content: '\201C';
@@ -153,7 +153,7 @@
       clip-path: polygon(0 64px, 70px 59.9px, 106px 88px, 142px 55.6px, 100% 0, 100% 5px, 142px 60.6px, 106px 93px, 70px 64.9px, 0 69px);
       opacity: .55;
     }
-    .fact-fit { font-size: 48px; }
+    .fact-fit { font-size: 46px; }
     .fact-copy {
       display: block;
       margin-top: 26px;
@@ -204,7 +204,7 @@
 
     <section class="zone-myth">
       <div class="myth-hatch"></div>
-      <div class="fit myth-fit" data-fit data-fit-max="92" data-fit-min="46">
+      <div class="fit myth-fit" data-fit data-fit-max="128" data-fit-min="42">
         <div class="group">
           <div class="pill pill-myth">
             <svg viewBox="0 0 40 40" aria-hidden="true">
@@ -222,7 +222,7 @@
     <section class="zone-fact">
       <div class="fact-echo"></div>
       <div class="fact-bg"></div>
-      <div class="fit fact-fit" data-fit data-fit-max="48" data-fit-min="34">
+      <div class="fit fact-fit" data-fit data-fit-max="66" data-fit-min="34">
         <div class="group">
           <div class="pill pill-fact">
             <svg viewBox="0 0 40 40" aria-hidden="true">
@@ -395,6 +395,38 @@
         return path;
       }
 
+      /* Share the free height between MYTH and FACT so both panels scale together:
+         find the largest common scale k (of each panel's nominal size, within its
+         data-fit range) at which both fit, then give each panel what it needs at k. */
+      function balancePanels(card) {
+        var panels = [['.zone-myth', '.myth-fit'], ['.zone-fact', '.fact-fit']].map(function (z) {
+          var fit = card.querySelector(z[1]);
+          return {
+            zone: card.querySelector(z[0]), fit: fit, group: fit && fit.querySelector('.group'),
+            nominal: fit && parseFloat(getComputedStyle(fit).fontSize),
+            max: fit && parseFloat(fit.getAttribute('data-fit-max')),
+            min: fit && parseFloat(fit.getAttribute('data-fit-min'))
+          };
+        });
+        if (panels.some(function (p) { return !p.zone || !p.group; })) return;
+        var avail = panels.reduce(function (a, p) { return a + p.fit.clientHeight; }, 0);
+        var kMax = Math.min.apply(null, panels.map(function (p) { return p.max / p.nominal; }));
+        var kMin = Math.min.apply(null, panels.map(function (p) { return p.min / p.nominal; }));
+        var k = kMax, needs;
+        for (var guard = 0; guard < 80; guard++) {
+          needs = panels.map(function (p) {
+            p.fit.style.fontSize = Math.min(p.max, Math.max(p.min, p.nominal * k)) + 'px';
+            return p.group.offsetHeight;
+          });
+          if (needs[0] + needs[1] <= avail || k <= kMin) break;
+          k *= 0.97;
+        }
+        panels.forEach(function (p, i) {
+          p.fit.style.fontSize = '';
+          p.zone.style.flexGrow = Math.max(1, needs[i]);
+        });
+      }
+
       Card.onRender(async function (data, card) {
         /* Default panel labels when the data leaves them out. */
         card.querySelectorAll('[data-default]').forEach(function (el) {
@@ -407,12 +439,19 @@
           if (first && first.nodeType === 3) first.nodeValue = first.nodeValue.replace(/^\s*["“”‘']+/, '');
           if (last && last.nodeType === 3) last.nodeValue = last.nodeValue.replace(/["“”’']+\s*$/, '');
         }
-        /* Fit now (fonts loaded) so the hand-drawn strikes follow the final line breaks.
-           card.js fits again afterwards and lands on the same sizes. */
+        /* No source and no handle: drop the footer rule too. */
+        var foot = card.querySelector('.foot');
+        if (foot) foot.hidden = !Array.prototype.some.call(foot.children, function (c) { return !c.hidden; });
+
         void card.offsetHeight;
         try { await document.fonts.ready; } catch (e) { /* ignore */ }
         await frame();
         try { await document.fonts.ready; } catch (e) { /* ignore */ }
+
+        balancePanels(card);
+
+        /* Fit now so the hand-drawn strikes follow the final line breaks.
+           card.js fits again afterwards and lands on the same sizes. */
         Card.fit();
         drawStrikes(card);
       });

@@ -72,6 +72,7 @@
       -webkit-box-decoration-break: clone; box-decoration-break: clone;
     }
 
+    #card.no-chart .headline { flex: 1 1 auto; max-height: none; min-height: 0; font-size: 128px; }
     .chart-title {
       flex: none;
       margin-top: 34px;
@@ -172,6 +173,7 @@
       { "label": "2026", "value": 71 }
     ],
     "chartUnit": "%",
+    "chartHighlight": 5,
     "annotation": "Up from **1 in 10** in 2023. Not using one yet? You're the outlier now.",
     "source": "Source: Nova Labs Dev Pulse, illustrative data",
     "date": "Nov 9, 2026",
@@ -609,9 +611,23 @@
           card.querySelectorAll('[data-field="' + k + '"]').forEach(function (n) { n.innerHTML = ''; n.hidden = true; });
         });
       }
+      // Typographic glue: never strand a 1–2 letter word at a line end ("a", "of", "7 in 10").
+      var head = card.querySelector('.headline');
+      if (head) {
+        var walker = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
+        for (var tn = walker.nextNode(); tn; tn = walker.nextNode()) {
+          tn.nodeValue = tn.nodeValue.replace(/(^|\s)(\S{1,2}) (?=\S)/g, '$1$2\u00A0').replace(/(^|\s|\u00A0)(\S{1,2}) (?=\S)/g, '$1$2\u00A0');
+        }
+      }
       var list = rowsOf(d);
       el.innerHTML = '';
-      if (!list.length) { el.hidden = true; return; }
+      if (!list.length) {
+        // no data: let the headline own the card instead of leaving a hole
+        el.hidden = true;
+        card.classList.add('no-chart');
+        if (head) head.setAttribute('data-fit-max', '128');
+        return;
+      }
       el.hidden = false;
       try {
         await Promise.all([

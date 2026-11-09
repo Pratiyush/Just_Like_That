@@ -18,6 +18,7 @@
       --ink: #9C3A26;                      /* text inside the cream pill and monogram */
       --accent: #F3C08A;                   /* underline under the highlight, closing mark */
       --rule: rgba(246, 232, 214, .42);
+      --echo: rgba(246, 232, 214, .26);    /* hairline echo of the mark ("transparent" to switch off) */
 
       background: var(--bg);
       color: var(--fg);
@@ -28,7 +29,7 @@
     }
 
     /* ---------- surface: light falloff, pigment mottle, paper grain ---------- */
-    .light, .mottle, .grain { position: absolute; inset: 0; pointer-events: none; }
+    .light, .mottle, .grain, .fleck { position: absolute; inset: 0; pointer-events: none; }
     .light {
       background:
         radial-gradient(62% 38% at 4% 2%, var(--glow), rgba(255, 196, 160, 0) 72%),
@@ -39,10 +40,21 @@
       mix-blend-mode: multiply;
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.0075' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 .62  0 0 0 0 .30  0 0 0 0 .20  0 0 0 -1.2 .9'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>") 0 0 / 100% 100% no-repeat;
     }
+    #card.q-full .light {                  /* long quotes reach the top: pull the light back so text keeps 4.5:1 */
+      background:
+        radial-gradient(40% 22% at 2% 1%, var(--glow), rgba(255, 196, 160, 0) 72%),
+        radial-gradient(140% 82% at 0% 0%, rgba(96, 24, 10, 0) 4%, var(--shade) 30%);
+    }
     .grain {
-      opacity: .5;
+      opacity: .85;
       mix-blend-mode: soft-light;
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' seed='8' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") 0 0 / 320px 320px;
+    }
+
+    .fleck {                               /* sparse pigment flecks, like unbleached stock */
+      opacity: .5;
+      mix-blend-mode: multiply;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .14  0 0 0 0 .07  16 0 0 0 -11.2'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>") 0 0 / 420px 420px;
     }
 
     /* ---------- the oversized quotation mark ---------- */
@@ -51,13 +63,21 @@
       left: -104px;
       top: 0;
       font-family: 'Fraunces', 'DejaVu Serif', Georgia, serif;
-      font-size: 1300px;
+      font-size: 1340px;
       line-height: 1;
       font-weight: 700;
       font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
       color: var(--glyph);
       pointer-events: none;
       user-select: none;
+    }
+    .glyph::after {                        /* hairline echo of the mark, slightly off-register */
+      content: '\201C';
+      position: absolute;
+      left: 0; top: 0;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--echo);
+      transform: translate(20px, -20px);
     }
 
     /* ---------- header ---------- */
@@ -140,7 +160,7 @@
       display: flex;
       align-items: center;
       gap: 34px;
-      margin-top: 48px;
+      margin-top: 56px;
     }
     .monogram {
       position: relative;
@@ -223,6 +243,7 @@
     <div class="glyph" aria-hidden="true">&#8220;</div>
     <div class="light"></div>
     <div class="mottle"></div>
+    <div class="fleck"></div>
     <div class="grain"></div>
 
     <header class="top">
@@ -313,7 +334,7 @@
       var gfs = parseFloat(gs.fontSize);
       var gTop = parseFloat(gs.top);
       var BOWL = 0.355;                 // bowl bottoms of the mark, in em of the glyph
-      var MAX_LIFT = gfs * 0.07;
+      var MAX_LIFT = gfs * 0.045;
       var cardTop = card.getBoundingClientRect().top;
 
       function fits() { return box.scrollHeight <= box.clientHeight + 1 && box.scrollWidth <= box.clientWidth + 1; }
@@ -345,6 +366,7 @@
       if (size === null) {              // too long to stay clear: use the whole box, mark becomes a watermark
         box.style.paddingTop = '';
         size = full; setSize(size); floor = MIN;
+        card.classList.add('q-full');
       }
 
       // Widow control.

@@ -25,8 +25,8 @@
     .sky {
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 640px 600px at 1110px 1150px, #FF8B3D 0%, var(--orange) 40%, var(--pink) 64%, rgba(255, 46, 99, 0) 100%),
-        linear-gradient(172deg, #5A1EA3 0%, var(--violet) 36%, #9A2BB2 76%, #A92BA6 100%);
+        radial-gradient(ellipse 650px 560px at 1110px 1150px, #FF8B3D 0%, var(--orange) 44%, var(--pink) 67%, rgba(255, 46, 99, 0) 94%),
+        linear-gradient(172deg, #5A1EA3 0%, var(--violet) 32%, #A02AAE 70%, #BC2A96 100%);
     }
     .grain {
       position: absolute; inset: 0;
@@ -43,6 +43,10 @@
       top: 550px;             /* sun centre y = 1150 = horizon */
       pointer-events: none;
     }
+
+    /* ---------- twilight sparkles (hidden if the headline runs into them) ---------- */
+    .spark { position: absolute; width: var(--s); height: var(--s); pointer-events: none; }
+    .spark svg { width: 100%; height: 100%; display: block; }
 
     /* ---------- layout ---------- */
     .layout {
@@ -171,7 +175,7 @@
           <stop offset="1" stop-color="#FF6B35"/>
         </linearGradient>
         <clipPath id="sky"><rect width="1200" height="600"/></clipPath>
-        <linearGradient id="ringFade" x1="0" y1="250" x2="0" y2="470" gradientUnits="userSpaceOnUse">
+        <linearGradient id="ringFade" x1="0" y1="160" x2="0" y2="330" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#fff" stop-opacity="0"/>
           <stop offset="1" stop-color="#fff" stop-opacity="1"/>
         </linearGradient>
@@ -188,10 +192,8 @@
         </mask>
       </defs>
       <g clip-path="url(#sky)">
-        <g mask="url(#rings)" fill="none" stroke="#fff">
-          <circle cx="600" cy="600" r="440" stroke-opacity=".38" stroke-width="2.5"/>
-          <circle cx="600" cy="600" r="525" stroke-opacity=".3" stroke-width="3" stroke-dasharray="0.1 14" stroke-linecap="round"/>
-        </g>
+        <circle cx="600" cy="600" r="412" fill="none" stroke="#fff" stroke-opacity=".42" stroke-width="2.5"/>
+        <circle cx="600" cy="600" r="488" fill="none" stroke="#fff" stroke-opacity=".34" stroke-width="3.2" stroke-dasharray="0.1 14" stroke-linecap="round" mask="url(#rings)"/>
         <circle cx="600" cy="600" r="360" fill="url(#sunFill)" mask="url(#slats)"/>
       </g>
       <!-- reflection on the water below the horizon -->
@@ -205,6 +207,10 @@
         <rect x="552" y="760" width="96" height="4" rx="2" opacity=".26"/>
       </g>
     </svg>
+
+    <div class="spark" style="--s: 34px; left: 892px; top: 236px; opacity: .92"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 0c.6 6.2 3 9.6 12 12-9 2.4-11.4 5.8-12 12-.6-6.2-3-9.6-12-12C9 9.6 11.4 6.2 12 0Z"/></svg></div>
+    <div class="spark" style="--s: 18px; left: 968px; top: 322px; opacity: .7"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 0c.6 6.2 3 9.6 12 12-9 2.4-11.4 5.8-12 12-.6-6.2-3-9.6-12-12C9 9.6 11.4 6.2 12 0Z"/></svg></div>
+    <div class="spark" style="--s: 13px; left: 812px; top: 352px; opacity: .55"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 0c.6 6.2 3 9.6 12 12-9 2.4-11.4 5.8-12 12-.6-6.2-3-9.6-12-12C9 9.6 11.4 6.2 12 0Z"/></svg></div>
 
     <div class="grain"></div>
 
@@ -281,6 +287,25 @@
           sub.style.fontSize = size + 'px';
         }
       }
+    });
+
+    // After the headline is fitted: drop any sparkle the text runs into.
+    Card.ready.then(function () {
+      var card = document.getElementById('card');
+      var range = document.createRange();
+      var boxes = [];
+      card.querySelectorAll('.headline, .top > *').forEach(function (el) {
+        if (el.hidden) return;
+        range.selectNodeContents(el);
+        boxes = boxes.concat(Array.prototype.slice.call(range.getClientRects()));
+      });
+      card.querySelectorAll('.spark').forEach(function (sp) {
+        var r = sp.getBoundingClientRect(), pad = 28;
+        var hit = boxes.some(function (b) {
+          return r.right + pad > b.left && r.left - pad < b.right && r.bottom + pad > b.top && r.top - pad < b.bottom;
+        });
+        if (hit) sp.hidden = true;
+      });
     });
   </script>
 </body>

@@ -81,9 +81,9 @@
       border-radius: var(--radius);
       background:
         linear-gradient(160deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.06) 38%, rgba(255,255,255,.03) 100%),
-        rgba(20, 11, 62, .38);
-      -webkit-backdrop-filter: blur(28px) saturate(160%);
-      backdrop-filter: blur(28px) saturate(160%);
+        rgba(20, 11, 62, .44);
+      -webkit-backdrop-filter: blur(34px) saturate(150%);
+      backdrop-filter: blur(34px) saturate(150%);
       border: 1px solid rgba(255,255,255,.14);
       box-shadow:
         inset 0 1px 0 rgba(255,255,255,.50),
@@ -136,6 +136,7 @@
       font-family: 'Sora', 'Inter', sans-serif; font-weight: 700;
       font-size: 108px; line-height: 1.04; letter-spacing: -0.035em;
       color: var(--fg);
+      text-shadow: 0 2px 30px rgba(8, 4, 32, .45);
       position: relative; z-index: 1;
     }
     .headline > span { margin-top: auto; display: block; padding-bottom: .12em; }
@@ -144,6 +145,7 @@
       -webkit-background-clip: text; background-clip: text;
       color: transparent; -webkit-text-fill-color: transparent;
       -webkit-box-decoration-break: clone; box-decoration-break: clone;
+      text-shadow: none;
       filter: drop-shadow(0 0 1px rgba(255,255,255,.4)) drop-shadow(0 0 30px var(--glow));
     }
 
@@ -259,6 +261,17 @@
       var len = String(data.headline || '').replace(/\*\*/g, '').length;
       var max = len <= 16 ? 136 : len <= 26 ? 122 : len <= 44 ? 108 : 100;
       h.setAttribute('data-fit-max', max);
+    });
+    // Once the text is fitted, park the orb on the glass's top-right corner so its lower part
+    // is always seen frosted through the panel, whatever height the panel ended up.
+    Card.ready.then(function () {
+      var card = document.getElementById('card');
+      var panel = card.querySelector('.panel');
+      var orb = card.querySelector('.orb');
+      var ring = card.querySelector('.orb-ring');
+      var top = panel.offsetTop - orb.offsetHeight + 110;
+      orb.style.top = top + 'px';
+      ring.style.top = (top - (ring.offsetHeight - orb.offsetHeight) / 2) + 'px';
     });
   </script>
 </body>

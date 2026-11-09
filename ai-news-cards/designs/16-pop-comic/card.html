@@ -17,6 +17,7 @@
       --yellow: #FFD23F;
       --balloon: #FFFFFF;
       --dots: var(--cyan);
+      --tint: rgba(230, 57, 70, .2);              /* Ben-Day red screen over yellow boxes */
       background: var(--paper);
       color: var(--ink);
       font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', sans-serif;
@@ -37,13 +38,16 @@
     .kicker {
       position: absolute; left: 0; top: 0;
       max-width: 600px;
+      max-height: calc(2.2em + 44px);            /* two lines at most, then data-fit shrinks */
       padding: 20px 30px 17px 24px;
       background-color: var(--yellow);
+      background-image: radial-gradient(circle, var(--tint) 0 2.4px, transparent 2.9px);
+      background-size: 11px 11px;
       border: solid var(--ink); border-width: 0 6px 6px 0;
       box-shadow: 8px 8px 0 var(--ink);
       font-size: 32px; font-weight: 700; line-height: 1.1;
       letter-spacing: .06em; text-transform: uppercase;
-      white-space: nowrap; overflow: hidden;
+      overflow: hidden;
       z-index: 6;
     }
 
@@ -89,6 +93,8 @@
       width: 512px; max-height: 470px;
       padding: 26px 34px 26px 30px;
       background-color: var(--yellow);
+      background-image: radial-gradient(circle, var(--tint) 0 2.4px, transparent 2.9px);
+      background-size: 11px 11px;
       border: solid var(--ink); border-width: 7px 0 0 7px;
       display: flex; flex-direction: column;
       z-index: 5;
@@ -100,7 +106,8 @@
     .handle {
       margin-top: 18px; padding-top: 14px;
       border-top: 4px dashed var(--ink);
-      font-size: 28px; font-weight: 700; letter-spacing: .03em;
+      font-size: 28px; font-weight: 700; letter-spacing: .02em;
+      white-space: nowrap; overflow: hidden;
       display: flex; align-items: center; justify-content: flex-end; gap: 12px;
     }
     .handle svg { width: 36px; height: 30px; flex: none; }
@@ -117,8 +124,8 @@
     .burst .inner { fill: var(--yellow); }
     .burst .line { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linejoin: miter; stroke-miterlimit: 8; }
     .exclaim-box {
-      position: absolute; left: 92px; top: 135px; width: 256px; height: 160px;
-      display: flex; align-items: safe center; justify-content: center;
+      position: absolute; left: 85px; top: 135px; width: 270px; height: 160px;
+      display: flex; align-items: safe center; justify-content: safe center;
       overflow: hidden;
     }
     .exclaim {
@@ -247,7 +254,7 @@
 
       <div class="caption">
         <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
-        <div class="handle" data-if="handle">
+        <div class="handle" data-if="handle" data-fit data-fit-min="26">
           <svg viewBox="0 0 36 30" aria-hidden="true"><path class="f-white st" stroke-width="3.5" d="M18 3 C8 3 3 8 3 13 C3 18 8 22 15 23 L10 28 L22 23 C30 22 33 17 33 13 C33 8 28 3 18 3 Z"/></svg>
           <span data-field="handle"></span>
         </div>
@@ -262,14 +269,14 @@
             <circle cx="6" cy="6" r="3.2" class="f-red" opacity=".35"/>
           </pattern>
         </defs>
-        <polygon class="f-ink" transform="translate(12 12)" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
+        <polygon class="f-ink" transform="translate(10 10)" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
         <polygon class="outer" transform="translate(4 3)" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
         <polygon class="line" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
         <polygon class="inner" transform="translate(4 3)" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
         <polygon fill="url(#burstDots)" transform="translate(4 3)" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
         <polygon class="line" stroke-width="5" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
       </svg>
-      <div class="exclaim-box" data-fit data-fit-max="118" data-fit-min="52">
+      <div class="exclaim-box" data-fit data-fit-max="118" data-fit-min="40">
         <div class="exclaim" data-field="exclaim"></div>
       </div>
     </div>

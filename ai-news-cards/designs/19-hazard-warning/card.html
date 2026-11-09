@@ -16,11 +16,16 @@
       --stripe: 34px;
       /* worn-paint mask: opaque with small irregular chips knocked out */
       --chip-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.1' numOctaves='4' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -22 16.6'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+      --chip-mask-light: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.13' numOctaves='3' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -30 23.8'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
       --scratch-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><mask id='k'><rect width='900' height='900' fill='white'/><g stroke='black' stroke-linecap='round' fill='none'><path d='M60 140 l58 -16' stroke-width='1.6'/><path d='M560 700 l44 -15' stroke-width='1.4'/><path d='M210 520 q22 -9 46 -12' stroke-width='1.5'/><path d='M690 230 l36 -6' stroke-width='1.3'/><path d='M380 330 l20 -6' stroke-width='2.2'/></g></mask><rect width='900' height='900' fill='black' mask='url(%23k)'/></svg>");
       background:
         repeating-linear-gradient(-45deg, var(--ink) 0 var(--stripe), var(--bg) var(--stripe) calc(var(--stripe) * 2));
       color: var(--ink);
       font-family: 'Barlow Condensed', 'Arial Narrow', 'Liberation Sans Narrow', sans-serif;
+    }
+    .worn-light {
+      -webkit-mask-image: var(--chip-mask-light);
+      mask-image: var(--chip-mask-light);
     }
     .worn {
       -webkit-mask-image: var(--chip-mask), var(--scratch-mask);
@@ -113,6 +118,7 @@
       margin-top: 26px;
       max-width: 840px;
       font-size: 39px; line-height: 1.2; font-weight: 500;
+      text-wrap: pretty;
     }
     .subhead .hl { font-weight: 700; }
 
@@ -127,7 +133,7 @@
     .tips { list-style: none; display: flex; flex-direction: column; gap: 22px; }
     .tips li { display: flex; align-items: flex-start; gap: 18px; }
     .tips svg { width: 52px; height: 52px; flex: none; margin-top: -2px; }
-    .tips span { font-size: 36px; line-height: 1.12; font-weight: 600; }
+    .tips span { font-size: 36px; line-height: 1.12; font-weight: 600; text-wrap: balance; }
 
     .cta {
       align-self: flex-start;
@@ -162,6 +168,17 @@
     #card.tighter .sign { width: 280px; height: 247px; }
     #card.tighter .zone { gap: 32px; }
     #card.tighter .subhead { font-size: 34px; }
+    #card.tightest .kicker { height: 64px; }
+    #card.tightest .kicker-text { font-size: 36px; }
+    #card.tightest .headline { margin-top: 20px; }
+    #card.tightest .subhead { line-height: 1.14; margin-top: 14px; }
+    #card.tightest .zone { padding-top: 22px; }
+    #card.tightest .tips { gap: 10px; }
+    #card.tightest .tips span { line-height: 1.06; }
+    #card.tightest .col { gap: 16px; }
+    #card.tightest .cta { padding-top: 5px; padding-bottom: 5px; font-size: 26px; }
+    #card.tightest .sign { width: 240px; height: 212px; }
+    #card.tightest .footer { margin-top: 18px; }
 
     /* ---------- wear & tear (decorative) ---------- */
     .wear { position: absolute; inset: 0; pointer-events: none; }
@@ -192,7 +209,7 @@
     <div class="wear chips"></div>
 
     <div class="content">
-      <div class="kicker worn" data-if="kicker">
+      <div class="kicker worn-light" data-if="kicker">
         <svg viewBox="0 0 50 44" aria-hidden="true">
           <path class="ylw" d="M25 3 L47 41 H3 Z" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
           <path class="ink" d="M22.4 15.5 h5.2 l-.9 13.5 h-3.4 z"/>
@@ -216,7 +233,7 @@
               <span data-item></span>
             </li>
           </ul>
-          <div class="cta" data-if="cta">
+          <div class="cta worn-light" data-if="cta">
             <svg viewBox="0 0 32 32" aria-hidden="true">
               <path d="M28.5 3.5 L14 18 M28.5 3.5 L19.5 28.5 L14 18 L3.5 12.5 Z" fill="none" style="stroke: var(--ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
             </svg>
@@ -274,8 +291,17 @@
         h.style.fontSize = '';
         return over;
       }
-      ['tight', 'tighter'].forEach(function (mode) {
+      ['tight', 'tighter', 'tightest'].forEach(function (mode) {
         if (tooLong()) card.classList.add(mode);
+      });
+      /* Last resort for far-too-long content: drop the least important blocks
+         (share prompt, then subhead) rather than clip the headline, and say so. */
+      ['.cta', '.subhead'].forEach(function (sel) {
+        var el = card.querySelector(sel);
+        if (el && !el.hidden && tooLong()) {
+          el.hidden = true;
+          console.warn('[hazard] content too long for one card: hid ' + sel.slice(1));
+        }
       });
     });
   </script>

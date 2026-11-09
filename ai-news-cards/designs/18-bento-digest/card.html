@@ -227,6 +227,7 @@
       padding-bottom: .15em;
       margin-bottom: -.11em;
     }
+    .title.is-clamped { display: -webkit-box; -webkit-box-orient: vertical; }
     .title .hl { background: none; color: inherit; text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .12em; }
 
     /* Compact tiles (short rows): icon + tag share a line */
@@ -282,8 +283,8 @@
     .bento[data-n="4"] .tile:nth-child(3) { grid-column: 3 / span 4; grid-row: 3; }
     .bento[data-n="4"] .tile:nth-child(4) { grid-column: 3 / span 4; grid-row: 4; }
 
-    .bento[data-n="3"] .tile:nth-child(2) { grid-column: 1 / span 3; grid-row: 3 / span 2; }
-    .bento[data-n="3"] .tile:nth-child(3) { grid-column: 4 / span 3; grid-row: 3 / span 2; }
+    .bento[data-n="3"] .tile:nth-child(2) { grid-column: 1 / span 6; grid-row: 3; }
+    .bento[data-n="3"] .tile:nth-child(3) { grid-column: 1 / span 6; grid-row: 4; }
 
     .bento[data-n="2"] .tile:nth-child(2) { grid-column: 1 / span 6; grid-row: 3 / span 2; }
 
@@ -394,7 +395,7 @@
           </div>
           <div class="tile-body">
             <div class="tag" data-item="tag"></div>
-            <h2 class="title" data-item="title" data-highlight data-fit data-fit-min="34"></h2>
+            <h2 class="title" data-item="title" data-fit data-fit-min="34"></h2>
           </div>
         </article>
       </div>
@@ -484,8 +485,10 @@
 
       function pickIcon(item, i) {
         if (item && item.icon && ICONS[item.icon]) return item.icon;
-        var text = item && typeof item === 'object' ? (item.tag || '') + ' ' + (item.title || '') : String(item || '');
-        for (var r = 0; r < RULES.length; r++) if (RULES[r][0].test(text)) return RULES[r][1];
+        var texts = item && typeof item === 'object' ? [item.tag || '', item.title || ''] : [String(item || '')];
+        for (var t = 0; t < texts.length; t++) {
+          for (var r = 0; r < RULES.length; r++) if (RULES[r][0].test(texts[t])) return RULES[r][1];
+        }
         return FALLBACK[i % FALLBACK.length];
       }
 
@@ -495,6 +498,42 @@
 
       function fits(el) {
         return el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1;
+      }
+
+      /* Tile shape -> starting title size + a group key (same-shape tiles share one size). */
+      function tileSpec(tile) {
+        var w = tile.clientWidth, h = tile.clientHeight;
+        tile.classList.toggle('is-compact', h < 262);
+        var max = 40, kind = 'small';
+        if (w > 560) { max = 46; kind = 'wide'; }
+        else if (w > 420) { max = 44; kind = 'mid'; }
+        if (h > 420) { max += 4; kind += '-tall'; }
+        if (tile.classList.contains('is-compact')) max = Math.min(max, 40);
+        return { max: max, kind: kind };
+      }
+
+      /* Would this tile's title fit at the 34px floor (compact if needed)? Leaves no trace. */
+      function titleCanFit(tile) {
+        var title = tile.querySelector('.title');
+        if (title.hidden) return true;
+        var wasCompact = tile.classList.contains('is-compact');
+        tileSpec(tile);
+        title.style.fontSize = '34px';
+        var ok = fits(title);
+        if (!ok && !tile.classList.contains('is-compact')) {
+          tile.classList.add('is-compact');
+          ok = fits(title);
+        }
+        title.style.fontSize = '';
+        tile.classList.toggle('is-compact', wasCompact);
+        return ok;
+      }
+
+      function clampLines(title) {
+        var lh = parseFloat(getComputedStyle(title).lineHeight) || 36;
+        var room = title.clientHeight - parseFloat(getComputedStyle(title).paddingBottom);
+        title.classList.add('is-clamped');
+        title.style.webkitLineClamp = String(Math.max(1, Math.floor(room / lh)));
       }
 
       /* Largest whole px size (max..34) at which el fits; leaves that size applied. */
@@ -526,7 +565,7 @@
           if (typeof item === 'string') {
             var t = tile.querySelector('.title');
             t.hidden = false;
-            t.innerHTML = Card.format(item, data.highlight);
+            t.innerHTML = Card.format(item);
           }
           tile.querySelector('.chip').innerHTML = svg(ICONS[pickIcon(item, i)]);
           var sw = document.createElement('i');
@@ -545,13 +584,15 @@
           head.style.fontSize = '';
           if (!ok) {
             grid.classList.add('wide');
+            /* Largest headline that keeps the hero under ~half the grid AND leaves every story room. */
             var limit = grid.clientHeight * 0.48;
             var size = 104;
             for (; size > 64; size -= 2) {
               head.style.fontSize = size + 'px';
-              if (hero.offsetHeight <= limit) break;
+              if (hero.offsetHeight <= limit && tiles.every(titleCanFit)) break;
             }
-            head.setAttribute('data-fit-max', String(size));   /* keep it applied: tiles are measured next */
+            head.style.fontSize = size + 'px';                  /* keep it applied: tiles are measured next */
+            head.setAttribute('data-fit-max', String(size));
           }
         }
 
@@ -559,22 +600,17 @@
            then give tiles of the same shape the same size so the type scale stays calm. */
         var groups = {};
         tiles.forEach(function (tile) {
-          var w = tile.clientWidth, h = tile.clientHeight;
-          tile.classList.toggle('is-compact', h < 262);
-          var max = 40, kind = 'small';
-          if (w > 560) { max = 46; kind = 'wide'; }
-          else if (w > 420) { max = 44; kind = 'mid'; }
-          if (h > 420) { max += 4; kind += '-tall'; }
-          if (tile.classList.contains('is-compact')) max = Math.min(max, 40);
+          var spec = tileSpec(tile);
           var title = tile.querySelector('.title');
           if (title.hidden) return;
-          var size = largestFit(title, max);
+          var size = largestFit(title, spec.max);
           if (!fits(title) && !tile.classList.contains('is-compact')) {
             tile.classList.add('is-compact');      /* long title: put icon + tag on one line */
-            size = largestFit(title, Math.min(max, 40));
+            size = largestFit(title, Math.min(spec.max, 40));
           }
+          if (!fits(title)) clampLines(title);    /* absurdly long: end on a whole line with an ellipsis */
           title.style.fontSize = '';
-          (groups[kind] = groups[kind] || []).push({ el: title, size: size });
+          (groups[spec.kind] = groups[spec.kind] || []).push({ el: title, size: size });
         });
         Object.keys(groups).forEach(function (k) {
           var min = Math.min.apply(null, groups[k].map(function (g) { return g.size; }));

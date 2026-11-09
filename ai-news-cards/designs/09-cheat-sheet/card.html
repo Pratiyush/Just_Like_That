@@ -101,7 +101,7 @@
       position: absolute; z-index: 3; top: 74px; right: 72px; width: 330px; text-align: right;
     }
     .handle {
-      display: block; width: 100%; overflow: hidden; white-space: nowrap;
+      display: block; width: 100%; overflow: hidden; white-space: nowrap; padding: 0 8px;
       font-family: 'Caveat', cursive; font-weight: 700; font-size: 44px; line-height: 1.2;
       color: var(--pen);
       transform: rotate(-1.5deg);
@@ -400,56 +400,108 @@
       }
     }
 
-    /* Pick text size + line pitch so the list fits; every line sits on a ruled line. */
-    function layoutSheet(card, U) {
+    /* [text px, line-pitch ratio, blank ruled lines between items].
+       Preference: a blank line between items (chunking), then bigger text, then roomier lines. */
+    var LIST_CANDS = (function () {
+      var c = [], fs;
+      for (fs = 48; fs >= 36; fs--) { c.push([fs, 1.42, 1]); c.push([fs, 1.32, 1]); c.push([fs, 1.25, 1]); }
+      for (fs = 48; fs >= 34; fs--) { c.push([fs, 1.42, 0]); c.push([fs, 1.3, 0]); }
+      for (fs = 36; fs >= 34; fs--) c.push([fs, 1.22, 0]);
+      return c;
+    })();
+
+    function applyList(card, c) {
+      var R = Math.round(c[0] * c[1]);
+      card.style.setProperty('--fs', c[0] + 'px');
+      card.style.setProperty('--R', R + 'px');
+      card.style.setProperty('--gap', (c[2] * R) + 'px');
+      return R;
+    }
+
+    /* First candidate whose list fits the space left under the headline (null if none). */
+    function chooseList(card) {
       var sheet = card.querySelector('.sheet'), inner = card.querySelector('.sheet-inner');
+      var avail = sheet.clientHeight;
+      for (var i = 0; i < LIST_CANDS.length; i++) {
+        applyList(card, LIST_CANDS[i]);
+        if (inner.offsetHeight <= avail) return LIST_CANDS[i];
+      }
+      return null;
+    }
+
+    function fitsEl(el) { return el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1; }
+
+    /* Silent copy of card.js's fitter, so we can try headline boxes without logging warnings. */
+    function simFit(h, maxH) {
+      h.style.maxHeight = maxH + 'px';
+      var size = parseFloat(h.getAttribute('data-fit-max')) || 104;
+      var min = parseFloat(h.getAttribute('data-fit-min')) || 64;
+      h.style.fontSize = size + 'px';
+      var guard = 300;
+      while (!fitsEl(h) && size > min && guard-- > 0) {
+        size = Math.max(min, size - Math.max(1, size * 0.03));
+        h.style.fontSize = size + 'px';
+      }
+      return fitsEl(h) ? size : 0;
+    }
+
+    /* Trade headline size against list comfort: the largest headline that still lets the
+       list keep a blank line between items wins; otherwise the largest headline with readable items. */
+    function planLayout(card) {
+      var h = card.querySelector('.headline'), noteRow = card.querySelector('.note-row');
+      var note = card.querySelector('.note');
+      noteRow.hidden = !card.querySelector('.points li') && note.hidden;
+      var recs = [];
+      function search() {
+        recs = [];
+        if (!h || h.hidden) { var c0 = chooseList(card); if (c0) recs.push({ maxH: 0, hs: 0, lc: c0 }); return; }
+        var steps = [470, 430, 390, 350, 310, 280, 250, 220, 200];
+        for (var i = 0; i < steps.length; i++) {
+          var hs = simFit(h, steps[i]);
+          if (!hs) break;
+          var lc = chooseList(card);
+          if (!lc) continue;
+          recs.push({ maxH: steps[i], hs: hs, lc: lc });
+          if (lc[2] === 1 && lc[0] >= 38 && hs >= 76) break;
+        }
+      }
+      search();
+      if (!recs.length && !noteRow.hidden) { noteRow.hidden = true; search(); }
+      var pick = null;
+      recs.forEach(function (r) { if (!pick && r.lc[2] === 1 && r.lc[0] >= 38 && r.hs >= 76) pick = r; });
+      recs.forEach(function (r) { if (!pick && r.lc[0] >= 40) pick = r; });
+      recs.forEach(function (r) { if (!pick || r.lc[0] > pick.lc[0]) pick = pick && pick.lc[0] >= 40 ? pick : r; });
+      if (h && !h.hidden) {
+        h.style.maxHeight = (pick ? pick.maxH : 470) + 'px';
+        h.style.fontSize = '';
+      }
+      return pick;
+    }
+
+    /* Apply the chosen list size, then put every line of text on a ruled line. */
+    function layoutSheet(card, U, pick) {
       var noteRow = card.querySelector('.note-row'), note = card.querySelector('.note');
       var items = card.querySelectorAll('.points li');
-      if (!items.length) { noteRow.hidden = note.hidden; }
-      var avail = sheet.clientHeight;
-      /* [text px, line pitch ratio, blank ruled lines between items]
-         prefer a blank line between items (chunking), then bigger text, then roomier lines */
-      var cands = [], fs;
-      for (fs = 48; fs >= 36; fs--) { cands.push([fs, 1.42, 1]); cands.push([fs, 1.32, 1]); cands.push([fs, 1.25, 1]); }
-      for (fs = 48; fs >= 34; fs--) { cands.push([fs, 1.42, 0]); cands.push([fs, 1.3, 0]); }
-      for (fs = 36; fs >= 34; fs--) cands.push([fs, 1.22, 0]);
-      function apply(c) {
-        var R = Math.round(c[0] * c[1]);
-        card.style.setProperty('--fs', c[0] + 'px');
-        card.style.setProperty('--R', R + 'px');
-        card.style.setProperty('--gap', (c[2] * R) + 'px');
-        return R;
-      }
-      function tryAll() {
-        for (var i = 0; i < cands.length; i++) { apply(cands[i]); if (inner.offsetHeight <= avail) return cands[i]; }
-        return null;
-      }
-      var chosen = tryAll();
-      if (!chosen && !noteRow.hidden) { noteRow.hidden = true; chosen = tryAll(); }
-      if (!chosen) { chosen = cands[cands.length - 1]; apply(chosen); console.warn('[card] points overflow the sheet'); }
-      var R = Math.round(chosen[0] * chosen[1]);
+      var c = pick ? pick.lc : chooseList(card);
+      if (!c) { c = LIST_CANDS[LIST_CANDS.length - 1]; console.warn('[card] points overflow the sheet'); }
+      var R = applyList(card, c);
 
-      /* rule grid: anchor on the first item's baseline */
-      var fsPx = chosen[0];
       var firstTxt = card.querySelector('.points li .txt');
-      var anchor = firstTxt ? U.baseline(firstTxt) + Math.round(fsPx * 0.13) : U.rel(inner).top + R;
-      var rowsAbove = noteRow.hidden ? 1 : 1;
-      var top = anchor - R * rowsAbove - R + 1;
-      card.style.setProperty('--rule-top', Math.round(top) + 'px');
+      var anchor = firstTxt ? U.baseline(firstTxt) + Math.round(c[0] * 0.13)
+                            : U.rel(card.querySelector('.sheet-inner')).top + R;
+      card.style.setProperty('--rule-top', Math.round(anchor - 2 * R + 1) + 'px');
 
-      /* marker numbers sit on the same baseline as the text */
+      /* marker numbers sit on the same baseline as their text */
       items.forEach(function (li) {
         var b = li.querySelector('.num b'), t = li.querySelector('.txt');
         b.style.setProperty('--num-dy', '0px');
-        var dy = U.baseline(t) - U.baseline(b);
-        b.style.setProperty('--num-dy', r1(dy) + 'px');
+        b.style.setProperty('--num-dy', r1(U.baseline(t) - U.baseline(b)) + 'px');
       });
-      /* handwritten note sits on the line above item 1 */
+      /* the handwritten note sits on the ruled line above item 1 */
       if (!noteRow.hidden && !note.hidden && firstTxt) {
         var nt = note.querySelector('[data-field="note"]');
         note.style.setProperty('--note-dy', '0px');
-        var want = U.baseline(firstTxt) - R;
-        note.style.setProperty('--note-dy', r1(want - U.baseline(nt)) + 'px');
+        note.style.setProperty('--note-dy', r1(U.baseline(firstTxt) - R - U.baseline(nt)) + 'px');
       }
     }
 
@@ -529,9 +581,10 @@
         await document.fonts.ready;
       } catch (e) { /* fallbacks are fine */ }
       prepHeadline(card);
-      Card.fit();
       fitCta(card);
-      layoutSheet(card, U);
+      var pick = planLayout(card);
+      Card.fit();
+      layoutSheet(card, U, pick);
       drawSwipes(card, U);
       placeBulb(card, U);
       Card.ready.then(function () { drawSwipes(card, setup(card)); });

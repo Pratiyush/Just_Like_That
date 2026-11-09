@@ -207,7 +207,7 @@
     }
     .ribbon-icon { width: 40px; height: 50px; flex: none; color: var(--ink); position: relative; }
     .cta {
-      position: relative; display: block; max-width: 600px; overflow: hidden;
+      position: relative; display: block; max-width: 600px; overflow: hidden; padding: 0 .14em 0 .04em;
       font-family: 'Caveat', cursive; font-weight: 700; font-size: 52px; line-height: 1.02;
       color: var(--ink); white-space: nowrap; text-wrap: balance;
     }
@@ -575,7 +575,7 @@
       });
       /* emphasis sparks at the end of the headline highlight */
       var sparks = card.querySelector('.sparks');
-      if (last && last.right + 60 < 1066) {
+      if (last && last.right + 52 <= 1044) {
         sparks.removeAttribute('hidden');
         sparks.style.left = r1(last.right + 4) + 'px';
         sparks.style.top = r1(last.top + (last.bottom - last.top) * 0.56 - 38) + 'px';

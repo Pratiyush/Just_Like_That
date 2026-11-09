@@ -192,6 +192,8 @@
     .compact2 .tag { display: none; }
 
     .stats { list-style: none; margin-top: auto; padding-top: calc(28px * var(--sc, 1)); width: 100%; }
+    .airy .side { justify-content: center; }            /* sparse content: keep the fighters and their stats together */
+    .airy .stats { margin-top: var(--stats-gap); }
     .compact .corner { display: none; }
     .compact .name { margin-top: 0; }
     .compact .stat-label { -webkit-line-clamp: 1; }
@@ -570,6 +572,25 @@
         });
         alignRows();
       }
+
+      /* sparse content: cap the empty lane between the headers and the stat rows, centre the group */
+      (function () {
+        var MAX_GAP = 190;
+        var s0 = sides[0], ul = s0 && s0.querySelector('.stats');
+        if (!ul || ul.hidden) return;
+        var head = 0;
+        ['.corner', '.name', '.tag'].forEach(function (sel) {
+          sides.forEach(function (s) {
+            var el = s.querySelector(sel);
+            if (el && el.offsetHeight) head = Math.max(head, el.getBoundingClientRect().bottom);
+          });
+        });
+        var gap = ul.getBoundingClientRect().top - head;
+        if (gap > MAX_GAP) {
+          card.style.setProperty('--stats-gap', MAX_GAP + 'px');
+          card.classList.add('airy');
+        }
+      })();
 
       /* VS badge: centred in the gap between the corner headers and the stat rows */
       var ar = arena.getBoundingClientRect();

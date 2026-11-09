@@ -54,6 +54,8 @@
     .frame .border { fill: none; stroke: var(--fg); stroke-opacity: .9; stroke-width: 3; }
     .frame .tick   { stroke: var(--line); stroke-opacity: .5; stroke-width: 1; }
     .frame .ctr    { stroke: var(--fg); stroke-opacity: .85; stroke-width: 2; }
+    .frame .guide  { stroke: var(--line); stroke-opacity: .3; stroke-width: 1; }
+    .frame .guide-tick { stroke: var(--line); stroke-opacity: .6; stroke-width: 1.2; }
     .frame text    { font: 400 11px/1 var(--mono); fill: var(--line); fill-opacity: .6; text-anchor: middle; dominant-baseline: central; }
 
     /* ---------- layout ---------- */
@@ -92,7 +94,8 @@
     .scalebar .sb-line { fill: none; stroke: var(--line); stroke-width: 1.5; }
     .scalebar span { font: 400 14px/1 var(--mono); letter-spacing: .16em; color: var(--muted); text-transform: uppercase; }
 
-    /* Headline: the focal point. Faint lettering guidelines sit on each baseline, as a drafter would rule them. */
+    /* Headline: the focal point. Faint lettering guidelines (cap line + baseline, drawn in JS) sit behind it,
+       the way a drafter rules them before hand-lettering. */
     .headline {
       flex: 1 1 auto; min-height: 0; overflow: hidden;
       margin-top: 30px;
@@ -101,14 +104,6 @@
       text-transform: uppercase;
       color: var(--fg);
       text-wrap: balance;
-      --gl: rgba(205, 239, 255, .22);
-      background-image:
-        linear-gradient(to bottom, transparent calc(var(--base) - 1px), var(--gl) calc(var(--base) - 1px), var(--gl) var(--base), transparent var(--base)),
-        linear-gradient(to bottom, transparent calc(var(--cap) - 1px), var(--gl) calc(var(--cap) - 1px), var(--gl) var(--cap), transparent var(--cap));
-      background-size: 100% 0.94em;
-      background-repeat: repeat-y;
-      --base: 0.87em;   /* baseline and cap line within each 0.94em line box (Barlow Condensed metrics) */
-      --cap: 0.165em;
       padding-bottom: 0.14em;   /* room for the highlight's dimension line under the last line */
     }
     /* Highlight = a dimensioned feature: cyan lettering with a dimension line, extension lines and 45° drafting ticks. */
@@ -318,6 +313,7 @@
       <rect class="trim" x="18" y="18" width="1044" height="1314"/>
       <rect class="border" x="36" y="36" width="1008" height="1278"/>
       <g class="zones"></g>
+      <g class="guides"></g>
       <line class="ctr" x1="540" y1="18" x2="540" y2="58"/>
       <line class="ctr" x1="540" y1="1292" x2="540" y2="1332"/>
       <line class="ctr" x1="18" y1="675" x2="58" y2="675"/>
@@ -571,6 +567,33 @@
       ];
     }
 
+    /* Lettering guidelines: a cap line and a baseline for every line of the headline. */
+    function drawGuides(card, s) {
+      var g = card.querySelector('.frame .guides');
+      g.innerHTML = '';
+      var head = card.querySelector('.headline');
+      if (!head || head.hidden) return;
+      var fs = parseFloat(getComputedStyle(head).fontSize);
+      var c = card.getBoundingClientRect();
+      var range = document.createRange();
+      range.selectNodeContents(head);
+      var tops = {};
+      Array.prototype.forEach.call(range.getClientRects(), function (r) {
+        if (r.width < 1) return;
+        var top = (r.top - c.top) / s;
+        var key = Math.round(top / (fs * 0.3));
+        if (tops[key] === undefined || top < tops[key]) tops[key] = top;
+      });
+      Object.keys(tops).forEach(function (k) {
+        var base = tops[k] + fs * 1.0;           // Barlow Condensed ascent = 1em
+        var cap = base - fs * 0.706;             // cap height
+        [cap, base].forEach(function (y) {
+          el('line', { 'class': 'guide', x1: 62, y1: f(y), x2: 1018, y2: f(y) }, g);
+        });
+        el('line', { 'class': 'guide-tick', x1: 66, y1: f(cap - 6), x2: 66, y2: f(base + 6) }, g);
+      });
+    }
+
     function rel(elm, card, s) {
       var a = elm.getBoundingClientRect(), c = card.getBoundingClientRect();
       return { x: (a.left - c.left) / s, y: (a.top - c.top) / s, w: a.width / s, h: a.height / s };
@@ -728,6 +751,7 @@
           lower.style.gridTemplateRows = 'auto minmax(0, 1fr)';
         } else pts.style.justifyContent = 'space-evenly';
       }
+      drawGuides(card, s);
       var box = card.querySelector('.schem-box');
       var vertical = card.classList.contains('has-points') && !card.classList.contains('wide');
       var anchors = drawSchematic(box, vertical);

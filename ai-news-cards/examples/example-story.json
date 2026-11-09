@@ -1,0 +1,69 @@
+{
+  "slug": "example-story",
+  "brand": "AI Brief",
+  "handle": "@yourhandle",
+  "issue": "No. 042",
+  "kicker": "Open source",
+  "headline": "A phone-sized AI model just matched last year's giants",
+  "highlight": "phone-sized",
+  "subhead": "Nova Labs, a fictional lab used for this example, released a 3B-parameter model that runs offline on a mid-range phone.",
+  "body": "The model was trained by distilling a much larger system and fits in under 2 GB of memory. Early testers report it handles summaries, translation and simple coding tasks without an internet connection, which keeps personal data on the device.",
+  "stat": "3B",
+  "statLabel": "parameters, small enough to run offline on a phone",
+  "points": [
+    "Runs fully offline on a mid-range phone",
+    "Free for commercial use",
+    "Matches last year's flagship on coding tests"
+  ],
+  "source": "Source: Nova Labs (example)",
+  "date": "Nov 9, 2026",
+  "cta": "Save this for later",
+  "quote": "The most important AI of the next decade will be the one that fits in your pocket.",
+  "author": "Dr. Mira Okafor",
+  "authorRole": "Research lead, Nova Labs (fictional)",
+  "question": "Would you trust an AI that never touches the cloud?",
+  "options": ["Yes, privacy first", "No, the cloud is smarter", "Depends on the task"],
+  "myth": "Useful AI needs a giant data center.",
+  "fact": "Small models now run offline on phones and handle many everyday tasks.",
+  "items": [
+    { "tag": "Models", "title": "3B model runs offline on phones" },
+    { "tag": "Policy", "title": "New AI labelling rules take effect" },
+    { "tag": "Robotics", "title": "Warehouse robots learn from video" },
+    { "tag": "Health", "title": "AI triage tool enters hospital trials" },
+    { "tag": "Tools", "title": "Free voice cloning detector released" }
+  ],
+  "chart": [
+    { "label": "2023", "value": 70 },
+    { "label": "2024", "value": 30 },
+    { "label": "2025", "value": 8 },
+    { "label": "2026", "value": 3 }
+  ],
+  "chartUnit": "B",
+  "chartHighlight": 3,
+  "annotation": "Same score, 23× smaller",
+  "left": {
+    "name": "Nova-3B",
+    "tag": "On-device",
+    "stats": [
+      { "label": "Size", "value": "3B" },
+      { "label": "Works offline", "value": "Yes" },
+      { "label": "Cost / 1M tokens", "value": "$0" }
+    ]
+  },
+  "right": {
+    "name": "Cloud Giant",
+    "tag": "Data center",
+    "stats": [
+      { "label": "Size", "value": "400B" },
+      { "label": "Works offline", "value": "No" },
+      { "label": "Cost / 1M tokens", "value": "$3" }
+    ]
+  },
+  "verdict": "Small wins on privacy and price. Big still wins on hard reasoning.",
+  "paper": "Small Models, Big Results: Distilling Reasoning into 3B Parameters",
+  "tldr": "Distilling a large model's reasoning traces into a 3B model keeps most of its benchmark score at a fraction of the size.",
+  "ticker": "Nova Labs open-sources 3B model · Runs offline on phones · Free for commercial use",
+  "slideCount": 6,
+  "exclaim": "WHOA!",
+  "sticker": "HOT TAKE"
+}

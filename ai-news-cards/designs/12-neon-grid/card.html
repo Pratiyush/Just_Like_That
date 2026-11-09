@@ -528,11 +528,7 @@
 
         /* Long kicker: give it the whole HUD row. */
         var kick = card.querySelector('.kicker');
-        if (!kick.hidden) {
-          kick.style.fontSize = '';
-          if (!fits(kick)) card.classList.add('hud-compact');
-          kick.style.fontSize = '';
-        }
+        if (!kick.hidden && !fits(kick)) card.classList.add('hud-compact');
 
         /* Long headline: lower the horizon and shrink the sun to give the copy more sky. */
         setStatMax();

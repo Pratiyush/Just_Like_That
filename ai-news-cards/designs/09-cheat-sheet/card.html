@@ -167,7 +167,7 @@
     }
     .num b::before {
       content: ''; position: absolute; z-index: -1;
-      left: 50%; top: 50%; width: 1.62em; height: 1.5em;
+      left: 50%; top: 50%; width: calc(1.62em * var(--blob-k, 1)); height: calc(1.5em * var(--blob-k, 1));
       transform: translate(-50%, -50%) rotate(8deg);
       background: var(--blob) center / 100% 100% no-repeat;
     }
@@ -175,6 +175,7 @@
     .txt .lead { display: block; font-weight: 800; color: var(--ink); }
     .txt .detail { display: block; }
     .points.compact .detail { display: none; }
+    .nb { white-space: nowrap; }
     .txt .star { display: inline-block; width: .9em; height: .9em; vertical-align: -.08em; margin-left: .1em; color: var(--pen); overflow: visible; }
     .txt .star path { fill: none; stroke: currentColor; stroke-linejoin: round; }
 
@@ -387,6 +388,21 @@
       return { col: col, rel: rel, baseline: baseline, scale: scale };
     }
 
+    /* Keep hyphenated words whole ("60-second", "open-source") so lines never end in a hyphen. */
+    function noBreakHyphens(root) {
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = walker.nextNode())) if (/\w-\w/.test(n.nodeValue)) nodes.push(n);
+      nodes.forEach(function (t) {
+        var parts = t.nodeValue.split(/(\S*\w-\w\S*)/), frag = document.createDocumentFragment();
+        parts.forEach(function (p, i) {
+          if (!p) return;
+          if (i % 2) { var sp = document.createElement('span'); sp.className = 'nb'; sp.textContent = p; frag.appendChild(sp); }
+          else frag.appendChild(document.createTextNode(p));
+        });
+        t.parentNode.replaceChild(frag, t);
+      });
+    }
+
     /* "Lead — detail" points: the lead is bold ink, the detail is softer. */
     function splitPoints(card) {
       card.querySelectorAll('.points .txt').forEach(function (t) {
@@ -424,6 +440,8 @@
       card.style.setProperty('--fs', c[0] + 'px');
       card.style.setProperty('--R', R + 'px');
       card.style.setProperty('--gap', (c[2] * R) + 'px');
+      /* with no blank line between items, shrink the number dabs so they never touch */
+      card.style.setProperty('--blob-k', c[2] ? 1 : r1(Math.min(1, 0.92 * c[1] / 1.95)));
       return R;
     }
 
@@ -464,7 +482,10 @@
       function search() {
         recs = [];
         if (!h || h.hidden) { var c0 = chooseList(card); if (c0) recs.push({ maxH: 0, hs: 0, lc: c0 }); return; }
-        var steps = [620, 560, 510, 470, 430, 390, 350, 310, 280, 250, 220, 200];
+        var minH = h.__minH || 0;
+        var steps = [620, 560, 510, 470, 430, 390, 350, 310, 280, 250, 220, 200]
+          .filter(function (x) { return x > minH; });
+        if (minH && minH <= 640) steps.push(minH);
         for (var i = 0; i < steps.length; i++) {
           var hs = simFit(h, steps[i]);
           if (!hs) break;
@@ -573,7 +594,7 @@
       strip.classList.add('two');
       for (sz = 31; sz >= 26; sz--) {
         k.style.fontSize = sz + 'px';
-        if (k.scrollWidth <= k.clientWidth + 1 && k.offsetHeight <= sz * 1.12 * 2 + 2) return;
+        if (k.scrollWidth <= k.clientWidth + 1 && k.offsetHeight <= sz * 1.12 * 2 + 8) return;
       }
       console.warn('[card] kicker overflows the tape');
     }
@@ -589,6 +610,7 @@
       h.style.maxHeight = 'none';
       h.style.fontSize = min + 'px';
       if (h.scrollHeight > 430 || h.scrollWidth > h.clientWidth + 1) h.classList.add('wide');
+      h.__minH = Math.ceil(h.scrollHeight) + 1;     /* box height needed at the floor size */
       h.style.fontSize = '';
       h.style.maxHeight = '';
     }
@@ -604,6 +626,9 @@
     Card.onRender(async function (data, card) {
       var U = setup(card);
       splitPoints(card);
+      ['.headline', '.points', '.cta'].forEach(function (sel) { var el = card.querySelector(sel); if (el) noBreakHyphens(el); });
+      var kk = card.querySelector('.kicker');
+      if (kk && !kk.hidden) kk.innerHTML = kk.innerHTML.replace(/ ([·•|\/]) /g, '\u00a0$1 ');
       var lis = card.querySelectorAll('.points li');
       if (lis.length && data.note) {
         lis[lis.length - 1].querySelector('.lead').insertAdjacentHTML('beforeend', ' ' + STAR);

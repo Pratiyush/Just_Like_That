@@ -1,0 +1,29 @@
+{
+  "id": "10-carousel-hook",
+  "name": "Carousel Hook",
+  "style": "Carousel cover slide: a grainy orange → hot-pink → violet sunset sky, a giant Unbounded headline with the key word on a tilted white sticker, a '01/07' counter and progress dots, and a striped setting sun sliced off by the right edge, where a white horizon line from the 'Swipe →' pill runs off the card.",
+  "palette": ["#FF6B35", "#FF2E63", "#7B2CBF", "#FFC45C", "#1C0631", "#FFFFFF"],
+  "fonts": ["Unbounded", "Plus Jakarta Sans"],
+  "bestFor": "The first slide of a multi-slide explainer: a model doing something unexpected, a research result unpacked step by step, a 'how it works' breakdown or a ranked list whose answers live on the following slides.",
+  "principles": [
+    {
+      "name": "Zeigarnik effect / open loops (Zeigarnik, 1927)",
+      "how": "The card is visibly unfinished: the counter reads 01/07, only the first progress dot is filled, the sun is cut in half by the right edge and the horizon line runs off the canvas. The headline states that something happened but holds back what it was, so the task feels open until the viewer swipes."
+    },
+    {
+      "name": "Information-gap curiosity (Loewenstein, 1994)",
+      "how": "The headline names a specific gap ('a skill nobody trained it for') without filling it. The subhead adds concrete detail that widens the gap (it was built to write code, and what it learned delayed the launch), and the CTA restates the gap as an instruction: 'Swipe to see what it learned'."
+    },
+    {
+      "name": "Gestalt continuation (Wertheimer, 1923)",
+      "how": "One continuous path runs headline → subhead → the arrow in the pill → the white horizon line → the sun → off the right edge. Because the line and the sun's arcs carry on past the frame, the eye reads the composition as continuing on slide 2."
+    },
+    {
+      "name": "High-arousal emotion drives sharing (Berger & Milkman, 2012)",
+      "how": "A saturated sunset gradient and a white sticker on the most charged word raise visual energy, and the copy aims for awe mixed with mild unease (an AI learning something nobody planned). Both are high-arousal emotions, which are shared more than calm, informative posts."
+    }
+  ],
+  "hookFormula": "[Subject] quietly [did something unplanned] that **nobody** [expected / trained it for], with the answer saved for slide 2",
+  "captionTip": "Don't give the answer away in the caption. Open with a line that points into the carousel ('Slide 4 is why the launch slipped'), then close with a send prompt ('Send this to the friend who says AI only autocompletes'), because DM sends are a strong ranking signal.",
+  "fields": ["kicker", "headline", "highlight", "subhead", "cta", "slideCount", "handle"]
+}

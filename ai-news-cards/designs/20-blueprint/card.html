@@ -474,7 +474,7 @@
         return out;
       }
       var R = { x: row(7, 1), h1: row(6, 0.8), z: row(3, 0.34), h2: row(6, 0.8), y: row(1, 0) };
-      var r = Math.max(7, Math.min(13, (aSpan / 6) * 0.24, span * 0.045));
+      var r = Math.max(4, Math.min(13, (aSpan / 6) * 0.3, span * 0.045));
       var pruned = { 1: 1, 4: 1, 5: 1 };
 
       var gBack = el('g', {}, svg), gMid = el('g', {}, svg), gHot = el('g', {}, svg), gTop = el('g', {}, svg);
@@ -720,7 +720,12 @@
       lower.style.flexGrow = '1';
       lower.style.flexBasis = lower.getBoundingClientRect().height / s + 'px';
       var pts = card.querySelector('.points');
-      if (pts && !pts.hidden) pts.style.justifyContent = 'space-evenly';
+      if (pts && !pts.hidden) {
+        if (card.classList.contains('wide')) {
+          // Findings keep their fitted height; the spare height goes to the schematic row.
+          lower.style.gridTemplateRows = 'auto minmax(0, 1fr)';
+        } else pts.style.justifyContent = 'space-evenly';
+      }
       var box = card.querySelector('.schem-box');
       var vertical = card.classList.contains('has-points') && !card.classList.contains('wide');
       var anchors = drawSchematic(box, vertical);

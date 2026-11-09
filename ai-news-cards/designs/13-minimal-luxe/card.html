@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minimal Luxe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@400;500&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #0A0A0A;
+      --fg: #F5F1E8;
+      --accent: #C9A96E;
+      --muted: rgba(245, 241, 232, .66);
+      --serif: 'Cormorant Garamond', 'Cormorant', Garamond, 'Times New Roman', 'Liberation Serif', 'DejaVu Serif', serif;
+      --sans: 'Jost', 'Futura', 'Century Gothic', 'Inter', 'DejaVu Sans', sans-serif;
+
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--serif);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 88px 96px 84px;
+    }
+
+    /* ---------- atmosphere: warm pool of light, vignette, film grain ---------- */
+    .atmos, .grain {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .atmos {
+      background:
+        radial-gradient(62% 44% at 50% 46%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 74%),
+        radial-gradient(120% 90% at 50% 50%, transparent 52%, rgba(0, 0, 0, .55) 100%);
+    }
+    .grain {
+      opacity: .07;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      background-size: 260px 260px;
+    }
+    #card > header, #card > main, #card > footer { position: relative; z-index: 1; }
+
+    /* ---------- crest: monogram seal + wordmark ---------- */
+    .crest {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: none;
+    }
+    .seal {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      display: grid;
+      place-items: center;
+    }
+    .seal svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .seal-mark {
+      position: relative;
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -.01em;
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .brand {
+      margin-top: 22px;
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: 26px;
+      line-height: 1.2;
+      letter-spacing: .42em;
+      margin-right: -.42em;            /* cancel trailing tracking so it centres optically */
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ---------- stage: the one thing to look at ---------- */
+    .stage {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0 36px;
+    }
+    .kicker-row {
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      max-width: 100%;
+      margin-bottom: 46px;
+    }
+    .kicker-row .rule {
+      flex: 0 1 64px;
+      min-width: 24px;
+      height: 1px;
+      background: var(--accent);
+      opacity: .85;
+    }
+    .kicker {
+      max-width: 720px;
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 27px;
+      line-height: 1.35;
+      letter-spacing: .34em;
+      margin-right: -.34em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-wrap: balance;
+    }
+
+    .headline {
+      flex: 0 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      width: 100%;
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 132px;
+      line-height: 1.02;
+      letter-spacing: -.012em;
+      color: var(--fg);
+      text-wrap: balance;
+      font-feature-settings: "kern", "liga", "lnum";
+    }
+    .headline .hl {
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -.005em;
+      padding-right: .04em;            /* room for the italic overhang */
+    }
+
+    .ornament {
+      flex: none;
+      margin: 52px 0 46px;
+      width: 260px;
+      height: 20px;
+    }
+    .ornament svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+    .subhead {
+      flex: none;
+      max-width: 800px;
+      max-height: 228px;
+      overflow: hidden;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 40px;
+      line-height: 1.36;
+      color: var(--muted);
+      text-wrap: balance;
+    }
+    .subhead .hl { color: var(--accent); font-style: italic; }
+
+    /* ---------- footer: date ◆ handle, hinged on the centre axis ---------- */
+    .foot {
+      flex: none;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      column-gap: 28px;
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 32px;
+      line-height: 1.2;
+      color: var(--muted);
+    }
+    .foot .date { text-align: right; justify-self: end; }
+    .foot .handle { text-align: left; justify-self: start; overflow-wrap: anywhere; }
+    .foot .lozenge {
+      width: 9px;
+      height: 9px;
+      background: var(--accent);
+      transform: rotate(45deg);
+    }
+    /* only one of date / handle present: centre it, drop the hinge */
+    .foot:has(> [data-field][hidden]) { display: flex; justify-content: center; }
+    .foot:has(> [data-field][hidden]) .lozenge { display: none; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="atmos" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="crest">
+      <div class="seal" aria-hidden="true">
+        <svg viewBox="0 0 84 84">
+          <circle cx="42" cy="42" r="41" fill="none" stroke="var(--accent)" stroke-width="1.25"/>
+          <circle cx="42" cy="42" r="36" fill="none" stroke="var(--accent)" stroke-width=".75" opacity=".55"/>
+        </svg>
+        <span class="seal-mark"></span>
+      </div>
+      <div class="brand" data-field="brand"></div>
+    </header>
+
+    <main class="stage">
+      <div class="kicker-row" data-if="kicker">
+        <i class="rule"></i><span class="kicker" data-field="kicker"></span><i class="rule"></i>
+      </div>
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="140" data-fit-min="72"></h1>
+      <div class="ornament" aria-hidden="true">
+        <svg viewBox="0 0 260 20">
+          <line x1="0" y1="10" x2="104" y2="10" stroke="var(--accent)" stroke-width="1"/>
+          <line x1="156" y1="10" x2="260" y2="10" stroke="var(--accent)" stroke-width="1"/>
+          <circle cx="114" cy="10" r="1.6" fill="var(--accent)"/>
+          <circle cx="146" cy="10" r="1.6" fill="var(--accent)"/>
+          <path d="M130 0 C131 7 133 9 140 10 C133 11 131 13 130 20 C129 13 127 11 120 10 C127 9 129 7 130 0 Z" fill="var(--accent)"/>
+        </svg>
+      </div>
+      <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
+    </main>
+
+    <footer class="foot">
+      <span class="date" data-field="date"></span>
+      <i class="lozenge" aria-hidden="true"></i>
+      <span class="handle" data-field="handle"></span>
+    </footer>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "brand": "AI Brief",
+    "kicker": "New Model",
+    "headline": "Four years. One model. It fits in your pocket.",
+    "highlight": "your pocket.",
+    "subhead": "Helix-3 from Nova Labs runs entirely offline on a phone, with reasoning that rivals cloud models ten times its size.",
+    "date": "Nov 9, 2026",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    /* Monogram: use data.monogram if given, otherwise the brand's initials (max 2). */
+    Card.onRender(function (data, card) {
+      var seal = card.querySelector('.seal');
+      var mark = card.querySelector('.seal-mark');
+      var src = String(data.monogram || '').trim();
+      if (!src) {
+        var words = String(data.brand || '').trim().split(/\s+/).filter(Boolean);
+        if (words.length === 1 && words[0].length <= 3) src = words[0];
+        else src = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('');
+      }
+      src = src.slice(0, 3);
+      mark.textContent = src;
+      seal.hidden = !src;
+      if (src.length > 2) mark.style.fontSize = '26px';
+    });
+  </script>
+</body>
+</html>

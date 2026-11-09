@@ -45,7 +45,7 @@
     .kicker {
       position: relative;
       display: inline-flex; align-items: center; gap: 12px;
-      max-width: 760px;
+      max-width: 100%;
       padding: 14px 28px 14px 20px;
       border-radius: 999px;
       background: var(--fg);
@@ -68,7 +68,8 @@
     .stage {
       flex: 1; min-height: 0; overflow: hidden;
       display: flex; flex-direction: column;
-      margin: 28px 0 0;
+      order: 1;
+      margin: 36px 0 0;
       font-size: 120px;
     }
     .stage-inner { margin: auto 0 40px; }   /* sits low, next to the options; overflows downward so fitting works */
@@ -91,7 +92,8 @@
     .subhead {
       flex: none;
       margin-top: 34px;
-      max-height: 200px; overflow: hidden;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--lines, 4);
+      overflow: hidden;
       padding-left: 28px;
       border-left: 4px solid var(--accent);
       font-weight: 400; font-size: 35px; line-height: 1.36;
@@ -104,7 +106,8 @@
       flex: none;
       list-style: none;
       display: flex; flex-direction: column; gap: 0.42em;
-      max-height: 560px; overflow: hidden;
+      order: 2;
+      max-height: 500px; overflow: hidden;
       font-size: 38px;
       padding: 4px 0 16px;                  /* keeps bar shadows from clipping */
     }
@@ -136,14 +139,14 @@
 
     /* ---------- footer ---------- */
     .foot {
-      flex: none;
+      flex: none; order: 3;
       margin-top: 40px;
-      display: flex; align-items: center; justify-content: space-between; gap: 32px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px 32px;
     }
     .cta {
       position: relative;
       display: inline-flex; align-items: center; gap: 14px;
-      max-width: 660px;
+      flex: 0 1 auto; min-width: 0; max-width: 100%;
       padding: 20px 34px 20px 24px;
       border-radius: 44px;
       background: var(--accent); color: var(--ink);
@@ -156,13 +159,13 @@
       clip-path: path('M0 0 H36 C26 8 14 16 2 24 C7 15 7 7 0 0 Z');
     }
     .cta svg { width: 38px; height: 38px; flex: none; }
+    .cta-text { max-height: 2.45em; overflow: hidden; }   /* two lines max; data-fit shrinks longer CTAs */
     .handle {
-      flex: none; max-width: 420px;
+      flex: none; max-width: 100%; margin-left: auto;
       font-weight: 500; font-size: 28px; letter-spacing: 0.01em;
       color: var(--muted);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .foot .handle:only-child { margin-left: auto; }
   </style>
 </head>
 <body>
@@ -183,7 +186,7 @@
       <use href="#hq-bubble" fill="#fff" fill-opacity="0.08"/>
       <use href="#hq-bubble" fill="url(#hq-dots)" mask="url(#hq-mask)" opacity="0.24"/>
       <use href="#hq-bubble" fill="none" stroke="#fff" stroke-opacity="0.3" stroke-width="3" vector-effect="non-scaling-stroke"/>
-      <g fill="#fff"><circle cx="782" cy="96" r="12"/><circle cx="824" cy="96" r="12" opacity="0.7"/><circle cx="866" cy="96" r="12" opacity="0.4"/></g>
+      <g class="typing" fill="#fff"><circle cx="782" cy="96" r="12"/><circle cx="824" cy="96" r="12" opacity="0.7"/><circle cx="866" cy="96" r="12" opacity="0.4"/></g>
     </svg>
     <div class="grain" aria-hidden="true"></div>
 
@@ -195,21 +198,22 @@
       </div>
     </header>
 
-    <main class="stage" data-fit data-fit-max="140" data-fit-min="64">
-      <div class="stage-inner">
-        <h1 class="question" data-field="question" data-highlight></h1>
-        <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
-      </div>
-    </main>
-
+    <!-- options come first in the DOM so data-fit sizes them before the question (CSS `order` puts them below) -->
     <ol class="options" data-list="options" data-fit data-fit-min="34">
       <li class="opt"><span class="opt-letter"></span><span class="opt-text" data-item></span><span class="opt-radio"></span></li>
     </ol>
 
+    <main class="stage" data-fit data-fit-max="168" data-fit-min="64">
+      <div class="stage-inner">
+        <h1 class="question" data-field="question" data-highlight></h1>
+        <p class="subhead" data-field="subhead"></p>
+      </div>
+    </main>
+
     <footer class="foot">
       <div class="cta" data-if="cta">
         <svg viewBox="0 0 40 40" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" d="M20 6c8.3 0 15 5.6 15 12.6S28.3 31.2 20 31.2c-1.6 0-3.1-.2-4.5-.6L8 34.4l1.8-6.3C6.8 25.8 5 22.4 5 18.6 5 11.6 11.7 6 20 6z"/><circle cx="13.6" cy="18.8" r="2.2" fill="currentColor"/><circle cx="20" cy="18.8" r="2.2" fill="currentColor"/><circle cx="26.4" cy="18.8" r="2.2" fill="currentColor"/></svg>
-        <span data-field="cta"></span>
+        <span class="cta-text" data-field="cta" data-fit data-fit-min="28"></span>
       </div>
       <span class="handle" data-field="handle"></span>
     </footer>
@@ -232,7 +236,7 @@
   </script>
   <script src="../../shared/card.js"></script>
   <script>
-    Card.onRender(function (data, card) {
+    Card.onRender(async function (data, card) {
       // A / B / C / D badges
       var list = card.querySelector('.options');
       var opts = list.querySelectorAll('.opt');
@@ -265,6 +269,38 @@
       var svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 60' preserveAspectRatio='none'><g fill='" + color + "'>" +
         d.map(function (p) { return "<path d='" + p + "'/>"; }).join('') + '</g></svg>';
       card.style.setProperty('--swash', 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
+
+      // Budget pass (needs real fonts): if the question would not fit even at its 64px floor,
+      // give it room by clamping the context line to fewer lines (ellipsis), then dropping it.
+      if (document.readyState !== 'complete') {
+        await new Promise(function (r) { window.addEventListener('load', r, { once: true }); });
+      }
+      void card.offsetHeight;
+      try { await document.fonts.ready; } catch (e) { /* ignore */ }
+      var stage = card.querySelector('.stage');
+      var sub = card.querySelector('.subhead');
+      if (!sub.hidden) {
+        var size = 38;                                   // mirror data-fit on the options
+        list.style.fontSize = size + 'px';
+        while (list.scrollHeight > list.clientHeight + 1 && size > 34) {
+          size = Math.max(34, size - 1);
+          list.style.fontSize = size + 'px';
+        }
+        stage.style.fontSize = '64px';
+        var over = function () { return stage.scrollHeight > stage.clientHeight + 1; };
+        for (var n = 4; n >= 1 && over(); n--) sub.style.setProperty('--lines', n);
+        if (over()) sub.hidden = true;
+        stage.style.fontSize = '';
+        list.style.fontSize = '';
+      }
+    });
+
+    // After fitting: move the "typing" dots out of the way of a long kicker.
+    Card.ready.then(function () {
+      var chip = document.querySelector('.kicker');
+      var dots = document.querySelector('.deco .typing');
+      if (!chip || chip.hidden || !dots) return;
+      if (chip.getBoundingClientRect().right > dots.getBoundingClientRect().left - 28) dots.style.display = 'none';
     });
   </script>
 </body>

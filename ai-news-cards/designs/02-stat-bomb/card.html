@@ -85,12 +85,12 @@
     }
     .chip svg { width: 24px; height: 24px; flex: none; }
     .kicker {
-      min-width: 0; overflow: hidden; white-space: nowrap;
+      min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
       font-family: var(--display); font-weight: 800; font-stretch: 80%;
       font-size: 30px; line-height: 1.2; letter-spacing: .09em; text-transform: uppercase;
     }
     .date {
-      flex: none; white-space: nowrap;
+      flex: none; white-space: nowrap; margin-left: auto;
       font-family: var(--mono); font-weight: 500; font-size: 26px;
       letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
     }
@@ -98,7 +98,7 @@
     .stage {
       flex: 1; min-height: 0;
       display: flex; flex-direction: column; justify-content: center;
-      padding: 8px 0;
+      padding: 34px 0 10px;
     }
 
     .label {
@@ -107,7 +107,7 @@
     }
     .label svg { width: 32px; height: 32px; flex: none; margin-top: 4px; color: var(--accent); }
     .label span {
-      min-width: 0; max-height: 84px; overflow: hidden;
+      min-width: 0; max-height: 104px; overflow: hidden;
       font-family: var(--mono); font-weight: 500; font-size: 32px; line-height: 1.3;
       letter-spacing: .03em; text-transform: uppercase;
     }
@@ -179,7 +179,7 @@
       <header class="top">
         <div class="chip" data-if="kicker">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 1 3.5 13.6h7L9.6 23 20.5 9.8h-7.2z" fill="currentColor"/></svg>
-          <span class="kicker" data-field="kicker" data-fit data-fit-min="26"></span>
+          <span class="kicker" data-field="kicker"></span>
         </div>
         <span class="date" data-field="date"></span>
       </header>
@@ -275,6 +275,19 @@
       if (p.suf) {
         var top = /^[%°‰]+$/.test(p.suf);
         add('u u-suf ' + (top ? 'u-top' : 'u-base') + (/^[×x]$/i.test(p.suf) ? ' u-x' : '') + (p.gap ? ' u-gap' : ''), p.suf);
+      }
+    }
+
+    /* ---- kicker: tighten (size, then width axis, then tracking) before ever truncating ---- */
+    var kicker = card.querySelector('.kicker');
+    if (!kicker.hidden) {
+      var kfits = function () { return kicker.scrollWidth <= kicker.clientWidth + 1; };
+      var steps = [[30, 80, .09], [28, 80, .09], [26, 80, .08], [26, 72, .07], [26, 66, .06], [26, 62, .05], [26, 62, .03]];
+      for (var k = 0; k < steps.length; k++) {
+        kicker.style.fontSize = steps[k][0] + 'px';
+        kicker.style.fontStretch = steps[k][1] + '%';
+        kicker.style.letterSpacing = steps[k][2] + 'em';
+        if (kfits()) break;
       }
     }
 
@@ -390,10 +403,27 @@
     }
 
     /* ---- headline box gets whatever is left (never more than it can use) ---- */
+    var hBox = 0;
     if (!head.hidden) {
-      var left = room - used;
-      head.style.height = Math.max(Math.min(hMax, left), Math.min(hMin, left)) + 'px';
+      // Spare height (a width-bound number like 1,000,000, a short headline, or no stat at all):
+      // let the headline step up a size or two, as long as it stays within four lines.
+      var ladder = hasStat ? [100, 108] : [100, 108, 116, 124];
+      var maxSize = 92;
+      if (room - used - hMax > (hasStat ? 170 : 0)) {
+        for (var li = 0; li < ladder.length; li++) {
+          var hTry = headNeed(ladder[li]);
+          var nLines = Math.round(hTry / (ladder[li] * 1.03));
+          if (room - used - hTry < (hasStat ? 90 : 0) || nLines > 4) break;
+          hMax = hTry; maxSize = ladder[li];
+        }
+      }
+      head.setAttribute('data-fit-max', String(maxSize));
+      hBox = Math.max(0, Math.min(hMax, room - used));
+      head.style.height = hBox + 'px';
     }
+    // Optical centring: spare height splits ~42/58 so the block sits a touch above the true middle.
+    var spare = Math.max(0, room - used - hBox);
+    stage.style.paddingBottom = (px(getComputedStyle(stage).paddingBottom) + spare * 0.16) + 'px';
 
     /* ---- park the glow behind the number ---- */
     var cr = card.getBoundingClientRect();

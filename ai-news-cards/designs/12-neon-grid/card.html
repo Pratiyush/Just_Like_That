@@ -28,15 +28,17 @@
       --hz: 990px;            /* horizon line          */
       --sun-cy: 902px;        /* sun centre            */
       --sun-r: 216px;         /* sun radius            */
+      --clear: 62px;          /* gap between copy and the sun's reticle */
 
       background: var(--bg);
       color: var(--fg);
       font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif;
     }
     #card.is-dense {
-      --hz: 1072px;
-      --sun-cy: 1004px;
-      --sun-r: 166px;
+      --hz: 1084px;
+      --sun-cy: 1020px;
+      --sun-r: 156px;
+      --clear: 50px;
     }
 
     /* ---------- background layers ---------- */
@@ -60,7 +62,7 @@
 
     /* ---------- HUD corner brackets ---------- */
     .bracket {
-      position: absolute; z-index: 3; width: 62px; height: 62px;
+      position: absolute; z-index: 6; width: 62px; height: 62px;
       border: 0 solid var(--accent-2);
       filter: drop-shadow(0 0 6px rgba(5, 217, 232, .85));
     }
@@ -73,7 +75,7 @@
     .stage {
       position: absolute; z-index: 4;
       top: 72px; left: 72px; right: 72px;
-      bottom: calc(1350px - var(--sun-cy) + var(--sun-r) + 62px);
+      bottom: calc(1350px - var(--sun-cy) + var(--sun-r) + var(--clear));
       display: flex; flex-direction: column;
     }
 
@@ -132,17 +134,19 @@
       color: var(--fg);
       text-shadow: 0 0 2px rgba(255, 255, 255, .55), 0 0 26px rgba(255, 42, 109, .45);
     }
-    #card.is-dense .headline { text-transform: none; line-height: 1.04; letter-spacing: -.005em; }
+    #card.is-dense .copy { padding-top: 12px; }
+    #card.is-dense .headline { text-transform: none; line-height: 1.0; letter-spacing: -.005em; padding-bottom: .2em; }
+    #card.is-dense .subhead { margin-top: 18px; font-size: 34px; line-height: 1.25; }
     /* RGB-split copies of the headline (text mirrored into data-text by JS) */
     .headline::before,
     .headline::after {
       content: attr(data-text);
-      position: absolute; top: .04em; left: 18px; right: 18px;
-      z-index: -1; pointer-events: none;
-      white-space: pre-line; text-wrap: balance; text-shadow: none;
+      position: absolute; top: .04em; left: 18px; right: 18px; bottom: 0;
+      overflow: hidden; z-index: -1; pointer-events: none;
+      white-space: pre; text-shadow: none;
     }
-    .headline::before { color: var(--accent-2); transform: translate(-5px, 1px); opacity: .95; }
-    .headline::after  { color: var(--accent);   transform: translate(5px, -1px); opacity: .95; }
+    .headline::before { color: var(--accent-2); transform: translate(-.05em, .01em); }
+    .headline::after  { color: var(--accent);   transform: translate(.05em, -.01em); }
     .headline .hl {
       color: transparent;
       background: linear-gradient(180deg, var(--sun-1) 8%, var(--sun-2) 52%, var(--sun-3) 92%);
@@ -173,17 +177,31 @@
       text-shadow: 0 2px 0 rgba(255, 255, 255, .28);
     }
 
-    /* ---------- floor labels ---------- */
-    .stat-label {
+    /* ---------- floor: stat label + footer ---------- */
+    .floor {
       position: absolute; z-index: 4;
-      left: 50%; top: calc(var(--hz) + 30px); transform: translateX(-50%);
-      width: max-content; max-width: 840px;
-      padding: 10px 30px 11px;
+      top: calc(var(--hz) + 28px); bottom: 72px; left: 72px; right: 72px;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .stat-label {
+      position: relative; flex: none;
+      max-width: 860px;
+      padding: 10px 32px 11px;
       font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 600;
       font-size: 28px; line-height: 1.22; letter-spacing: .1em; text-transform: uppercase; text-align: center;
       color: var(--accent-2);
-      background: rgba(13, 2, 33, .9);
-      box-shadow: 0 0 0 2px rgba(5, 217, 232, .55), 0 0 26px rgba(5, 217, 232, .35);
+      --c: var(--accent-2);
+      background:
+        linear-gradient(var(--c), var(--c)) left top / 20px 4px no-repeat,
+        linear-gradient(var(--c), var(--c)) left top / 4px 20px no-repeat,
+        linear-gradient(var(--c), var(--c)) right top / 20px 4px no-repeat,
+        linear-gradient(var(--c), var(--c)) right top / 4px 20px no-repeat,
+        linear-gradient(var(--c), var(--c)) left bottom / 20px 4px no-repeat,
+        linear-gradient(var(--c), var(--c)) left bottom / 4px 20px no-repeat,
+        linear-gradient(var(--c), var(--c)) right bottom / 20px 4px no-repeat,
+        linear-gradient(var(--c), var(--c)) right bottom / 4px 20px no-repeat,
+        rgba(13, 2, 33, .88);
+      box-shadow: inset 0 0 0 1.5px rgba(5, 217, 232, .4), 0 0 30px rgba(5, 217, 232, .22);
       text-shadow: 0 0 10px rgba(5, 217, 232, .55);
     }
     .stat-label::before {
@@ -194,8 +212,7 @@
     }
 
     .footer {
-      position: absolute; z-index: 4;
-      left: 72px; right: 72px; bottom: 72px;
+      position: relative; flex: none; align-self: stretch; margin-top: auto;
       display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
       padding-top: 18px;
       border-top: 2px solid rgba(5, 217, 232, .5);
@@ -203,7 +220,7 @@
     }
     .footer::before {
       content: ''; position: absolute; z-index: -1;
-      left: -72px; right: -72px; top: -70px; bottom: -72px;
+      left: -72px; right: -72px; top: -80px; bottom: -72px;
       background: linear-gradient(0deg, rgba(10, 1, 26, .96) 0%, rgba(10, 1, 26, .9) 55%, rgba(10, 1, 26, 0) 100%);
     }
     .footer::after {
@@ -242,20 +259,22 @@
         <div class="hud-rec"><i class="dot"></i>REC<b>CH·12</b></div>
       </div>
       <div class="copy">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="122" data-fit-min="64"></h1>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="140" data-fit-min="64"></h1>
         <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
       </div>
     </div>
 
     <div class="sun-stat" data-field="stat" data-fit data-fit-min="44"></div>
-    <div class="stat-label" data-field="statLabel"></div>
 
-    <div class="footer">
+    <div class="floor">
+      <div class="stat-label" data-field="statLabel"></div>
+      <div class="footer">
       <div class="src" data-if="source">
         <svg viewBox="0 0 24 24" fill="none" stroke="#05D9E8" stroke-width="2" stroke-linecap="square"><path d="M12 13v8M8.5 21h7"/><circle cx="12" cy="11" r="2"/><path d="M7.8 6.8a6 6 0 0 0 0 8.4M16.2 6.8a6 6 0 0 1 0 8.4M4.9 3.9a10 10 0 0 0 0 14.2M19.1 3.9a10 10 0 0 1 0 14.2"/></svg>
         <span data-field="source"></span>
       </div>
       <div class="handle" data-field="handle"></div>
+      </div>
     </div>
   </div>
 
@@ -484,9 +503,36 @@
         if (size < 84 || overflow) {
           card.classList.add('is-dense');
           setStatMax();
+          Card.fit();
         }
+        syncGlitch(h);
         drawScene(card);
       });
+
+      /* The RGB-split copies must break exactly where the real headline breaks
+         (it is balanced), so copy its rendered lines into data-text. */
+      function syncGlitch(h) {
+        var fs = parseFloat(getComputedStyle(h).fontSize);
+        var lines = [], cur = '', lastTop = null;
+        var walker = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+        var range = document.createRange(), node;
+        while ((node = walker.nextNode())) {
+          var t = node.textContent;
+          for (var i = 0; i < t.length; i++) {
+            range.setStart(node, i); range.setEnd(node, i + 1);
+            var rects = range.getClientRects();
+            if (rects.length && /\S/.test(t[i])) {
+              var top = rects[0].top;
+              if (lastTop !== null && top - lastTop > fs * .5) { lines.push(cur); cur = ''; }
+              lastTop = top;
+            }
+            cur += t[i];
+          }
+        }
+        lines.push(cur);
+        h.setAttribute('data-text', lines.map(function (s) { return s.replace(/\s+/g, ' ').trim(); }).join('\n'));
+      }
+      Card.ready.then(function () { syncGlitch(document.querySelector('#card .headline')); });
     })();
   </script>
 </body>

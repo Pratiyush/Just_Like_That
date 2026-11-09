@@ -35,6 +35,7 @@
       padding-bottom: 22px;
       border-bottom: 3px solid var(--fg);
     }
+    .mast:not(:has(> :not([hidden]))) { display: none; }
     .kick { display: flex; align-items: center; gap: 16px; min-width: 0; }
     .kick svg { flex: none; width: 34px; height: 30px; display: block; }
     .kick .k-bar { fill: var(--bar); }
@@ -111,6 +112,7 @@
       border-radius: 14px;
       padding: 20px 26px 22px 32px;
       font-size: 34px; line-height: 1.22; font-weight: 500; color: var(--fg);
+      text-wrap: balance;
       box-shadow:
         inset 6px 0 0 var(--accent),
         0 0 0 1.5px rgba(11, 31, 58, .07),
@@ -160,7 +162,7 @@
     "kicker": "Adoption trend",
     "headline": "AI agents now write code for 7 in 10 dev teams",
     "highlight": "7 in 10",
-    "chartTitle": "Dev teams using an AI coding agent every week",
+    "chartTitle": "Share of dev teams using an AI coding agent every week",
     "chart": [
       { "label": "2021", "value": 3 },
       { "label": "2022", "value": 6 },
@@ -170,7 +172,6 @@
       { "label": "2026", "value": 71 }
     ],
     "chartUnit": "%",
-    "chartHighlight": 5,
     "annotation": "Up from **1 in 10** in 2023. Not using one yet? You're the outlier now.",
     "source": "Source: Nova Labs Dev Pulse, illustrative data",
     "date": "Nov 9, 2026",
@@ -224,29 +225,27 @@
        unit as prefix (currency) or suffix (%, ×, ms, pts...). */
     function makeFormatter(values, unitRaw) {
       var maxAbs = Math.max.apply(null, values.map(Math.abs));
-      var div = 1, mult = '';
-      if (maxAbs >= 1e9) { div = 1e9; mult = 'B'; }
-      else if (maxAbs >= 1e6) { div = 1e6; mult = 'M'; }
-      else if (maxAbs >= 1e5) { div = 1e3; mult = 'K'; }
-      var opts;
-      if (div > 1) {
-        var m = maxAbs / div;
-        var d = m < 10 ? 2 : m < 100 ? 1 : 0;
-        opts = { minimumFractionDigits: 0, maximumFractionDigits: d };
-      } else {
-        var dec = decimalsOf(values);
-        opts = { minimumFractionDigits: dec, maximumFractionDigits: dec };
-      }
+      var compact = maxAbs >= 1e5;          // big numbers: 41K, 152K, 2.45M (each value picks its own scale)
+      var dec = decimalsOf(values);         // small numbers: shared precision, integers stay clean
       var unit = unitRaw === undefined || unitRaw === null ? '' : String(unitRaw);
       var pre = /^[$€£¥₹₩]/.test(unit);
       var unitText = unit;
       if (!pre && unit && !/^\s/.test(unit) && /^[A-Za-z]{2,}/.test(unit)) unitText = ' ' + unit;
+      function body(a) {
+        if (compact && a >= 1000) {
+          var div = a >= 1e9 ? 1e9 : a >= 1e6 ? 1e6 : 1e3;
+          var m = a / div;
+          return m.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: m < 10 ? 2 : m < 100 ? 1 : 0 }) +
+            (div === 1e9 ? 'B' : div === 1e6 ? 'M' : 'K');
+        }
+        var d = Number.isInteger(a) ? 0 : dec;
+        return a.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: Math.max(d, dec) });
+      }
       return function (v, withUnit) {
-        var neg = v < 0;
-        var s = (Math.abs(v) / div).toLocaleString('en-US', opts) + mult;
+        var s = body(Math.abs(v));
         var u = unit && withUnit !== false
           ? '<span class="unit ' + (pre ? 'pre' : 'suf') + '">' + esc(unitText) + '</span>' : '';
-        return (neg ? '−' : '') + (pre ? u + esc(s) : esc(s) + u);
+        return (v < 0 ? '\u2212' : '') + (pre ? u + esc(s) : esc(s) + u);
       };
     }
 
@@ -302,7 +301,7 @@
       }
       // 4) box sits above the bar: drop straight down
       if (box.l <= cx - 36 && box.r >= cx + 36 && box.b <= top - 44) {
-        return { pts: [[cx, box.b], [cx, top - 16]], len: top - 16 - box.b, elbow: false, ay: box.b };
+        return { pts: [[cx, box.b], [cx, top - 16]], len: top - 16 - box.b, elbow: false, ay: box.b, above: true };
       }
       return null;
     }
@@ -406,15 +405,41 @@
       if (data.annotation !== undefined && data.annotation !== null && String(data.annotation).trim() !== '') {
         annoEl = div('anno', el);
         annoEl.innerHTML = Card.format(data.annotation);
+        var cs = getComputedStyle(annoEl);
+        var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+        var range = document.createRange();
         [0.5, 0.56, 0.44, 0.62, 0.38, 0.7, 0.8].forEach(function (f) {
           var w = Math.round(Math.max(300, Math.min(W, W * f)));
           annoEl.style.width = w + 'px';
-          sizes.push({ w: w, h: annoEl.offsetHeight });
+          // shrink-wrap the card to its longest (balanced) line so no dead space sits at the right
+          range.selectNodeContents(annoEl);
+          var rs = Array.prototype.slice.call(range.getClientRects());
+          if (rs.length) {
+            var lo = Math.min.apply(null, rs.map(function (r) { return r.left; }));
+            var hi2 = Math.max.apply(null, rs.map(function (r) { return r.right; }));
+            var tight = Math.ceil(hi2 - lo + padX + 4);
+            if (tight < w) {
+              annoEl.style.width = tight + 'px';
+              var hTight = annoEl.offsetHeight;
+              annoEl.style.width = w + 'px';
+              var hWide = annoEl.offsetHeight;
+              if (hTight <= hWide) w = tight;
+            }
+          }
+          annoEl.style.width = w + 'px';
+          if (!sizes.some(function (z) { return z.w === w; })) sizes.push({ w: w, h: annoEl.offsetHeight });
         });
       }
 
       var GAP = 12;
-      var plotBottom = H - axisH - (hasNeg ? quietH + GAP + 6 : 0);
+      // room under the zero line for labels that hang below negative bars
+      var negRoom = 0;
+      list.forEach(function (d, i) {
+        if (d.value >= 0) return;
+        var h = i === hi ? (function () { hlEl.style.fontSize = HL_MAX + 'px'; return hlEl.offsetHeight; })() : quietH;
+        negRoom = Math.max(negRoom, h + GAP + 14);
+      });
+      var plotBottom = H - axisH - negRoom;
       var baseTop = HL_MAX + GAP + 4;
       var geo, best = null;
 
@@ -427,8 +452,9 @@
         if (best) break;
       }
       if (annoEl && !best) {
-        // last resort: park the callout at the top-left, no leader
-        best = { w: sizes[0].w, h: sizes[0].h, x: 0, y: 0, leader: null };
+        // no clean spot (chart squeezed by a very long headline): never cover data, drop the callout
+        annoEl.remove();
+        annoEl = null;
       }
 
       function layout(pt) {
@@ -509,7 +535,8 @@
                 }
               }
               if (bad) continue;
-              var score = Math.abs(ld.len - 64) + (ld.elbow ? 36 : 0) + Math.abs(ld.ay - (box.t + box.b) / 2) * 0.25 + s.h * 0.12 + y * 0.03;
+              var off = ld.above ? Math.abs(tg.cx - (box.l + box.r) / 2) * 0.12 : Math.abs(ld.ay - (box.t + box.b) / 2) * 0.25;
+              var score = Math.abs(ld.len - 64) + (ld.elbow ? 36 : 0) + off + s.h * 0.12 + y * 0.03;
               if (!found || score < found.score) {
                 found = { score: score, w: s.w, h: s.h, x: box.l, y: box.t, leader: ld };
               }
@@ -551,9 +578,38 @@
       }
     }
 
+    /* Which keys came from outside the sample (render.js --data, ?data=, URL params)? */
+    function overrideKeys() {
+      var keys = {};
+      if (window.CARD_DATA && typeof window.CARD_DATA === 'object') Object.keys(window.CARD_DATA).forEach(function (k) { keys[k] = 1; });
+      var params = new URLSearchParams(location.search);
+      params.forEach(function (v, k) {
+        if (k !== 'data') { keys[k] = 1; return; }
+        try {
+          var s = v.replace(/-/g, '+').replace(/_/g, '/');
+          while (s.length % 4) s += '=';
+          var bin = atob(s), bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          Object.keys(JSON.parse(new TextDecoder().decode(bytes)) || {}).forEach(function (kk) { keys[kk] = 1; });
+        } catch (e) { /* card.js reports bad data */ }
+      });
+      return keys;
+    }
+    var CHART_COMPANIONS = ['chartTitle', 'chartUnit', 'chartHighlight', 'annotation'];
+
     Card.onRender(async function (data, card) {
       var el = card.querySelector('.chart');
-      var list = rowsOf(data);
+      // A chart and its unit/title/highlight/annotation travel together: when new chart data
+      // arrives without them, don't let the sample's companions describe the wrong numbers.
+      var ov = overrideKeys(), d = Object.assign({}, data);
+      if (ov.chart) {
+        CHART_COMPANIONS.forEach(function (k) {
+          if (ov[k]) return;
+          delete d[k];
+          card.querySelectorAll('[data-field="' + k + '"]').forEach(function (n) { n.innerHTML = ''; n.hidden = true; });
+        });
+      }
+      var list = rowsOf(d);
       el.innerHTML = '';
       if (!list.length) { el.hidden = true; return; }
       el.hidden = false;
@@ -566,7 +622,7 @@
         await document.fonts.ready;
       } catch (e) { /* fall back to whatever is available */ }
       Card.fit();            // settle the headline first so the chart gets its real height
-      draw(el, list, data);
+      draw(el, list, d);
     });
   })();
   </script>

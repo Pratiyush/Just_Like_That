@@ -112,7 +112,8 @@
     .slab::before { top: 11px; }
     .slab::after { bottom: 11px; }
     .headline {
-      max-height: 330px; overflow: hidden;
+      max-height: 350px; overflow: hidden;
+      padding-bottom: .27em; margin-bottom: -.27em;   /* Anton's tall content box: keep it inside for data-fit */
       font-family: var(--display); font-weight: 400;
       font-size: 96px; line-height: 1.0; letter-spacing: .005em;
       text-transform: uppercase; text-align: center;
@@ -120,13 +121,14 @@
       text-wrap: balance;
       padding-top: .04em;
     }
-    .headline .hl {
+    .headline .hl { display: contents; }
+    .headline .hlw {
       color: #fff;
       background:
         linear-gradient(90deg, var(--left) 0 50%, var(--right) 50% 100%) no-repeat;
-      background-size: 100% .13em;
-      background-position: 0 96%;
-      padding: 0 .02em;
+      background-size: 100% .11em;
+      background-position: 0 100%;
+      padding-bottom: .02em;
     }
 
     /* arena: two corners + centre lane */
@@ -137,6 +139,7 @@
       margin-top: 44px;
     }
     .side { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+    .side > * { flex: none; }
     .lane { flex: 0 0 var(--lane, 250px); }
     .side.right { align-items: flex-end; text-align: right; color: var(--right-ink); }
 
@@ -158,11 +161,12 @@
       font-family: var(--display); font-weight: 400;
       font-size: 96px; line-height: 1.02;
       text-transform: uppercase; letter-spacing: .01em;
-      max-height: 2.04em; overflow: hidden;
+      max-height: 2.3em; overflow: hidden;
+      padding-bottom: .26em; margin-bottom: -.26em;
       text-shadow: 5px 5px 0 rgba(0,0,0,.18);
     }
     .name.one-line { white-space: nowrap; }
-    .name .w { white-space: nowrap; }
+    .name .w, .headline .hlw { display: inline-block; white-space: nowrap; }
 
     .tag {
       display: inline-block;
@@ -194,7 +198,7 @@
     .stat-val {
       display: block; min-width: 0; flex: 0 1 auto;
       white-space: nowrap; overflow: hidden;
-      font-weight: 800; font-size: 76px; line-height: 1.0;
+      font-weight: 800; font-size: 76px; line-height: 1.1;
       letter-spacing: -.005em;
       font-variant-numeric: tabular-nums lining-nums;
     }
@@ -256,7 +260,8 @@
     }
     .verdict {
       flex: 1; min-width: 0;
-      max-height: 114px; overflow: hidden;
+      max-height: 118px; overflow: hidden;
+      padding-bottom: .1em; margin-bottom: -.1em;
       font-weight: 700; font-style: italic;
       font-size: 40px; line-height: 1.1;
       text-wrap: pretty;
@@ -360,7 +365,7 @@
   <script type="application/json" id="card-data">
   {
     "kicker": "Title fight · Open vs closed",
-    "headline": "The underdog costs **10× less** and nearly KO'd the champ",
+    "headline": "The underdog costs **10x less** and nearly KO'd the champ",
     "corners": ["Blue corner", "Orange corner"],
     "left": {
       "name": "Helix-3",
@@ -409,6 +414,13 @@
         if (!el || el.hidden || !name) return;
         el.innerHTML = String(name).split(/\s+/).map(function (w) {
           return '<span class="w">' + Card.format(w) + '</span>';
+        }).join(' ');
+      });
+
+      /* headline highlight: one unbreakable underlined box per word (no inline overflow) */
+      card.querySelectorAll('.headline mark.hl').forEach(function (m) {
+        m.innerHTML = m.textContent.trim().split(/\s+/).map(function (w) {
+          return '<span class="hlw">' + w.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
         }).join(' ');
       });
 

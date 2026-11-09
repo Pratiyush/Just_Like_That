@@ -1,0 +1,30 @@
+{
+  "id": "01-breaking-alert",
+  "name": "Breaking Alert",
+  "style": "Live broadcast news urgency: a pure-black studio field with scanlines and red speed lines, a signal-red BREAKING bug with a LIVE chip, an oversized condensed all-caps headline, a white lower-third strap with a source/time bar, and a full-bleed news ticker.",
+  "palette": ["#000000", "#FF1E1E", "#FFFFFF", "#CC1818", "#F2F2F0", "#0E0E0E"],
+  "fonts": ["Anton", "Barlow Condensed", "JetBrains Mono"],
+  "bestFor": "Breaking announcements, model launches, surprise releases, major industry events: anything that is new right now and worth sending to someone.",
+  "principles": [
+    {
+      "name": "Pre-attentive processing (Treisman & Gelade, 1980)",
+      "how": "Signal red is the only saturated colour on a pure-black field, and it only appears on alert elements: the BREAKING bug, the LIVE dot, the highlighted headline phrase and the ticker accents. The eye registers 'alarm' from colour alone, before any word is read, so the card stops the thumb on its own."
+    },
+    {
+      "name": "Isolation (Von Restorff) effect (von Restorff, 1933)",
+      "how": "The highlighted phrase is the one red run of text in a white headline, so it becomes the focal point and the part people remember. Set `highlight` to the payoff (the number, the twist, the 'you' part), not the subject."
+    },
+    {
+      "name": "Urgency and timeliness (scarcity of time, one of Cialdini's levers, 1984)",
+      "how": "Broadcast grammar says 'this is happening now': the LIVE chip, the timestamp in the source bar, and a ticker that runs off the edge mid-word as if the feed keeps moving. News that feels perishable is worth seeing immediately instead of later."
+    },
+    {
+      "name": "High-arousal emotion drives sharing (Berger & Milkman, 2012)",
+      "how": "Alarm red, motion streaks and an all-caps condensed headline set an excited, slightly anxious tone. Berger and Milkman found that content evoking high-arousal emotions like awe, anxiety and excitement is shared more than low-arousal content, and DM sends are a strong Instagram reach signal."
+    }
+  ],
+  "hookFormula": "The [thing] that just [did something huge] [twist that lands on you]. Example: 'The AI that just beat the giants runs on your phone' (highlight the twist).",
+  "captionTip": "Open the caption with the one fact the headline holds back (the name, the number or the 'how') within the first line, then close with 'Send this to someone who needs to hear it first', because breaking news spreads through DMs.",
+  "fields": ["kicker", "headline", "highlight", "subhead", "ticker", "source", "date", "handle"],
+  "notes": "`ticker` takes a string with items separated by ·, • or |, or an array of strings. Items are restyled with red diamond separators and repeated to fill the band. `handle` sits in the ticker's red label block, and `date` sits at the right of the source bar. All-caps headlines read best at 12 words or fewer; longer ones shrink to fit (64 px floor). Fills that carry white text use `--accent-deep`, which is derived from `--accent`. If you recolour `--accent` to a light hue, also set `--accent-deep` to a shade that keeps white text at 4.5:1 or better."
+}

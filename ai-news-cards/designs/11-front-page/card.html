@@ -122,6 +122,10 @@
       transform: rotate(45deg) translateY(-3px); margin: 0 16px;
     }
     .edrow .ed-right { text-align: right; text-transform: none; letter-spacing: .04em; }
+    #card.ed-compact .edrow { grid-template-columns: auto minmax(0, 1fr); }
+    #card.ed-compact .ed-left { display: none; }
+    #card.ed-compact .ed-date { text-align: left; letter-spacing: .1em; }
+    #card.ed-compact .ed-date::before { display: none; }
 
     /* ---------- kicker ---------- */
     .kicker-row {
@@ -141,7 +145,11 @@
       text-transform: uppercase;
       color: var(--accent);
       text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+    #card.kicker-long .kicker { letter-spacing: .14em; margin-right: -.14em; max-width: 86%; }
 
     /* ---------- headline ---------- */
     .head-box {
@@ -189,6 +197,11 @@
       column-gap: 24px;
     }
     #card.tight .lower { height: 340px; }
+    #card.xtight .lower { height: 296px; }
+    #card.xtight .deck { font-size: 31px; max-height: 118px; }
+    #card.xtight .deck-wrap { margin-top: 10px; }
+    #card.xtight .deck-wrap::before { margin-bottom: 10px; }
+    #card.xtight .lower { margin-top: 16px; padding-top: 14px; }
     #card.no-body .lower { grid-template-columns: minmax(0, 1fr); }
     #card.no-body .lower { height: 380px; }
 
@@ -298,7 +311,7 @@
     }
     .stamp-line { display: block; height: 7px; margin: 2px 4px 0; border-top: 3px solid currentColor; border-bottom: 1.5px solid currentColor; }
     /* when the brand needs the full width, the stamp lands on the photo instead */
-    #card.brand-wide .stamp { top: auto; right: auto; left: 52px; bottom: 300px; transform: rotate(-11deg) scale(.9); }
+    #card.brand-wide .stamp { top: auto; right: auto; left: 92px; bottom: var(--stamp-bottom, 230px); transform: rotate(-9deg) scale(.86); transform-origin: left bottom; }
     #card.no-photo .stamp { display: none; }
   </style>
 </head>
@@ -324,12 +337,12 @@
 
     <div class="kicker-row" data-if="kicker"><span class="kicker ink" data-field="kicker"></span></div>
 
-    <div class="head-box" data-fit data-fit-max="156" data-fit-min="64">
+    <div class="head-box" data-fit data-fit-max="210" data-fit-min="64">
       <h1 class="headline ink" data-field="headline" data-highlight></h1>
     </div>
 
     <div class="deck-wrap" data-if="subhead">
-      <p class="deck ink" data-field="subhead" data-fit data-fit-max="36" data-fit-min="30"></p>
+      <p class="deck ink" data-field="subhead" data-fit data-fit-min="30"></p>
     </div>
 
     <section class="lower">
@@ -338,7 +351,7 @@
         <figcaption class="caption ink" data-field="caption"></figcaption>
       </figure>
       <div class="cols" data-if="body">
-        <div class="body ink" data-field="body" data-fit data-fit-max="29" data-fit-min="26"></div>
+        <div class="body ink" data-field="body"></div>
         <div class="jump ink" data-if="cta">
           <span data-field="cta"></span>
           <svg viewBox="0 0 30 18" aria-hidden="true"><path d="M1 9h24" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M19 2.5 28 9l-9 6.5z" fill="currentColor"/></svg>
@@ -546,28 +559,58 @@
         '</svg>';
     }
 
-    Card.onRender(function (data, card) {
-      // masthead: long brand names take the whole row (ear + stamp move away)
-      var brand = String(data.brand || '');
-      card.classList.toggle('brand-wide', brand.length > 11);
+    function overflowing(el) {
+      return el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1;
+    }
 
-      // long headlines get more room: the photo/columns band gets shorter
-      var hl = String(data.headline || '').replace(/\*\*/g, '');
-      card.classList.toggle('tight', hl.length > 70 || String(data.subhead || '').length > 150);
+    Card.onRender(async function (data, card) {
+      var txt = function (k) { return String(empty(data[k]) ? '' : data[k]).replace(/\*\*/g, ''); };
+
+      // masthead: long brand names take the whole row (the ear hides, the stamp moves onto the photo)
+      card.classList.toggle('brand-wide', txt('brand').length > 11);
+      card.classList.toggle('kicker-long', txt('kicker').length > 22);
+
+      // long headlines/decks get more room: the photo + columns band gets shorter
+      var hl = txt('headline').length, sub = txt('subhead').length;
+      card.classList.toggle('xtight', hl > 120);
+      card.classList.toggle('tight', hl > 64 || sub > 150);
       card.classList.toggle('no-body', empty(data.body));
 
-      // EXTRA stamp: "sticker" overrides the word; false/"" hides it
+      // EXTRA stamp: "sticker" overrides the word; false or "" hides it
       var stamp = card.querySelector('.stamp');
       var word = data.sticker === undefined ? 'Extra!' : data.sticker;
-      if (empty(word)) { stamp.hidden = true; }
-      else {
-        stamp.hidden = false;
+      stamp.hidden = empty(word);
+      if (!stamp.hidden) {
         stamp.querySelector('.stamp-word').textContent = String(word);
         stamp.querySelector('.stamp-stars').innerHTML = STAR + STAR + STAR;
       }
 
       void card.offsetHeight;
       halftone(card.querySelector('.photo'));
+
+      // The steps below measure text, so wait for the web fonts first.
+      try { await document.fonts.ready; } catch (e) { /* ignore */ }
+
+      // Edition bar: if the three cells can't all fit at 26px, drop the decorative "Vol./No." cell.
+      card.classList.remove('ed-compact');
+      var cells = card.querySelectorAll('.edrow > *');
+      if (Array.prototype.some.call(cells, function (c) { return !c.hidden && overflowing(c); })) {
+        card.classList.add('ed-compact');
+      }
+
+      // Columns: 29px down to 26px. Copy that is still too long is cut at the foot of
+      // column two like a real front-page jump ("Continued on ..."), never mid-line.
+      var body = card.querySelector('.body');
+      if (!body.hidden) {
+        var size = 29;
+        body.style.fontSize = size + 'px';
+        while (overflowing(body) && size > 26) { size -= 0.5; body.style.fontSize = size + 'px'; }
+      }
+
+      // With a full-width masthead the stamp lands on the lower part of the photo.
+      var photo = card.querySelector('.photo');
+      var cr = card.getBoundingClientRect(), pr = photo.getBoundingClientRect();
+      card.style.setProperty('--stamp-bottom', Math.round(cr.bottom - pr.bottom + 18) + 'px');
     });
   })();
   </script>

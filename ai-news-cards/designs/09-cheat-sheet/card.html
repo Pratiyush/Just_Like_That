@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cheat Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@600;700;800;900&family=Permanent+Marker&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      /* theme */
+      --paper: #FBF7EE;
+      --ink: #25232D;
+      --ink-soft: #55525F;
+      --pen: #2B4A9E;
+      --rule: #BCD2E7;
+      --margin: #E47C74;
+      --peach: #FFD8BE;
+      --lavender: #CDB4DB;
+      --tape: #CDB4DB;
+      --ribbon: #FFD8BE;
+      --ribbon-edge: #E9AE88;
+      /* geometry (rule grid values are rewritten by the script) */
+      --margin-x: 172px;
+      --text-x: 210px;
+      --R: 60px;
+      --rule-top: 560px;
+      --fs: 42px;
+      --gap: 0px;
+
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+    }
+
+    /* ---------- paper ---------- */
+    .paper { position: absolute; inset: 0; z-index: 0; }
+    .paper::before {           /* warm aged edges */
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(130% 95% at 50% 45%, rgba(255,255,255,0) 58%, rgba(170,130,80,.10) 100%),
+        linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0) 30%);
+    }
+    .paper::after {            /* paper tooth */
+      content: ''; position: absolute; inset: 0; opacity: .55; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .47  0 0 0 0 .36  0 0 0 .7 -.22'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+    .rules {
+      position: absolute; left: 0; right: 0; bottom: 0; top: var(--rule-top);
+      background-image: linear-gradient(180deg, transparent calc(100% - 2px), var(--rule) calc(100% - 2px));
+      background-size: 100% var(--R);
+    }
+    .margin-line {
+      position: absolute; top: 0; bottom: 0; left: var(--margin-x); width: 3px;
+      background: var(--margin); opacity: .78;
+    }
+    .margin-line::after {
+      content: ''; position: absolute; top: 0; bottom: 0; left: 7px; width: 1.5px;
+      background: var(--margin); opacity: .55;
+    }
+    .holes i {
+      position: absolute; left: 22px; width: 30px; height: 30px; border-radius: 50%;
+      background: radial-gradient(circle at 45% 40%, #d9d2c4 0, #e6dfd1 55%, #efe9dd 100%);
+      box-shadow: inset 2px 3px 4px rgba(90,70,40,.28), 0 1px 0 rgba(255,255,255,.8);
+    }
+    .holes i:nth-child(1) { top: 210px; }
+    .holes i:nth-child(2) { top: 660px; }
+    .holes i:nth-child(3) { top: 1110px; }
+
+    .swipes { position: absolute; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: multiply; }
+    .swipes svg { position: absolute; overflow: visible; }
+
+    /* ---------- washi tape + name line ---------- */
+    .tape {
+      position: absolute; z-index: 3; top: 58px; left: 84px;
+      transform: rotate(-2.4deg); transform-origin: left center;
+      mix-blend-mode: multiply;
+    }
+    .tape-strip {
+      position: relative;
+      display: flex; align-items: center;
+      min-width: 380px; max-width: 560px; height: 84px; padding: 0 40px 0 44px;
+      background:
+        repeating-linear-gradient(-55deg, rgba(255,255,255,.32) 0 9px, rgba(255,255,255,0) 9px 23px),
+        linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 45%, rgba(0,0,0,.04)),
+        var(--tape);
+      opacity: .93;
+      clip-path: polygon(7px 0, calc(100% - 4px) 0, 100% 11%, calc(100% - 6px) 24%, calc(100% - 1px) 37%, calc(100% - 7px) 51%, calc(100% - 2px) 64%, calc(100% - 6px) 77%, 100% 89%, calc(100% - 5px) 100%, 3px 100%, 0 87%, 6px 74%, 1px 62%, 8px 49%, 2px 36%, 7px 23%, 0 11%);
+    }
+    .kicker {
+      display: block; width: 100%; overflow: hidden; white-space: nowrap;
+      font-family: 'Permanent Marker', 'Caveat', cursive;
+      font-size: 36px; line-height: 1.25; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--ink);
+      padding-top: 4px;
+    }
+
+    .name {
+      position: absolute; z-index: 3; top: 74px; right: 72px; width: 330px; text-align: right;
+    }
+    .handle {
+      display: block; width: 100%; overflow: hidden; white-space: nowrap;
+      font-family: 'Caveat', cursive; font-weight: 700; font-size: 44px; line-height: 1.2;
+      color: var(--pen);
+      transform: rotate(-1.5deg);
+    }
+    .name::after {             /* the printed name line */
+      content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 2px;
+      background: var(--rule); opacity: .95;
+    }
+
+    /* ---------- content column ---------- */
+    .content {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column;
+      padding: 182px 72px 72px 72px;
+    }
+    .head { position: relative; }
+    .headline {
+      max-height: 470px; overflow: hidden;
+      font-weight: 900; font-size: 108px; line-height: 1.03; letter-spacing: -0.022em;
+      color: var(--ink);
+      padding-right: 6px;
+    }
+    .headline .hl, .points .hl { background: none; color: inherit; }
+
+    .sheet { position: relative; flex: 1; min-height: 0; margin-top: 18px; }
+    .sheet-inner { position: relative; }
+
+    .note-row {
+      height: var(--R);
+      display: flex; justify-content: flex-end; align-items: flex-start;
+    }
+    .note {
+      display: inline-flex; align-items: baseline; gap: .28em;
+      font-family: 'Caveat', cursive; font-weight: 700;
+      font-size: calc(var(--fs) * 1.16); line-height: var(--R);
+      color: var(--pen); white-space: nowrap;
+      transform: translateY(var(--note-dy, 0px)) rotate(-1.2deg);
+      transform-origin: right center;
+    }
+    .note svg { width: 1.05em; height: 1.05em; align-self: center; flex: none; }
+
+    .points { list-style: none; }
+    .points li {
+      display: grid; align-items: start;
+      grid-template-columns: calc(var(--margin-x) - 72px) 1fr;
+      column-gap: calc(var(--text-x) - var(--margin-x));
+      font-size: var(--fs); line-height: var(--R);
+    }
+    .points li + li { margin-top: var(--gap); }
+    .num { position: relative; height: var(--R); text-align: center; }
+    .num b {
+      position: relative; display: inline-block;
+      font-family: 'Permanent Marker', 'Caveat', cursive; font-weight: 400;
+      font-size: calc(var(--fs) * 1.3); line-height: 1;
+      color: var(--ink);
+      transform: translateY(var(--num-dy, 0px)) rotate(-4deg);
+    }
+    .num b::before {
+      content: ''; position: absolute; z-index: -1;
+      left: 50%; top: 50%; width: 1.62em; height: 1.5em;
+      transform: translate(-50%, -50%) rotate(8deg);
+      background: var(--blob) center / 100% 100% no-repeat;
+    }
+    .txt { min-width: 0; font-weight: 600; color: var(--ink-soft); }
+    .txt .lead { font-weight: 800; color: var(--ink); }
+
+    /* ---------- footer: bookmark ribbon ---------- */
+    .foot {
+      flex: none; position: relative;
+      display: flex; justify-content: flex-end; align-items: center;
+      margin: 26px -72px 0 0;
+    }
+    .ribbon-wrap { display: flex; align-items: center; gap: 10px; }
+    .ribbon-arrow { width: 128px; height: 74px; flex: none; color: var(--pen); margin-top: -26px; }
+    .ribbon-shadow { filter: drop-shadow(0 6px 5px rgba(90,55,25,.16)) drop-shadow(0 1px 1px rgba(90,55,25,.22)); }
+    .ribbon {
+      position: relative;
+      display: flex; align-items: center; gap: 20px;
+      padding: 22px 112px 24px 74px;
+      background:
+        repeating-linear-gradient(180deg, rgba(255,255,255,0) 0 3px, rgba(255,255,255,.10) 3px 4px),
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--ribbon) 45%, #fff) 0%,
+          var(--ribbon) 34%,
+          var(--ribbon) 66%,
+          color-mix(in srgb, var(--ribbon) 82%, #b8653a) 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40px 50%);
+    }
+    .ribbon::before {         /* stitching */
+      content: ''; position: absolute; left: 28px; right: 0; top: 9px; bottom: 9px;
+      border-top: 2.5px dashed var(--ribbon-edge); border-bottom: 2.5px dashed var(--ribbon-edge);
+    }
+    .ribbon-icon { width: 40px; height: 50px; flex: none; color: var(--ink); position: relative; }
+    .cta {
+      position: relative; display: block; max-width: 600px; overflow: hidden;
+      font-family: 'Caveat', cursive; font-weight: 700; font-size: 52px; line-height: 1.02;
+      color: var(--ink); white-space: nowrap;
+    }
+
+    /* doodles */
+    .doodle { position: absolute; z-index: 3; color: var(--pen); pointer-events: none; overflow: visible; }
+    .doodle path, .ribbon-arrow path, .note svg path { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="paper">
+      <div class="rules"></div>
+      <div class="margin-line"></div>
+      <div class="holes"><i></i><i></i><i></i></div>
+    </div>
+    <div class="swipes"></div>
+
+    <div class="tape" data-if="kicker">
+      <div class="tape-strip"><span class="kicker" data-field="kicker" data-fit data-fit-min="26"></span></div>
+    </div>
+    <div class="name" data-if="handle">
+      <span class="handle" data-field="handle" data-fit data-fit-min="30"></span>
+    </div>
+
+    <div class="content">
+      <header class="head">
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="112" data-fit-min="64"></h1>
+      </header>
+
+      <section class="sheet">
+        <div class="sheet-inner">
+          <div class="note-row">
+            <span class="note" data-if="note">
+              <svg viewBox="0 0 40 40" aria-hidden="true"><path stroke-width="3.2" d="M20 3.5 L24.6 15 L37 15.6 L27.4 23.4 L30.8 35.6 L20.3 28.6 L9.4 35.8 L12.9 23.6 L3 15.8 L15.6 15.2 Z"/></svg>
+              <span data-field="note"></span>
+            </span>
+          </div>
+          <ol class="points" data-list="points">
+            <li><span class="num"><b data-item-index></b></span><span class="txt" data-item></span></li>
+          </ol>
+        </div>
+      </section>
+
+      <footer class="foot" data-if="cta">
+        <div class="ribbon-wrap">
+          <svg class="ribbon-arrow" viewBox="0 0 128 74" aria-hidden="true">
+            <path stroke-width="3.4" d="M6 58 C 22 62, 40 58, 50 44 C 58 32, 52 18, 42 22 C 31 27, 40 46, 60 50 C 80 54, 100 48, 118 40"/>
+            <path stroke-width="3.4" d="M103 31 L 119 39.5 L 106 52"/>
+          </svg>
+          <div class="ribbon-shadow">
+            <div class="ribbon">
+              <svg class="ribbon-icon" viewBox="0 0 40 50" aria-hidden="true"><path d="M8 4.5 H32 Q35.5 4.5 35.5 8 V45.5 L20 34 L4.5 45.5 V8 Q4.5 4.5 8 4.5 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
+              <span class="cta" data-field="cta"></span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <svg class="doodle sparks" width="70" height="70" viewBox="0 0 70 70" aria-hidden="true" hidden>
+      <path stroke-width="4" d="M12 40 L4 46"/>
+      <path stroke-width="4" d="M24 22 L18 8"/>
+      <path stroke-width="4" d="M42 26 L54 14"/>
+    </svg>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Prompt cheat sheet",
+    "headline": "Your AI isn't dumb.\nYour prompt is.",
+    "highlight": "Your prompt is.",
+    "note": "#5 is the one nobody does",
+    "points": [
+      "Give it a **role** — “Act as a senior editor.”",
+      "Show one **example** — paste what great looks like",
+      "Name the **reader** — “for busy founders, 100 words”",
+      "Pick a **format** — table, bullets or a draft email",
+      "Let it **interview you** — “Ask me 3 questions first.”"
+    ],
+    "cta": "Save this for your next prompt",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+  (function () {
+    var HL = ['--peach', '--lavender'];
+
+    function rng(seed) {
+      return function () {
+        seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+        var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    function r1(n) { return Math.round(n * 10) / 10; }
+    function esc(s) { return encodeURIComponent(s); }
+
+    /* Smooth closed path through points (midpoint quadratic). */
+    function smooth(pts) {
+      var n = pts.length, d = '';
+      for (var i = 0; i < n; i++) {
+        var p = pts[i], q = pts[(i + 1) % n];
+        var mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+        if (i === 0) d += 'M' + r1(mx) + ' ' + r1(my);
+        else d += ' Q' + r1(p[0]) + ' ' + r1(p[1]) + ' ' + r1(mx) + ' ' + r1(my);
+      }
+      var p0 = pts[0], p1 = pts[1 % n];
+      d += ' Q' + r1(p0[0]) + ' ' + r1(p0[1]) + ' ' + r1((p0[0] + p1[0]) / 2) + ' ' + r1((p0[1] + p1[1]) / 2) + 'Z';
+      return d;
+    }
+
+    /* A soft highlighter dab used behind the marker numbers. */
+    function blobURI(color, seed) {
+      var rand = rng(seed), pts = [], n = 11;
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * Math.PI * 2, rad = 40 + (rand() - 0.5) * 9;
+        pts.push([50 + Math.cos(a) * rad * 1.04, 50 + Math.sin(a) * rad * 0.96]);
+      }
+      var svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>" +
+        "<path d='" + smooth(pts) + "' fill='" + color + "'/>" +
+        "<path d='M22 38 Q50 30 80 36' stroke='#fff' stroke-opacity='.28' stroke-width='5' fill='none' stroke-linecap='round'/>" +
+        "</svg>";
+      return 'url("data:image/svg+xml;utf8,' + esc(svg) + '")';
+    }
+
+    /* A chisel-tip highlighter stroke, drawn at real pixel size so the ends never stretch. */
+    function swipeSVG(w, h, color, rand) {
+      var slant = Math.min(h * 0.34, w * 0.18), j = h * 0.07;
+      var steps = Math.max(3, Math.round(w / 70)), top = [], bot = [], i;
+      for (i = 0; i <= steps; i++) top.push([slant + (w - slant) * (i / steps), j + (rand() - 0.5) * j * 1.6]);
+      for (i = 0; i <= steps; i++) bot.push([(w - slant) * (1 - i / steps), h - j + (rand() - 0.5) * j * 1.6]);
+      var pts = top.concat(bot), d = 'M' + pts.map(function (p) { return r1(p[0]) + ' ' + r1(p[1]); }).join(' L') + 'Z';
+      var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      s.setAttribute('width', r1(w)); s.setAttribute('height', r1(h));
+      s.setAttribute('viewBox', '0 0 ' + r1(w) + ' ' + r1(h));
+      s.innerHTML =
+        '<path d="' + d + '" fill="' + color + '"/>' +
+        /* second pass overlap at the start, ink pooling at the end, streaks from the felt */
+        '<path d="M' + r1(slant * 0.3) + ' ' + r1(h * 0.62) + ' L' + r1(slant + h * 0.5) + ' ' + r1(j) + ' L' + r1(slant + h * 0.9) + ' ' + r1(j) + ' L' + r1(h * 0.55) + ' ' + r1(h - j) + ' L' + r1(slant * 0.15) + ' ' + r1(h - j) + 'Z" fill="' + color + '" opacity=".55"/>' +
+        '<path d="M' + r1(w - slant * 0.2) + ' ' + r1(j) + ' L' + r1(w - h * 0.42) + ' ' + r1(j) + ' L' + r1(w - slant - h * 0.42) + ' ' + r1(h - j) + ' L' + r1(w - slant) + ' ' + r1(h - j) + 'Z" fill="' + color + '" opacity=".6"/>' +
+        '<path d="M' + r1(slant + 6) + ' ' + r1(h * 0.36) + ' L' + r1(w - slant - 6) + ' ' + r1(h * 0.33) + '" stroke="#fff" stroke-opacity=".22" stroke-width="' + r1(Math.max(1.5, h * 0.05)) + '" fill="none"/>' +
+        '<path d="M' + r1(slant + 4) + ' ' + r1(h * 0.7) + ' L' + r1(w - slant - 10) + ' ' + r1(h * 0.72) + '" stroke="#fff" stroke-opacity=".16" stroke-width="' + r1(Math.max(1.2, h * 0.035)) + '" fill="none"/>';
+      return s;
+    }
+
+    function setup(card) {
+      var css = getComputedStyle(card);
+      var col = function (v) { return css.getPropertyValue(v).trim(); };
+      var scale = function () { return card.getBoundingClientRect().width / 1080 || 1; };
+      var rel = function (el) {
+        var r = el.getBoundingClientRect(), c = card.getBoundingClientRect(), s = scale();
+        return { left: (r.left - c.left) / s, top: (r.top - c.top) / s, right: (r.right - c.left) / s, bottom: (r.bottom - c.top) / s, width: r.width / s, height: r.height / s };
+      };
+      var baseline = function (el) {
+        var p = document.createElement('span');
+        p.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline;';
+        el.insertBefore(p, el.firstChild);
+        var y = rel(p).top;
+        p.remove();
+        return y;
+      };
+      return { col: col, rel: rel, baseline: baseline, scale: scale };
+    }
+
+    /* "Lead — detail" points: the lead is bold ink, the detail is softer. */
+    function splitPoints(card) {
+      card.querySelectorAll('.points .txt').forEach(function (t) {
+        var html = t.innerHTML, k = html.indexOf(' — ');
+        if (k < 0) { t.innerHTML = '<span class="lead">' + html + '</span>'; return; }
+        t.innerHTML = '<span class="lead">' + html.slice(0, k) + '</span> <span class="detail">— ' + html.slice(k + 3) + '</span>';
+      });
+    }
+
+    function fitCta(card) {
+      var el = card.querySelector('.cta');
+      if (!el || el.hidden) return;
+      var s;
+      el.style.whiteSpace = 'nowrap';
+      for (s = 52; s >= 42; s--) { el.style.fontSize = s + 'px'; if (el.scrollWidth <= el.clientWidth + 1) return; }
+      el.style.whiteSpace = 'normal';
+      for (s = 48; s >= 36; s--) {
+        el.style.fontSize = s + 'px';
+        if (el.scrollWidth <= el.clientWidth + 1 && el.offsetHeight <= s * 1.02 * 2 + 2) return;
+      }
+    }
+
+    /* Pick text size + line pitch so the list fits; every line sits on a ruled line. */
+    function layoutSheet(card, U) {
+      var sheet = card.querySelector('.sheet'), inner = card.querySelector('.sheet-inner');
+      var noteRow = card.querySelector('.note-row'), note = card.querySelector('.note');
+      var items = card.querySelectorAll('.points li');
+      if (!items.length) { noteRow.hidden = note.hidden; }
+      var avail = sheet.clientHeight;
+      var cands = [], fs;
+      for (fs = 48; fs >= 40; fs--) cands.push([fs, 1.42, 1]);
+      for (fs = 48; fs >= 35; fs--) cands.push([fs, 1.42, 0]);
+      for (fs = 36; fs >= 34; fs--) cands.push([fs, 1.3, 0]);
+      function apply(c) {
+        var R = Math.round(c[0] * c[1]);
+        card.style.setProperty('--fs', c[0] + 'px');
+        card.style.setProperty('--R', R + 'px');
+        card.style.setProperty('--gap', (c[2] * R) + 'px');
+        return R;
+      }
+      function tryAll() {
+        for (var i = 0; i < cands.length; i++) { apply(cands[i]); if (inner.offsetHeight <= avail) return cands[i]; }
+        return null;
+      }
+      var chosen = tryAll();
+      if (!chosen && !noteRow.hidden) { noteRow.hidden = true; chosen = tryAll(); }
+      if (!chosen) { chosen = cands[cands.length - 1]; apply(chosen); console.warn('[card] points overflow the sheet'); }
+      var R = Math.round(chosen[0] * chosen[1]);
+
+      /* rule grid: anchor on the first item's baseline */
+      var fsPx = chosen[0];
+      var firstTxt = card.querySelector('.points li .txt');
+      var anchor = firstTxt ? U.baseline(firstTxt) + Math.round(fsPx * 0.13) : U.rel(inner).top + R;
+      var rowsAbove = noteRow.hidden ? 1 : 1;
+      var top = anchor - R * rowsAbove - R + 1;
+      card.style.setProperty('--rule-top', Math.round(top) + 'px');
+
+      /* marker numbers sit on the same baseline as the text */
+      items.forEach(function (li) {
+        var b = li.querySelector('.num b'), t = li.querySelector('.txt');
+        b.style.setProperty('--num-dy', '0px');
+        var dy = U.baseline(t) - U.baseline(b);
+        b.style.setProperty('--num-dy', r1(dy) + 'px');
+      });
+      /* handwritten note sits on the line above item 1 */
+      if (!noteRow.hidden && !note.hidden && firstTxt) {
+        var nt = note.querySelector('[data-field="note"]');
+        note.style.setProperty('--note-dy', '0px');
+        var want = U.baseline(firstTxt) - R;
+        note.style.setProperty('--note-dy', r1(want - U.baseline(nt)) + 'px');
+      }
+    }
+
+    function drawSwipes(card, U) {
+      var layer = card.querySelector('.swipes');
+      layer.innerHTML = '';
+      var marks = card.querySelectorAll('mark.hl');
+      var seed = 7;
+      var last = null;
+      marks.forEach(function (m) {
+        var li = m.closest('li');
+        var idx = li ? (parseInt(li.getAttribute('data-index'), 10) - 1) : 0;
+        var color = U.col(HL[idx % 2]) || '#FFD8BE';
+        var fs = parseFloat(getComputedStyle(m).fontSize);
+        var big = !!m.closest('.headline');
+        var s = U.scale(), c = card.getBoundingClientRect();
+        Array.prototype.forEach.call(m.getClientRects(), function (r) {
+          var rand = rng(seed++ * 97);
+          var left = (r.left - c.left) / s, top = (r.top - c.top) / s, w = r.width / s, h = r.height / s;
+          var padX = fs * (big ? 0.14 : 0.12);
+          var y0 = top + h * (big ? 0.36 : 0.40), y1 = top + h * (big ? 0.90 : 0.92);
+          var sv = swipeSVG(w + padX * 2, y1 - y0, color, rand);
+          sv.style.left = r1(left - padX) + 'px';
+          sv.style.top = r1(y0) + 'px';
+          sv.style.transform = 'rotate(' + r1((rand() - 0.6) * (big ? 1.4 : 1.8)) + 'deg)';
+          layer.appendChild(sv);
+          if (big) last = { left: left, top: top, right: left + w, bottom: top + h, fs: fs };
+        });
+      });
+      /* emphasis sparks at the end of the headline highlight */
+      var sparks = card.querySelector('.sparks');
+      if (last && last.right + 40 < 1040) {
+        sparks.hidden = false;
+        sparks.style.left = r1(last.right + 4) + 'px';
+        sparks.style.top = r1(last.top + last.fs * 0.05 - 34) + 'px';
+      } else sparks.hidden = true;
+    }
+
+    Card.onRender(async function (data, card) {
+      var U = setup(card);
+      splitPoints(card);
+      card.querySelectorAll('.points li').forEach(function (li, i) {
+        li.style.setProperty('--blob', blobURI(U.col(HL[i % 2]) || '#FFD8BE', 31 + i * 17));
+      });
+      void card.offsetHeight;
+      try {
+        await Promise.all([
+          document.fonts.load('900 100px Nunito'), document.fonts.load('800 40px Nunito'),
+          document.fonts.load('600 40px Nunito'), document.fonts.load('700 40px Caveat'),
+          document.fonts.load('40px "Permanent Marker"')
+        ]);
+        await document.fonts.ready;
+      } catch (e) { /* fallbacks are fine */ }
+      Card.fit();
+      fitCta(card);
+      layoutSheet(card, U);
+      drawSwipes(card, U);
+      Card.ready.then(function () { drawSwipes(card, setup(card)); });
+    });
+  })();
+  </script>
+</body>
+</html>

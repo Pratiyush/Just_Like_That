@@ -13,12 +13,9 @@
       --orange: #FF6B35;
       --pink: #FF2E63;
       --violet: #7B2CBF;
-      --sun-hi: #FFE3A1;
-      --sun-mid: #FFB04A;
       --ink: #1C0631;
       --fg: #FFFFFF;
       --box: #FFFFFF;
-      --horizon: 1150px;
       color: var(--fg);
       background: var(--violet);
       font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
@@ -28,8 +25,8 @@
     .sky {
       position: absolute; inset: 0;
       background:
-        radial-gradient(circle at 1110px 1040px, #FF9A3C 0px, var(--orange) 170px, var(--pink) 430px, rgba(255, 46, 99, 0) 820px),
-        linear-gradient(172deg, #5B1FA6 0%, var(--violet) 34%, #9E2CB0 74%, #B42C9A 100%);
+        radial-gradient(ellipse 640px 700px at 1110px 1150px, #FF8B3D 0%, var(--orange) 36%, var(--pink) 62%, rgba(255, 46, 99, 0) 100%),
+        linear-gradient(172deg, #5A1EA3 0%, var(--violet) 36%, #9A2BB2 76%, #A92BA6 100%);
     }
     .grain {
       position: absolute; inset: 0;
@@ -38,12 +35,12 @@
       opacity: .35;
     }
 
-    /* ---------- the sun: bleeds off the right edge ---------- */
+    /* ---------- the setting sun: centre sits on the horizon, off the right edge ---------- */
     .sun {
       position: absolute;
       width: 1200px; height: 1200px;
-      left: calc(1110px - 600px);
-      top: calc(1040px - 600px);
+      left: 510px;            /* sun centre x = 1110 */
+      top: 550px;             /* sun centre y = 1150 = horizon */
       pointer-events: none;
     }
 
@@ -55,7 +52,7 @@
     }
     .top {
       display: flex; align-items: center; justify-content: space-between; gap: 32px;
-      min-height: 64px;
+      height: 64px; flex: none;
     }
     .kicker {
       display: inline-flex; align-items: center; gap: 14px;
@@ -72,26 +69,27 @@
       display: flex; align-items: baseline; gap: 2px;
       font-family: 'Unbounded', 'Inter', sans-serif;
       white-space: nowrap;
+      line-height: 1;
     }
-    .counter .now { font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: -.02em; }
-    .counter .of { font-weight: 600; font-size: 26px; opacity: .78; }
+    .counter .now { font-weight: 800; font-size: 44px; letter-spacing: -.02em; }
+    .counter .of { font-weight: 600; font-size: 26px; opacity: .8; }
 
     .main {
       flex: 1; min-height: 0;
       display: flex; flex-direction: column;
-      padding-top: 64px;
-      padding-bottom: 40px;
+      padding: 60px 0 40px;
     }
     .headline {
-      flex: 0 1 auto; min-height: 0; max-height: 640px; overflow: hidden;
+      flex: 0 1 auto; min-height: 0; max-height: 610px; overflow: hidden;
       font: 800 112px/1.04 'Unbounded', 'Inter', sans-serif;
       letter-spacing: -.035em;
-      text-wrap: balance;
-      padding-bottom: .06em;
+      padding-bottom: .14em;
+      text-shadow: 0 .03em .25em rgba(48, 6, 84, .28);
     }
     .headline .hl {
       background: var(--box);
       color: var(--ink);
+      text-shadow: none;
       padding: 0 .14em .02em;
       margin: 0 .02em;
       border-radius: .06em;
@@ -100,24 +98,27 @@
     }
     .headline .hl.solo {
       display: inline-block;
-      transform: rotate(-2.5deg);
-      line-height: 1.08;
+      transform: rotate(-2deg);
+      line-height: 1.06;
+      margin: .06em .02em .1em;
     }
     .subhead {
-      margin-top: 40px;
-      max-width: 700px;
-      max-height: 230px; overflow: hidden;
-      font-weight: 500; font-size: 38px; line-height: 1.32;
+      flex: none;
+      margin-top: 36px;
+      max-width: 640px;
+      font-weight: 500; font-size: 38px; line-height: 1.3;
       letter-spacing: -.005em;
     }
 
     .swipe-row {
+      flex: none;
+      height: 88px;
       display: flex; align-items: center;
-      margin-right: -80px;      /* rule runs off the right edge */
+      margin-right: -80px;      /* the rule runs off the right edge, into the sun */
     }
     .swipe {
       display: inline-flex; align-items: center; gap: 22px;
-      max-width: 860px;
+      max-width: 880px;
       padding: 12px 12px 12px 34px;
       background: #fff; color: var(--ink);
       border-radius: 999px;
@@ -139,18 +140,19 @@
     .swipe .go svg { width: 34px; height: 34px; }
     .rule {
       flex: 1; height: 3px; margin-left: 22px;
-      background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,255,255,.95) 60%, rgba(255,255,255,.6));
+      background: #fff;
     }
+    .swipe[hidden] + .rule { margin-left: 0; }
 
     .bottom {
-      margin-top: 40px;
+      flex: none;
+      margin-top: 44px; height: 40px;
       display: flex; align-items: center; gap: 28px;
-      min-height: 40px;
     }
     .handle { font-weight: 700; font-size: 28px; letter-spacing: .01em; }
     .dots { display: flex; align-items: center; gap: 12px; }
-    .dots i { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.85); }
-    .dots i.on { width: 44px; border-radius: 99px; background: #fff; border-color: #fff; }
+    .dots i { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.85); }
+    .dots i.on { width: 48px; border-radius: 99px; background: #fff; border-color: #fff; }
   </style>
 </head>
 <body>
@@ -159,28 +161,42 @@
 
     <svg class="sun" viewBox="0 0 1200 1200" aria-hidden="true">
       <defs>
-        <linearGradient id="sunFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#FFF1C9"/>
-          <stop offset=".45" stop-color="#FFC15A"/>
-          <stop offset="1" stop-color="#FF7A3A"/>
+        <linearGradient id="sunFill" x1="0" y1="240" x2="0" y2="600" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#FFF3CF"/>
+          <stop offset=".5" stop-color="#FFC45C"/>
+          <stop offset="1" stop-color="#FF8A3A"/>
         </linearGradient>
+        <linearGradient id="reflect" x1="0" y1="600" x2="0" y2="800" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#FFC45C"/>
+          <stop offset="1" stop-color="#FF6B35"/>
+        </linearGradient>
+        <clipPath id="sky"><rect width="1200" height="600"/></clipPath>
         <mask id="slats">
           <rect width="1200" height="1200" fill="#fff"/>
           <g fill="#000">
-            <rect x="0" y="640" width="1200" height="7"/>
-            <rect x="0" y="676" width="1200" height="11"/>
-            <rect x="0" y="710" width="1200" height="15"/>
-            <rect x="0" y="742" width="1200" height="20"/>
-            <rect x="0" y="772" width="1200" height="25"/>
-            <rect x="0" y="800" width="1200" height="31"/>
-            <rect x="0" y="827" width="1200" height="37"/>
-            <rect x="0" y="853" width="1200" height="60"/>
+            <rect y="474" width="1200" height="5"/>
+            <rect y="506" width="1200" height="7"/>
+            <rect y="535" width="1200" height="10"/>
+            <rect y="561" width="1200" height="13"/>
+            <rect y="584" width="1200" height="16"/>
           </g>
         </mask>
       </defs>
-      <circle cx="600" cy="600" r="455" fill="none" stroke="#fff" stroke-opacity=".30" stroke-width="2.5"/>
-      <circle cx="600" cy="600" r="540" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2" stroke-dasharray="2 14" stroke-linecap="round"/>
-      <circle cx="600" cy="600" r="370" fill="url(#sunFill)" mask="url(#slats)"/>
+      <g clip-path="url(#sky)">
+        <circle cx="600" cy="600" r="450" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2.5"/>
+        <circle cx="600" cy="600" r="540" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2.5" stroke-dasharray="1 13" stroke-linecap="round"/>
+        <circle cx="600" cy="600" r="360" fill="url(#sunFill)" mask="url(#slats)"/>
+      </g>
+      <!-- reflection on the water below the horizon -->
+      <g fill="url(#reflect)">
+        <rect x="270" y="616" width="660" height="9" rx="4.5" opacity=".95"/>
+        <rect x="318" y="640" width="564" height="8" rx="4" opacity=".85"/>
+        <rect x="372" y="664" width="456" height="7" rx="3.5" opacity=".72"/>
+        <rect x="426" y="688" width="348" height="6" rx="3" opacity=".6"/>
+        <rect x="474" y="712" width="252" height="5" rx="2.5" opacity=".48"/>
+        <rect x="516" y="736" width="168" height="4" rx="2" opacity=".36"/>
+        <rect x="552" y="760" width="96" height="4" rx="2" opacity=".26"/>
+      </g>
     </svg>
 
     <div class="grain"></div>
@@ -191,16 +207,16 @@
           <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 1.5c.5 4.9 2.6 8.1 10.5 10.5-7.9 2.4-10 5.6-10.5 10.5C11.5 17.6 9.4 14.4 1.5 12 9.4 9.6 11.5 6.4 12 1.5Z"/></svg>
           <span data-field="kicker"></span>
         </div>
-        <div class="counter" data-if="slideCount"><span class="now">01</span><span class="of">/<span class="total"></span></span></div>
+        <div class="counter"><span class="now">01</span><span class="of">/<span class="total"></span></span></div>
       </div>
 
       <div class="main">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="150" data-fit-min="64"></h1>
-        <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="180" data-fit-min="64"></h1>
+        <p class="subhead" data-field="subhead"></p>
       </div>
 
-      <div class="swipe-row" data-if="cta">
-        <div class="swipe">
+      <div class="swipe-row">
+        <div class="swipe" data-if="cta">
           <span class="cta" data-field="cta" data-fit data-fit-min="26"></span>
           <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 5.5 19.5 12 13 18.5"/></svg></span>
         </div>
@@ -209,7 +225,7 @@
 
       <div class="bottom">
         <span class="handle" data-field="handle"></span>
-        <div class="dots" data-if="slideCount"></div>
+        <div class="dots"></div>
       </div>
     </div>
   </div>
@@ -227,16 +243,15 @@
   </script>
   <script src="../../shared/card.js"></script>
   <script>
-    Card.onRender(function (data, card) {
-      // Slide counter + progress dots from slideCount.
-      var n = parseInt(data.slideCount, 10);
+    Card.onRender(async function (data, card) {
+      // Slide counter + progress dots from slideCount ("7", 7 or "1/7").
+      var n = parseInt(String(data.slideCount || '').split('/').pop(), 10);
       var counter = card.querySelector('.counter');
       var dots = card.querySelector('.dots');
       if (!n || n < 2) {
         counter.hidden = true; dots.hidden = true;
       } else {
-        var pad = function (v) { return v < 10 ? '0' + v : String(v); };
-        card.querySelector('.counter .total').textContent = pad(n);
+        card.querySelector('.counter .total').textContent = n < 10 ? '0' + n : String(n);
         dots.innerHTML = '';
         for (var i = 0; i < Math.min(n, 10); i++) {
           var d = document.createElement('i');
@@ -248,6 +263,17 @@
       card.querySelectorAll('.headline .hl').forEach(function (m) {
         if (!/\s/.test(m.textContent.trim())) m.classList.add('solo');
       });
+      // Subhead: 38px, stepping down to 34px (the body minimum) before the headline has to give up space.
+      var sub = card.querySelector('.subhead');
+      if (!sub.hidden) {
+        try { await document.fonts.ready; } catch (e) {}
+        var size = 38;
+        sub.style.fontSize = size + 'px';
+        while (sub.getBoundingClientRect().height > 4 * 1.3 * size + 2 && size > 34) {
+          size -= 1;
+          sub.style.fontSize = size + 'px';
+        }
+      }
     });
   </script>
 </body>

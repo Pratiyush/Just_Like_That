@@ -16,12 +16,12 @@
       --cyan: #22D3EE;
       --magenta: #F472B6;
       --fg: #F7F5FF;
-      --muted: rgba(232, 228, 255, 0.80);
-      --faint: rgba(232, 228, 255, 0.66);
+      --muted: rgba(234, 230, 255, 0.84);
+      --faint: rgba(232, 228, 255, 0.70);
       --hl-a: #67E8F9;
       --hl-b: #A5B4FC;
       --hl-c: #F0ABFC;
-      --glow: rgba(150, 110, 255, 0.70);
+      --glow: rgba(150, 110, 255, 0.80);
       --radius: 48px;
 
       background: var(--bg);
@@ -49,15 +49,15 @@
 
     /* glossy orb sitting half behind the glass */
     .orb {
-      position: absolute; width: 270px; height: 270px; left: 712px; top: 196px; border-radius: 50%;
+      position: absolute; width: 284px; height: 284px; left: 752px; top: 216px; border-radius: 50%;
       background:
-        radial-gradient(circle at 32% 26%, rgba(255,255,255,.95) 0, rgba(255,255,255,0) 18%),
+        radial-gradient(circle at 32% 26%, rgba(255,255,255,.80) 0, rgba(255,255,255,0) 17%),
         radial-gradient(circle at 70% 82%, rgba(244,114,182,.95) 0, rgba(244,114,182,0) 55%),
         radial-gradient(circle at 38% 34%, #8BF3FF 0, var(--cyan) 22%, var(--violet) 62%, #2B0F6E 100%);
       box-shadow: 0 0 80px 10px rgba(124,58,237,.45), 0 0 160px 40px rgba(34,211,238,.18), inset -24px -30px 60px rgba(10,6,40,.55);
     }
     .orb-ring {
-      position: absolute; width: 420px; height: 420px; left: 637px; top: 121px; border-radius: 50%;
+      position: absolute; width: 440px; height: 440px; left: 674px; top: 138px; border-radius: 50%;
       border: 1.5px solid rgba(255,255,255,.18);
       -webkit-mask-image: linear-gradient(200deg, #000 20%, transparent 70%); mask-image: linear-gradient(200deg, #000 20%, transparent 70%);
     }
@@ -77,7 +77,7 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      padding: 52px 48px 54px;
+      padding: 48px 48px 52px;
       border-radius: var(--radius);
       background:
         linear-gradient(160deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.06) 38%, rgba(255,255,255,.03) 100%),
@@ -94,7 +94,9 @@
     /* light-catching gradient edge, brightest top-left */
     .panel::before {
       content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none;
-      background: linear-gradient(150deg, rgba(255,255,255,.75), rgba(255,255,255,.12) 30%, rgba(255,255,255,0) 55%, rgba(244,114,182,.35) 100%);
+      background:
+        radial-gradient(220px 90px at 86% 0%, rgba(165,243,252,.85), rgba(165,243,252,0) 70%),
+        linear-gradient(150deg, rgba(255,255,255,.75), rgba(255,255,255,.12) 30%, rgba(255,255,255,0) 55%, rgba(244,114,182,.35) 100%);
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite: xor; mask-composite: exclude;
     }
@@ -105,7 +107,7 @@
     }
 
     .meta-row {
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px;
+      display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 10px 22px;
       position: relative; z-index: 1;
     }
     .kicker {
@@ -121,7 +123,7 @@
       flex: none; width: 14px; height: 14px; border-radius: 50%; background: var(--cyan);
       box-shadow: 0 0 0 5px rgba(34,211,238,.18), 0 0 16px 2px rgba(34,211,238,.9);
     }
-    .date { font-size: 26px; font-weight: 600; color: var(--faint); letter-spacing: .02em; }
+    .date { font-size: 26px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
 
     .headline {
       flex: 1 1 auto; min-height: 0;
@@ -140,17 +142,17 @@
       -webkit-background-clip: text; background-clip: text;
       color: transparent; -webkit-text-fill-color: transparent;
       -webkit-box-decoration-break: clone; box-decoration-break: clone;
-      filter: drop-shadow(0 0 1px rgba(255,255,255,.35)) drop-shadow(0 0 26px var(--glow));
+      filter: drop-shadow(0 0 1px rgba(255,255,255,.4)) drop-shadow(0 0 30px var(--glow));
     }
 
     .subhead {
-      margin-top: 28px; max-height: 204px; overflow: hidden; flex: none;
-      font-size: 36px; line-height: 1.38; font-weight: 500; color: var(--muted); letter-spacing: -0.005em;
+      margin-top: 28px; max-height: 190px; overflow: hidden; flex: none;
+      font-size: 36px; line-height: 1.36; text-wrap: pretty; font-weight: 500; color: var(--muted); letter-spacing: -0.005em;
       position: relative; z-index: 1;
     }
 
     .chips {
-      list-style: none; margin-top: 40px; flex: none;
+      list-style: none; margin-top: 38px; flex: none;
       display: flex; flex-wrap: wrap; gap: 10px 10px;
       position: relative; z-index: 1;
     }
@@ -179,7 +181,7 @@
       background: conic-gradient(from 210deg, var(--cyan), var(--violet), var(--magenta), var(--cyan));
       box-shadow: inset 0 0 0 7px rgba(10,6,40,.55), 0 0 14px rgba(124,58,237,.6);
     }
-    .source { color: var(--faint); font-weight: 600; text-align: right; max-width: 62%; }
+    .source { color: var(--faint); font-weight: 600; text-align: right; max-width: 60%; text-wrap: balance; }
   </style>
 </head>
 <body>

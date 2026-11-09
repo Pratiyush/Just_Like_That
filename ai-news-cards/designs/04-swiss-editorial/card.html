@@ -39,9 +39,9 @@
     /* ---------- paper + grid ---------- */
     .grain {
       position: absolute; inset: 0; z-index: 6; pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='1.7' intercept='-.35'/><feFuncG type='linear' slope='1.7' intercept='-.35'/><feFuncB type='linear' slope='1.7' intercept='-.35'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
       mix-blend-mode: soft-light;     /* mean-neutral: grain without greying the paper */
-      opacity: .7;
+      opacity: .55;
     }
     .guides {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
@@ -105,7 +105,7 @@
     /* ---------- headline ---------- */
     .headline {
       flex: 1; min-height: 0; overflow: hidden;
-      margin-top: 52px;
+      margin-top: 48px;
       padding-bottom: .14em;       /* room for descenders under the tight leading */
       font-size: 120px; font-weight: 600; line-height: .94; letter-spacing: -0.045em;
       text-wrap: pretty;
@@ -133,7 +133,7 @@
     /* ---------- meta table ---------- */
     .meta {
       flex: none;
-      margin-top: 44px;
+      margin-top: 40px;
       padding-top: 18px;
       border-top: 1.5px solid var(--rule);
       display: grid;
@@ -200,10 +200,10 @@
     "handle": "@yourhandle",
     "issue": "No. 042",
     "kicker": "Research",
-    "headline": "Half of AI's benchmark wins vanish when you reword the question",
+    "headline": "Half of AI’s benchmark wins vanish when you reword the question",
     "highlight": "vanish",
     "subhead": "Nova Labs re-ran 2,400 published scores with reworded prompts. Only 51% held up, and the biggest models fell furthest.",
-    "source": "Source: Nova Labs robustness study",
+    "source": "Source: Nova Labs preprint",
     "date": "Nov 9, 2026",
     "labels": { "subhead": "In brief", "category": "Category", "date": "Date", "source": "Source" }
   }

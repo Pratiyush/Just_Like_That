@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pop Comic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --paper: #FFF4D6;
+      --ink: #141414;
+      --red: #E63946;
+      --cyan: #00A6ED;
+      --yellow: #FFD23F;
+      --balloon: #FFFFFF;
+      --dots: var(--cyan);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+    }
+
+    /* ---------- the panel ---------- */
+    .panel {
+      position: absolute;
+      left: 40px; top: 40px; width: 1000px; height: 1270px;
+      border: 10px solid var(--ink);
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .halftone, .halftone svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .halftone circle { fill: var(--dots); }
+
+    /* ---------- kicker: narration box in the top-left corner ---------- */
+    .kicker {
+      position: absolute; left: 0; top: 0;
+      max-width: 560px;
+      padding: 20px 30px 17px 24px;
+      background-color: var(--yellow);
+      border: solid var(--ink); border-width: 0 6px 6px 0;
+      box-shadow: 8px 8px 0 var(--ink);
+      font-size: 30px; font-weight: 700; line-height: 1.1;
+      letter-spacing: .06em; text-transform: uppercase;
+      white-space: nowrap; overflow: hidden;
+      z-index: 6;
+    }
+
+    /* ---------- speech balloon ---------- */
+    .balloon { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+    .balloon .body { fill: var(--balloon); stroke: var(--ink); stroke-width: 8; stroke-linejoin: round; }
+    .balloon .shadow { fill: url(#inkDots); }
+    .balloon-text {
+      position: absolute; left: 78px; top: 322px; width: 824px; height: 374px;
+      display: flex; align-items: safe center; justify-content: center;
+      overflow: hidden;
+      z-index: 3;
+    }
+    .headline {
+      font-family: 'Bangers', 'Impact', 'Arial Black', sans-serif;
+      font-weight: 400; font-size: 1em; line-height: 1.0;
+      letter-spacing: .025em; text-align: center; text-transform: uppercase;
+      color: var(--ink);
+      width: 100%;
+    }
+    .headline .hl {
+      color: var(--red);
+      -webkit-text-stroke: .05em var(--ink);
+      paint-order: stroke fill;
+      text-shadow: .045em .05em 0 var(--ink);
+    }
+
+    /* ---------- robot ---------- */
+    .robot { position: absolute; left: 6px; top: 765px; width: 440px; height: 480px; z-index: 4; overflow: visible; }
+    .st { stroke: var(--ink); stroke-linejoin: round; stroke-linecap: round; }
+    .f-ink { fill: var(--ink); }
+    .f-red { fill: var(--red); }
+    .f-cyan { fill: var(--cyan); }
+    .f-yellow { fill: var(--yellow); }
+    .f-paper { fill: var(--paper); }
+    .f-white { fill: #fff; }
+    .f-none { fill: none; }
+    .f-mouth { fill: #7A1622; }
+
+    /* ---------- caption: narration box in the bottom-right corner ---------- */
+    .caption {
+      position: absolute; right: 0; bottom: 0;
+      width: 512px; max-height: 470px;
+      padding: 26px 34px 26px 30px;
+      background-color: var(--yellow);
+      border: solid var(--ink); border-width: 6px 0 0 6px;
+      box-shadow: -8px -8px 0 var(--ink);
+      display: flex; flex-direction: column;
+      z-index: 5;
+    }
+    .subhead {
+      font-size: 36px; font-weight: 700; line-height: 1.2;
+      max-height: 340px; overflow: hidden;
+    }
+    .handle {
+      margin-top: 18px; padding-top: 14px;
+      border-top: 4px dashed var(--ink);
+      font-size: 28px; font-weight: 700; letter-spacing: .03em;
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+    }
+    .handle svg { width: 36px; height: 30px; flex: none; }
+    .subhead[hidden] + .handle { margin-top: 0; padding-top: 0; border-top: 0; }
+
+    /* ---------- starburst (breaks out of the panel) ---------- */
+    .burst {
+      position: absolute; left: 640px; top: -40px; width: 440px; height: 430px;
+      transform: rotate(-8deg);
+      z-index: 10;
+    }
+    .burst svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .burst .outer { fill: var(--red); }
+    .burst .inner { fill: var(--yellow); }
+    .burst .line { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linejoin: miter; stroke-miterlimit: 8; }
+    .exclaim-box {
+      position: absolute; left: 92px; top: 135px; width: 256px; height: 160px;
+      display: flex; align-items: safe center; justify-content: center;
+      overflow: hidden;
+    }
+    .exclaim {
+      font-family: 'Bangers', 'Impact', 'Arial Black', sans-serif;
+      font-size: 1em; line-height: .92; letter-spacing: .04em;
+      text-align: center; text-transform: uppercase;
+      color: var(--red);
+      -webkit-text-stroke: .07em var(--ink);
+      paint-order: stroke fill;
+      text-shadow: .05em .06em 0 var(--ink);
+      padding: 0 .08em .06em 0;
+    }
+
+    /* ---------- paper finish ---------- */
+    .grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 20;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply; opacity: .13;
+    }
+    .age {
+      position: absolute; inset: 0; pointer-events: none; z-index: 19;
+      background: radial-gradient(ellipse 75% 70% at 50% 48%, rgba(0,0,0,0) 60%, rgba(140, 96, 30, .16) 100%);
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="panel">
+      <div class="halftone" aria-hidden="true"></div>
+
+      <!-- speech balloon (panel coordinates: 980 x 1250) -->
+      <svg class="balloon" viewBox="0 0 980 1250" aria-hidden="true">
+        <defs>
+          <pattern id="inkDots" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <circle cx="5.5" cy="5.5" r="3.4" class="f-ink"/>
+          </pattern>
+        </defs>
+        <path class="shadow" transform="translate(16 16)" d="M152 200 Q490 186 828 200 C900 200 958 248 958 330 Q970 472 958 615 C958 690 905 745 828 745 L450 745 C444 790 424 830 392 862 C396 822 384 776 350 745 L152 745 C80 745 22 690 22 615 Q10 472 22 330 C22 248 80 200 152 200 Z"/>
+        <path class="body" d="M152 200 Q490 186 828 200 C900 200 958 248 958 330 Q970 472 958 615 C958 690 905 745 828 745 L450 745 C444 790 424 830 392 862 C396 822 384 776 350 745 L152 745 C80 745 22 690 22 615 Q10 472 22 330 C22 248 80 200 152 200 Z"/>
+      </svg>
+      <div class="balloon-text" data-fit data-fit-max="168" data-fit-min="64">
+        <h1 class="headline" data-field="headline" data-highlight></h1>
+      </div>
+
+      <!-- original robot character: eyes aimed up-right at the balloon -->
+      <svg class="robot" viewBox="0 0 440 480" aria-hidden="true">
+        <defs>
+          <pattern id="blushDots" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <circle cx="4.5" cy="4.5" r="3" class="f-red"/>
+          </pattern>
+          <pattern id="shadeDots" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <circle cx="5" cy="5" r="2.9" class="f-ink" opacity=".28"/>
+          </pattern>
+          <pattern id="warmDots" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <circle cx="5" cy="5" r="3.1" class="f-red" opacity=".55"/>
+          </pattern>
+          <clipPath id="headClip"><rect x="68" y="108" width="304" height="230" rx="84"/></clipPath>
+          <clipPath id="bodyClip"><path d="M78 492 L94 402 C99 374 116 360 146 360 L294 360 C324 360 341 374 346 402 L362 492 Z"/></clipPath>
+        </defs>
+
+        <!-- body -->
+        <path class="f-red" d="M78 492 L94 402 C99 374 116 360 146 360 L294 360 C324 360 341 374 346 402 L362 492 Z"/>
+        <g clip-path="url(#bodyClip)">
+          <path fill="url(#shadeDots)" d="M282 352 C330 380 330 450 300 500 L380 500 L380 352 Z"/>
+        </g>
+        <path class="f-none st" stroke-width="8" d="M78 492 L94 402 C99 374 116 360 146 360 L294 360 C324 360 341 374 346 402 L362 492"/>
+        <circle class="f-paper st" stroke-width="4" cx="122" cy="392" r="7"/>
+        <circle class="f-paper st" stroke-width="4" cx="318" cy="392" r="7"/>
+        <!-- chest plate -->
+        <rect class="f-yellow st" stroke-width="6" x="158" y="396" width="124" height="70" rx="18"/>
+        <path class="f-red st" stroke-width="4.5" d="M220 449 C205 438 197 430 197 420 C197 412 203 407 210 407 C215 407 218 410 220 414 C222 410 225 407 230 407 C237 407 243 412 243 420 C243 430 235 438 220 449 Z"/>
+        <circle class="f-cyan st" stroke-width="4" cx="177" cy="430" r="7.5"/>
+        <circle class="f-cyan st" stroke-width="4" cx="263" cy="430" r="7.5"/>
+        <!-- neck -->
+        <rect class="f-paper st" stroke-width="6" x="192" y="318" width="56" height="50" rx="10"/>
+        <path class="f-none st" stroke-width="5" d="M196 337 H244 M196 352 H244"/>
+
+        <!-- surprise lines (emanata) -->
+        <path class="f-none st" stroke-width="7" d="M58 120 L26 96 M84 86 L66 50 M44 166 L8 160"/>
+
+        <!-- head, tilted toward the balloon -->
+        <g transform="rotate(7 220 330)">
+          <!-- antenna -->
+          <path class="f-none st" stroke-width="7" d="M220 112 C210 94 232 82 222 60"/>
+          <circle class="f-red st" stroke-width="6" cx="222" cy="44" r="18"/>
+          <circle class="f-white" cx="215" cy="37" r="5"/>
+          <path class="f-none st" stroke-width="5" d="M252 28 Q263 44 252 60 M266 16 Q284 44 266 72"/>
+          <!-- ears -->
+          <rect class="f-cyan st" stroke-width="7" x="40" y="184" width="44" height="98" rx="18"/>
+          <rect class="f-cyan st" stroke-width="7" x="356" y="184" width="44" height="98" rx="18"/>
+          <path class="f-none st" stroke-width="5" d="M52 218 H72 M52 236 H72 M52 254 H72 M368 218 H388 M368 236 H388 M368 254 H388"/>
+          <!-- head shell with Ben-Day shading -->
+          <rect class="f-yellow" x="68" y="108" width="304" height="230" rx="84"/>
+          <g clip-path="url(#headClip)">
+            <path fill="url(#warmDots)" d="M380 150 C350 250 290 312 180 330 L60 340 L60 350 L390 350 Z"/>
+          </g>
+          <rect class="f-none st" stroke-width="8" x="68" y="108" width="304" height="230" rx="84"/>
+          <path class="f-none" stroke="#fff" stroke-width="11" stroke-linecap="round" d="M100 190 C100 158 116 136 146 128"/>
+          <!-- brows, raised -->
+          <path class="f-none st" stroke-width="8" d="M140 132 Q166 112 196 126 M244 126 Q274 112 300 132"/>
+          <!-- visor -->
+          <rect class="f-paper st" stroke-width="7" x="104" y="146" width="232" height="166" rx="62"/>
+          <!-- eyes: pupils pushed up-right -->
+          <ellipse class="f-white st" stroke-width="6" cx="172" cy="214" rx="34" ry="41"/>
+          <ellipse class="f-white st" stroke-width="6" cx="268" cy="214" rx="34" ry="41"/>
+          <circle class="f-ink" cx="181" cy="201" r="20"/>
+          <circle class="f-ink" cx="277" cy="201" r="20"/>
+          <circle class="f-white" cx="188" cy="193" r="6.5"/>
+          <circle class="f-white" cx="284" cy="193" r="6.5"/>
+          <circle class="f-white" cx="175" cy="210" r="3"/>
+          <circle class="f-white" cx="271" cy="210" r="3"/>
+          <!-- cheeks -->
+          <ellipse fill="url(#blushDots)" cx="134" cy="274" rx="21" ry="12"/>
+          <ellipse fill="url(#blushDots)" cx="306" cy="274" rx="21" ry="12"/>
+          <!-- mouth: a little "oh!" -->
+          <ellipse class="f-mouth st" stroke-width="6" cx="220" cy="281" rx="15" ry="17"/>
+          <ellipse class="f-red" cx="220" cy="290" rx="8" ry="5"/>
+          <!-- rivets -->
+          <circle class="f-paper st" stroke-width="3.5" cx="86" cy="226" r="5"/>
+          <circle class="f-paper st" stroke-width="3.5" cx="354" cy="226" r="5"/>
+        </g>
+      </svg>
+
+      <div class="kicker" data-field="kicker" data-fit data-fit-min="26"></div>
+
+      <div class="caption">
+        <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
+        <div class="handle" data-if="handle">
+          <svg viewBox="0 0 36 30" aria-hidden="true"><path class="f-white st" stroke-width="3.5" d="M18 3 C8 3 3 8 3 13 C3 18 8 22 15 23 L10 28 L22 23 C30 22 33 17 33 13 C33 8 28 3 18 3 Z"/></svg>
+          <span data-field="handle"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- starburst carrying the exclaim -->
+    <div class="burst" data-if="exclaim">
+      <svg viewBox="0 0 440 430" aria-hidden="true">
+        <defs>
+          <pattern id="burstDots" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+            <circle cx="6" cy="6" r="3.2" class="f-red" opacity=".35"/>
+          </pattern>
+        </defs>
+        <polygon class="f-ink" transform="translate(12 12)" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
+        <polygon class="outer" transform="translate(4 3)" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
+        <polygon class="line" points="216.0,41.3 251.5,86.6 292.4,52.1 310.4,99.6 356.3,95.9 352.8,151.5 414.7,156.9 366.4,202.2 428.0,239.1 359.1,255.7 400.8,307.1 332.8,301.1 339.9,373.2 282.2,333.2 269.5,398.3 220.5,355.9 184.1,395.4 153.5,342.6 106.2,354.4 110.8,307.4 36.4,313.6 79.2,256.3 2.5,238.7 72.3,196.9 39.8,163.7 86.0,145.1 75.1,101.4 132.3,104.0 130.0,44.0 183.5,76.9"/>
+        <polygon class="inner" transform="translate(4 3)" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
+        <polygon fill="url(#burstDots)" transform="translate(4 3)" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
+        <polygon class="line" stroke-width="5" points="216.5,59.3 247.8,101.2 297.0,79.2 302.1,129.9 347.2,131.4 342.8,171.1 373.4,194.0 348.9,232.0 368.7,271.3 326.6,283.3 335.9,324.8 278.8,315.8 259.4,358.3 219.3,329.2 178.8,368.2 157.7,318.6 103.5,331.9 111.5,284.6 64.3,267.1 93.4,225.7 63.5,196.6 99.4,175.2 79.6,123.4 131.3,125.5 149.3,92.1 185.3,100.7"/>
+      </svg>
+      <div class="exclaim-box" data-fit data-fit-max="118" data-fit-min="52">
+        <div class="exclaim" data-field="exclaim"></div>
+      </div>
+    </div>
+
+    <div class="age"></div>
+    <div class="grain"></div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Meanwhile, in AI news…",
+    "exclaim": "Whoa!",
+    "headline": "An AI agent ordered 4,000 rubber ducks to debug its own code",
+    "highlight": "4,000 rubber ducks",
+    "subhead": "Nova Labs gave its coding agent a company card for one weekend. By Monday, the loading dock was very, very yellow.",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    /* Ben-Day halftone field: real variable-size dots on a 45° screen,
+       big at the panel edges, shrinking toward the balloon so the whole
+       field "points" at the headline. Colour comes from --dots. */
+    Card.onRender(function (data, card) {
+      var cap = card.querySelector('.caption');
+      if (cap) cap.hidden = !data.subhead && !data.handle;
+      var host = card.querySelector('.halftone');
+      if (!host) return;
+      var W = 980, H = 1250, pitch = 22;
+      var fx = 490, fy = 470;                 /* focus: centre of the balloon */
+      var c = Math.SQRT1_2, n = Math.ceil(Math.hypot(W, H) / pitch) + 2;
+      function smooth(a, b, x) { var t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+      var out = [];
+      for (var i = -n; i <= n; i++) {
+        for (var j = -n; j <= n; j++) {
+          var x = W / 2 + (i - j) * c * pitch;
+          var y = H / 2 + (i + j) * c * pitch;
+          if (x < -pitch || y < -pitch || x > W + pitch || y > H + pitch) continue;
+          var dx = (x - fx) / (W * 0.62), dy = (y - fy) / (H * 0.6);
+          var k = smooth(0.3, 1.12, Math.sqrt(dx * dx + dy * dy));
+          var r = pitch * 0.5 * (0.2 + 0.78 * k);
+          out.push('<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r.toFixed(2) + '"/>');
+        }
+      }
+      host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' + out.join('') + '</svg>';
+    });
+  </script>
+</body>
+</html>

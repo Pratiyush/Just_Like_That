@@ -40,14 +40,6 @@
         radial-gradient(55% 38% at 100% 34%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 72%),
         radial-gradient(70% 22% at 0% 100%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 80%);
     }
-    .bg .grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 108px 100%;
-      -webkit-mask-image: linear-gradient(180deg, transparent 6%, #000 30%, #000 60%, transparent 78%);
-              mask-image: linear-gradient(180deg, transparent 6%, #000 30%, #000 60%, transparent 78%);
-    }
     .bg svg.speed { position: absolute; inset: 0; width: 100%; height: 100%; }
     .bg .scan {
       position: absolute; inset: 0;
@@ -75,7 +67,7 @@
       padding: var(--pad) var(--pad) var(--pad);
     }
 
-    /* ---------- top bar: BREAKING bug + LIVE + timestamp ---------- */
+    /* ---------- top bar: BREAKING bug + LIVE chip + trail rule ---------- */
     .topbar {
       display: flex; align-items: center; gap: 28px;
       height: 76px; flex: none;
@@ -237,7 +229,6 @@
   <div id="card">
     <div class="bg" aria-hidden="true">
       <div class="glow"></div>
-      <div class="grid"></div>
       <svg class="speed" viewBox="0 0 1080 1350" preserveAspectRatio="none"></svg>
       <div class="scan"></div>
     </div>
@@ -254,7 +245,7 @@
       </header>
 
       <div class="headwrap">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="230" data-fit-min="64"></h1>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="280" data-fit-min="64"></h1>
       </div>
 
       <section class="lower">

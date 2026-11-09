@@ -1,0 +1,29 @@
+{
+  "id": "13-minimal-luxe",
+  "name": "Minimal Luxe",
+  "style": "Quiet luxury: near-black velvet with film grain and a soft warm pool of light, a large light Cormorant Garamond headline in ivory with the key phrase in champagne-gold italic, wide-tracked Jost small caps, a gold monogram seal, hairline rules, a tiny gold star ornament and gallery-mount corner marks, all on one centred axis.",
+  "palette": ["#0A0A0A", "#F5F1E8", "#C9A96E"],
+  "fonts": ["Cormorant Garamond", "Jost"],
+  "bestFor": "Major announcements, premium brand moments and a single profound line: a flagship model launch, a landmark result, a milestone, a year-in-review statement.",
+  "principles": [
+    {
+      "name": "Isolation (Von Restorff) effect",
+      "how": "Gold is spent almost nowhere: only the highlight phrase is gold italic in a sea of ivory roman type and near-black space, so it is the one thing that differs and the one thing remembered. On a bright, busy feed the whole near-black card is itself the isolated item."
+    },
+    {
+      "name": "Hick's law",
+      "how": "One focal point and no competing choices: a single centred column, one headline, one accent phrase. Everything else (seal, wordmark, kicker, subhead, date, handle) is small, muted and secondary, so the eye has nowhere to go but the headline."
+    },
+    {
+      "name": "Aesthetic-usability effect",
+      "how": "Restraint, generous whitespace, a classical serif and hand-tuned details (monogram seal, hairlines, typographer's quotes, optically centred tracking) borrow the visual language of luxury houses. The card reads as premium before a word is read, which lends the news authority and credibility."
+    },
+    {
+      "name": "Processing fluency",
+      "how": "Large ivory-on-black type (headline 124 px start, never below 72 px; about 17:1 contrast) set in short balanced lines, with explicit or balanced line breaks at phrase boundaries, makes the hook effortless to read even at thumbnail size. Fluent text feels truer and more likeable."
+    }
+  ],
+  "hookFormula": "[Big investment]. [One thing]. [Unexpected small payoff in **your** world]. Example: \"Four years. One model. It fits in your pocket.\" Highlight the last phrase; use \\n to give each beat its own line.",
+  "captionTip": "Match the card's restraint: open with the one-line hook, give the single most important fact in a second line, then stop. End with a send prompt (\"Send this to the friend who still thinks AI needs the cloud\"); DM shares are a strong ranking signal.",
+  "fields": ["brand", "kicker", "headline", "highlight", "subhead", "date", "handle", "monogram (optional: 1-3 letters for the seal; defaults to the brand's initials)"]
+}

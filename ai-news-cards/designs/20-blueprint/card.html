@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow+Semi+Condensed:ital,wght@0,400;0,500;0,600;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #0B3D91;          /* blueprint blue */
+      --bg-deep: #062A6B;     /* vignette / panel fill */
+      --fg: #FFFFFF;          /* lettering */
+      --line: #CDEFFF;        /* pale-cyan line art */
+      --accent: #5CE1FF;      /* highlighted words, balloons */
+      --muted: #A9C6EC;       /* captions in the title block */
+      --grid-minor: rgba(255, 255, 255, .075);
+      --grid-major: rgba(255, 255, 255, .17);
+      --panel: rgba(4, 30, 82, .58);
+
+      --mono: 'Space Mono', 'JetBrains Mono', 'DejaVu Sans Mono', monospace;
+      --display: 'Barlow Condensed', 'Archivo Narrow', 'Liberation Sans Narrow', 'DejaVu Sans Condensed', sans-serif;
+      --text: 'Barlow Semi Condensed', 'Barlow', 'Liberation Sans Narrow', 'DejaVu Sans Condensed', sans-serif;
+
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--text);
+    }
+
+    /* ---------- paper: cyanotype mottling, grain, vignette ---------- */
+    .paper, .grid, .frame, .leaders { position: absolute; pointer-events: none; }
+    .paper {
+      inset: 0;
+      background:
+        radial-gradient(120% 90% at 50% 38%, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 55%),
+        radial-gradient(140% 110% at 50% 50%, rgba(0,0,0,0) 52%, rgba(2,16,48,.55) 100%),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='.0042' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -.9 .62'/></filter><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.6 .9'/></filter><rect width='100%' height='100%' filter='url(%23m)' opacity='.10'/><rect width='100%' height='100%' filter='url(%23g)' opacity='.16'/></svg>");
+    }
+    /* Fine grid, only inside the drawing border (the margin stays plain, like a real sheet). */
+    .grid {
+      inset: 36px;
+      background-image:
+        linear-gradient(var(--grid-major) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, var(--grid-major) 1.5px, transparent 1.5px),
+        linear-gradient(var(--grid-minor) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+      background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
+      background-position: -36px -36px, -36px -36px, 0 0, 0 0;
+    }
+    .frame { inset: 0; width: 1080px; height: 1350px; }
+    .frame .trim   { fill: none; stroke: var(--line); stroke-opacity: .35; stroke-width: 1; }
+    .frame .border { fill: none; stroke: var(--fg); stroke-opacity: .9; stroke-width: 3; }
+    .frame .tick   { stroke: var(--line); stroke-opacity: .5; stroke-width: 1; }
+    .frame .ctr    { stroke: var(--fg); stroke-opacity: .85; stroke-width: 2; }
+    .frame text    { font: 400 11px/1 var(--mono); fill: var(--line); fill-opacity: .6; text-anchor: middle; dominant-baseline: central; }
+
+    /* ---------- layout ---------- */
+    .content {
+      position: absolute;
+      top: 90px; left: 90px; right: 90px; bottom: 36px;   /* bottom = drawing border; title block sits on it */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 58px; }
+
+    /* Rubber-stamp kicker: double rule, slight rotation, ink speckle. */
+    .stamp {
+      display: inline-block;
+      transform: rotate(-2.4deg);
+      transform-origin: left center;
+      padding: 11px 18px 9px 22px;
+      border: 3px solid var(--fg);
+      box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4.5px var(--fg);
+      font: 700 25px/1 var(--mono);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--fg);
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      -webkit-mask-size: 600px 120px;
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mask-size: 600px 120px;
+    }
+
+    /* Scale bar: purely decorative drafting furniture. */
+    .scalebar { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; opacity: .9; }
+    .scalebar svg { display: block; }
+    .scalebar .sb-fill { fill: var(--line); }
+    .scalebar .sb-line { fill: none; stroke: var(--line); stroke-width: 1.5; }
+    .scalebar span { font: 400 14px/1 var(--mono); letter-spacing: .16em; color: var(--muted); text-transform: uppercase; }
+
+    /* Headline: the focal point. Faint lettering guidelines sit on each baseline, as a drafter would rule them. */
+    .headline {
+      flex: 1 1 auto; min-height: 0; overflow: hidden;
+      margin-top: 30px;
+      font: 700 120px/0.94 var(--display);
+      letter-spacing: -0.004em;
+      text-transform: uppercase;
+      color: var(--fg);
+      text-wrap: balance;
+      --gl: rgba(205, 239, 255, .22);
+      background-image:
+        linear-gradient(to bottom, transparent calc(var(--base) - 1px), var(--gl) calc(var(--base) - 1px), var(--gl) var(--base), transparent var(--base)),
+        linear-gradient(to bottom, transparent calc(var(--cap) - 1px), var(--gl) calc(var(--cap) - 1px), var(--gl) var(--cap), transparent var(--cap));
+      background-size: 100% 0.94em;
+      background-repeat: repeat-y;
+      --base: 0.80em;   /* tuned to Barlow Condensed metrics */
+      --cap: 0.10em;
+    }
+    /* Highlight = a dimensioned feature: cyan lettering with a dimension line, extension lines and 45° drafting ticks. */
+    .headline mark.hl {
+      color: var(--accent);
+      background-image:
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(var(--accent), var(--accent)),
+        linear-gradient(45deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%),
+        linear-gradient(45deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%);
+      background-size: 100% 0.03em, 0.03em 0.19em, 0.03em 0.19em, 0.13em 0.13em, 0.13em 0.13em;
+      background-position: 0 var(--dim), 0 calc(var(--dim) + 0.07em), 100% calc(var(--dim) + 0.07em), -0.065em calc(var(--dim) - 0.05em), calc(100% + 0.065em) calc(var(--dim) - 0.05em);
+      background-position: 0 var(--dim), 0 calc(var(--dim) - 0.13em), 100% calc(var(--dim) - 0.13em), -0.05em calc(var(--dim) - 0.05em), calc(100% + 0.05em) calc(var(--dim) - 0.05em);
+      background-repeat: no-repeat;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+      --dim: 0.93em;
+    }
+
+    .paper-ref {
+      margin-top: 22px;
+      display: flex; align-items: baseline; gap: 18px;
+    }
+    .paper-ref .tag {
+      flex: 0 0 auto;
+      font: 700 16px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent);
+      padding: 6px 9px 5px; border: 1.5px solid var(--accent);
+      transform: translateY(-6px);
+    }
+    .paper-title {
+      flex: 1; min-width: 0;
+      max-height: 2.5em; overflow: hidden;
+      font: italic 500 34px/1.2 var(--text);
+      color: var(--line);
+    }
+    .paper-title::before { content: '\201C'; }
+    .paper-title::after  { content: '\201D'; }
+
+    .tldr {
+      position: relative;
+      margin-top: 40px;
+      padding: 30px 32px 24px;
+      border: 2px solid var(--line);
+      background: var(--panel);
+    }
+    .tldr::before, .tldr::after {   /* registration ticks on the panel corners */
+      content: ''; position: absolute; width: 18px; height: 18px; border: 0 solid var(--accent);
+    }
+    .tldr::before { right: -9px; top: -9px; border-width: 2px 2px 0 0; }
+    .tldr::after  { right: -9px; bottom: -9px; border-width: 0 2px 2px 0; }
+    .tldr .tab {
+      position: absolute; left: 24px; top: -15px;
+      padding: 5px 12px 4px;
+      background: var(--line); color: var(--bg);
+      font: 700 19px/1 var(--mono); letter-spacing: .14em;
+    }
+    .tldr-text {
+      max-height: 4.9em; overflow: hidden;
+      font: 500 36px/1.22 var(--text);
+      color: var(--fg);
+    }
+    .tldr-text mark.hl { color: var(--accent); }
+
+    /* Lower zone: schematic + findings + title block. */
+    .lower {
+      flex: 0 0 470px;
+      margin-top: 36px;
+      display: grid;
+      column-gap: 54px;
+      row-gap: 22px;
+      min-height: 0;
+    }
+    #card.has-points .lower {
+      grid-template-columns: 396px 1fr;
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-areas: "schem pts" "schem tb";
+    }
+    #card.no-points .lower {
+      flex-basis: 380px;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-areas: "schem schem" ". tb";
+    }
+    .schem { grid-area: schem; display: flex; flex-direction: column; min-height: 0; }
+    #card.has-points .schem { padding-bottom: 40px; }
+    .schem-box { flex: 1; min-height: 0; position: relative; }
+    .schem-box svg { position: absolute; inset: 0; overflow: visible; }
+    .fig {
+      margin-top: 12px;
+      font: 400 15px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .fig b { color: var(--line); font-weight: 700; }
+
+    /* Schematic line art (built in JS). */
+    .sx-conn  { stroke: var(--line); stroke-opacity: .30; stroke-width: 1; fill: none; }
+    .sx-drop  { stroke: var(--line); stroke-opacity: .55; stroke-width: 1.2; fill: none; }
+    .sx-node  { fill: var(--bg); stroke: var(--line); stroke-width: 1.8; }
+    .sx-pruned{ fill: var(--bg); stroke: var(--line); stroke-opacity: .55; stroke-width: 1.4; stroke-dasharray: 3 3; }
+    .sx-x     { stroke: var(--line); stroke-opacity: .65; stroke-width: 1.4; }
+    .sx-hot   { stroke: var(--fg); stroke-width: 2.6; fill: none; stroke-linecap: round; }
+    .sx-hotnode { fill: var(--fg); stroke: var(--fg); stroke-width: 2; }
+    .sx-hotring { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .sx-block { fill: url(#sx-hatch); stroke: var(--fg); stroke-width: 2; }
+    .sx-hatchline { stroke: var(--line); stroke-opacity: .55; stroke-width: 1.1; }
+    .sx-center { stroke: var(--line); stroke-opacity: .55; stroke-width: 1; stroke-dasharray: 22 5 4 5; fill: none; }
+    .sx-ext   { stroke: var(--line); stroke-opacity: .7; stroke-width: 1; }
+    .sx-dim   { stroke: var(--line); stroke-width: 1.3; fill: none; }
+    .sx-arrow { fill: var(--line); }
+    .sx-mask  { fill: var(--bg); }
+    .sx-label { font: italic 400 19px/1 var(--mono); fill: var(--line); }
+    .sx-cap   { font: 700 13px/1 var(--mono); letter-spacing: .14em; fill: var(--muted); }
+
+    /* Findings as numbered notes, each tied to the schematic by a balloon + leader. */
+    .points {
+      grid-area: pts;
+      list-style: none;
+      min-height: 0; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: flex-start; gap: 24px;
+      font: 500 35px/1.17 var(--text);
+      padding-top: 2px;
+    }
+    .points li { display: flex; align-items: flex-start; gap: 18px; }
+    .balloon {
+      flex: 0 0 48px; height: 48px; margin-top: -3px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--bg-deep);
+      display: flex; align-items: center; justify-content: center;
+      font: 700 21px/1 var(--mono); color: var(--accent);
+    }
+    .points .txt { flex: 1; min-width: 0; color: var(--fg); }
+    .points mark.hl { color: var(--accent); font-weight: 600; }
+
+    /* Engineering title block, sharing the border's bottom-right corner. */
+    .tb {
+      grid-area: tb;
+      align-self: end;
+      margin-right: -54px;           /* reach the drawing border at x = 1044 */
+      width: 504px;
+      border-left: 3px solid var(--fg);
+      border-top: 3px solid var(--fg);
+      background: var(--panel);
+    }
+    .tb-row { display: flex; }
+    .tb-row + .tb-row { border-top: 1.5px solid rgba(205, 239, 255, .7); }
+    .tb-cell { padding: 12px 18px 12px 18px; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+    .tb-cell + .tb-cell { border-left: 1.5px solid rgba(205, 239, 255, .7); }
+    .tb-lab { font: 400 14px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+    .tb-val { font: 600 28px/1.08 var(--text); text-transform: uppercase; letter-spacing: .02em; color: var(--fg); overflow-wrap: anywhere; }
+    .tb-src  { flex: 1; }
+    .tb-proj { flex: 0 0 108px; align-items: center; justify-content: center; padding-right: 36px; padding-left: 14px; }
+    .tb-proj svg { display: block; }
+    .tb-proj .pj { fill: none; stroke: var(--line); stroke-width: 1.6; }
+    .tb-proj .pj-c { fill: none; stroke: var(--line); stroke-width: .9; stroke-dasharray: 6 2 1.5 2; opacity: .8; }
+    .tb-proj span { font: 700 12px/1 var(--mono); letter-spacing: .16em; color: var(--muted); }
+    .tb-r2 .tb-cell { padding-bottom: 40px; }
+    .tb-date { flex: 0 0 auto; }
+    .tb-by   { flex: 1; padding-right: 36px !important; }
+    .tb-by .tb-val { font: 700 26px/1.12 var(--mono); text-transform: none; letter-spacing: 0; }
+    .tb-src .tb-val { padding-right: 0; }
+
+    /* Leaders overlay (built in JS). */
+    .leaders { inset: 0; width: 1080px; height: 1350px; overflow: visible; }
+    .ld-line { stroke: var(--accent); stroke-width: 1.6; fill: none; }
+    .ld-dot  { fill: var(--accent); }
+    .ld-ring { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="paper"></div>
+    <div class="grid"></div>
+
+    <!-- Drawing sheet: trim line, border, zone references, centring marks. -->
+    <svg class="frame" viewBox="0 0 1080 1350" aria-hidden="true">
+      <rect class="trim" x="18" y="18" width="1044" height="1314"/>
+      <rect class="border" x="36" y="36" width="1008" height="1278"/>
+      <g class="zones"></g>
+      <line class="ctr" x1="540" y1="18" x2="540" y2="58"/>
+      <line class="ctr" x1="540" y1="1292" x2="540" y2="1332"/>
+      <line class="ctr" x1="18" y1="675" x2="58" y2="675"/>
+      <line class="ctr" x1="1022" y1="675" x2="1062" y2="675"/>
+    </svg>
+
+    <div class="content">
+      <div class="top">
+        <div class="stamp" data-field="kicker"></div>
+        <div class="scalebar" aria-hidden="true">
+          <svg width="176" height="18" viewBox="0 0 176 18">
+            <rect class="sb-line" x="1" y="5" width="174" height="8"/>
+            <rect class="sb-fill" x="1" y="5" width="21.75" height="8"/>
+            <rect class="sb-fill" x="43.5" y="5" width="21.75" height="8"/>
+            <rect class="sb-fill" x="87" y="5" width="43.5" height="8"/>
+            <path class="sb-line" d="M1 0v18M87 0v18M175 0v18"/>
+          </svg>
+          <span>Scale&nbsp;&nbsp;NTS</span>
+        </div>
+      </div>
+
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="128" data-fit-min="64"></h1>
+
+      <div class="paper-ref" data-if="paper">
+        <span class="tag">Ref.</span>
+        <p class="paper-title" data-field="paper" data-fit data-fit-min="30"></p>
+      </div>
+
+      <div class="tldr" data-if="tldr">
+        <span class="tab">TL;DR</span>
+        <p class="tldr-text" data-field="tldr" data-fit data-fit-min="32"></p>
+      </div>
+
+      <div class="lower">
+        <div class="schem">
+          <div class="schem-box"></div>
+          <div class="fig"><b>Fig. 1</b>&nbsp;&nbsp;Schematic&nbsp;&nbsp;·&nbsp;&nbsp;Not to scale</div>
+        </div>
+
+        <ol class="points" data-list="points" data-fit data-fit-min="30">
+          <li><span class="balloon" data-item-index></span><span class="txt" data-item></span></li>
+        </ol>
+
+        <div class="tb">
+          <div class="tb-row tb-r1">
+            <div class="tb-cell tb-src" data-if="source"><span class="tb-lab">Source</span><span class="tb-val" data-field="source"></span></div>
+            <div class="tb-cell tb-proj" aria-hidden="true">
+              <svg width="58" height="30" viewBox="0 0 58 30">
+                <path class="pj" d="M2 8 L22 3 L22 27 L2 22 Z"/>
+                <circle class="pj" cx="44" cy="15" r="12"/>
+                <circle class="pj" cx="44" cy="15" r="6"/>
+                <path class="pj-c" d="M0 15 H58 M44 0 V30"/>
+              </svg>
+            </div>
+          </div>
+          <div class="tb-row tb-r2">
+            <div class="tb-cell tb-date" data-if="date"><span class="tb-lab">Date</span><span class="tb-val" data-field="date"></span></div>
+            <div class="tb-cell tb-by" data-if="handle"><span class="tb-lab">Drawn by</span><span class="tb-val" data-field="handle"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <svg class="leaders" viewBox="0 0 1080 1350" aria-hidden="true"></svg>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Paper Breakdown",
+    "headline": "A 3B model beat a 70B giant by learning to forget",
+    "highlight": "learning to forget",
+    "paper": "Prune to Remember: Learned Token Eviction for Long-Context Recall",
+    "tldr": "Teach a small model to throw away most of what it reads, and it recalls long documents better than one 20× its size.",
+    "points": [
+      "It discards **60%** of tokens before they ever reach memory",
+      "Recall on 1M-token documents: **91%** vs 74% for the 70B",
+      "Runs on a single laptop GPU with **9× less** memory"
+    ],
+    "source": "Source: Nova Labs preprint",
+    "date": "Nov 9, 2026",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+  (function () {
+    var NS = 'http://www.w3.org/2000/svg';
+
+    function el(name, attrs, parent) {
+      var n = document.createElementNS(NS, name);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      if (parent) parent.appendChild(n);
+      return n;
+    }
+    function f(n) { return Math.round(n * 10) / 10; }
+
+    /* Zone references in the sheet margin: 1–6 across, A–H down. */
+    function drawZones(card) {
+      var g = card.querySelector('.frame .zones');
+      var x0 = 36, y0 = 36, w = 1008, h = 1278, cols = 6, rows = 8;
+      var cw = w / cols, rh = h / rows;
+      for (var i = 0; i < cols; i++) {
+        if (i) {
+          el('line', { 'class': 'tick', x1: f(x0 + i * cw), y1: 18, x2: f(x0 + i * cw), y2: 36 }, g);
+          el('line', { 'class': 'tick', x1: f(x0 + i * cw), y1: 1314, x2: f(x0 + i * cw), y2: 1332 }, g);
+        }
+        el('text', { x: f(x0 + (i + 0.5) * cw), y: 27 }, g).textContent = String(i + 1);
+        el('text', { x: f(x0 + (i + 0.5) * cw), y: 1323 }, g).textContent = String(i + 1);
+      }
+      for (var j = 0; j < rows; j++) {
+        var L = String.fromCharCode(65 + j);
+        if (j) {
+          el('line', { 'class': 'tick', x1: 18, y1: f(y0 + j * rh), x2: 36, y2: f(y0 + j * rh) }, g);
+          el('line', { 'class': 'tick', x1: 1044, y1: f(y0 + j * rh), x2: 1062, y2: f(y0 + j * rh) }, g);
+        }
+        el('text', { x: 27, y: f(y0 + (j + 0.5) * rh) }, g).textContent = L;
+        el('text', { x: 1053, y: f(y0 + (j + 0.5) * rh) }, g).textContent = L;
+      }
+    }
+
+    /*
+     * Neural-network schematic, drawn to fill its box.
+     * Works in "flow" coordinates (u = along the data flow, v = across) so the same
+     * drawing can run top-to-bottom (next to the findings) or left-to-right (full width).
+     * Returns anchor points (card px) per stage for the leader lines.
+     */
+    function drawSchematic(box, vertical) {
+      box.innerHTML = '';
+      var W = box.clientWidth, H = box.clientHeight;
+      if (W < 60 || H < 60) return [];
+      var svg = el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, box);
+      var LF = vertical ? H : W, LA = vertical ? W : H;
+      function P(u, v) { return vertical ? [v, u] : [u, v]; }
+      function line(u1, v1, u2, v2, cls, parent) {
+        var a = P(u1, v1), b = P(u2, v2);
+        return el('line', { 'class': cls, x1: f(a[0]), y1: f(a[1]), x2: f(b[0]), y2: f(b[1]) }, parent || svg);
+      }
+
+      var defs = el('defs', {}, svg);
+      var pat = el('pattern', { id: 'sx-hatch', patternUnits: 'userSpaceOnUse', width: 8, height: 8, patternTransform: 'rotate(45)' }, defs);
+      el('line', { 'class': 'sx-hatchline', x1: 0, y1: 0, x2: 0, y2: 8 }, pat);
+      var mk = el('marker', { id: 'sx-arr', viewBox: '0 0 12 8', refX: 12, refY: 4, markerWidth: 12, markerHeight: 8, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' }, defs);
+      el('path', { 'class': 'sx-arrow', d: 'M0 0.6 L12 4 L0 7.4 Z' }, mk);
+
+      // Reserve room: across-dimension before the input row, output arrow after; flow-dimension on the near side.
+      var fS = vertical ? 50 : 58, fE = vertical ? 44 : 64;
+      var aS = vertical ? 58 : 44, aE = vertical ? 26 : 16;
+      var a0 = aS, a1 = LA - aE, aMid = (a0 + a1) / 2, aSpan = a1 - a0;
+      var u0 = fS, u1 = LF - fE, span = u1 - u0;
+      var U = { x: u0, h1: u0 + span * 0.2, bt: u0 + span * 0.34, bb: u0 + span * 0.5, z: u0 + span * 0.64, h2: u0 + span * 0.82, y: u1 };
+      function row(n, frac) {
+        var w = aSpan * frac, out = [];
+        for (var i = 0; i < n; i++) out.push(n === 1 ? aMid : aMid - w / 2 + (w * i) / (n - 1));
+        return out;
+      }
+      var R = { x: row(7, 1), h1: row(6, 0.8), z: row(3, 0.34), h2: row(6, 0.8), y: row(1, 0) };
+      var r = Math.max(7, Math.min(13, (aSpan / 6) * 0.24, span * 0.045));
+      var pruned = { 1: 1, 4: 1, 5: 1 };
+
+      var gBack = el('g', {}, svg), gMid = el('g', {}, svg), gHot = el('g', {}, svg), gTop = el('g', {}, svg);
+
+      // Centre line (dash-dot) along the flow axis.
+      line(6, aMid, LF - 4, aMid, 'sx-center', gBack);
+
+      // Dense connections.
+      R.x.forEach(function (va, i) {
+        if (pruned[i]) return;
+        R.h1.forEach(function (vb) { line(U.x, va, U.h1, vb, 'sx-conn', gBack); });
+      });
+      R.z.forEach(function (va) { R.h2.forEach(function (vb) { line(U.z, va, U.h2, vb, 'sx-conn', gBack); }); });
+      R.h2.forEach(function (va) { line(U.h2, va, U.y, aMid, 'sx-conn', gBack); });
+
+      // Encoder block: hatched trapezoid, wide in, narrow out.
+      var bw0 = aSpan * 0.8 + r * 2 + 10, bw1 = aSpan * 0.34 + r * 2 + 10;
+      var q = [P(U.bt, aMid - bw0 / 2), P(U.bt, aMid + bw0 / 2), P(U.bb, aMid + bw1 / 2), P(U.bb, aMid - bw1 / 2)];
+      R.h1.forEach(function (v) { line(U.h1 + r, v, U.bt, v, 'sx-drop', gMid); });
+      R.z.forEach(function (v) { line(U.bb, v, U.z - r, v, 'sx-drop', gMid); });
+      el('path', { 'class': 'sx-block', d: 'M' + q.map(function (p) { return f(p[0]) + ' ' + f(p[1]); }).join(' L') + ' Z' }, gMid);
+
+      // Hot path: the one route the eye follows.
+      var hp = [[U.x, R.x[2]], [U.h1, R.h1[2]], [U.bt, R.h1[2]], [U.bb, R.z[1]], [U.z, R.z[1]], [U.h2, R.h2[3]], [U.y, aMid]];
+      el('path', { 'class': 'sx-hot', d: 'M' + hp.map(function (p) { var a = P(p[0], p[1]); return f(a[0]) + ' ' + f(a[1]); }).join(' L') }, gHot);
+
+      // Nodes.
+      function node(u, v, cls) { var c = P(u, v); return el('circle', { 'class': cls, cx: f(c[0]), cy: f(c[1]), r: f(r) }, gTop); }
+      R.x.forEach(function (v, i) {
+        if (pruned[i]) {
+          node(U.x, v, 'sx-pruned');
+          var d = r * 0.45;
+          line(U.x - d, v - d, U.x + d, v + d, 'sx-x', gTop);
+          line(U.x - d, v + d, U.x + d, v - d, 'sx-x', gTop);
+        } else node(U.x, v, i === 2 ? 'sx-hotnode' : 'sx-node');
+      });
+      R.h1.forEach(function (v, i) { node(U.h1, v, i === 2 ? 'sx-hotnode' : 'sx-node'); });
+      R.z.forEach(function (v, i) { node(U.z, v, i === 1 ? 'sx-hotnode' : 'sx-node'); });
+      R.h2.forEach(function (v, i) { node(U.h2, v, i === 3 ? 'sx-hotnode' : 'sx-node'); });
+      node(U.y, aMid, 'sx-hotnode');
+      var ring = P(U.y, aMid);
+      el('circle', { 'class': 'sx-hotring', cx: f(ring[0]), cy: f(ring[1]), r: f(r + 6) }, gTop);
+
+      // Output arrow + label.
+      var ae = U.y + r + 28;
+      var arr = line(U.y + r + 8, aMid, ae, aMid, 'sx-dim', gTop);
+      arr.setAttribute('marker-end', 'url(#sx-arr)');
+      var lp = vertical ? P(ae + 20, aMid) : P(ae + 16, aMid);
+      var yl = el('text', { 'class': 'sx-label', x: f(lp[0]), y: f(lp[1]), 'text-anchor': vertical ? 'middle' : 'start', 'dominant-baseline': 'central' }, gTop);
+      yl.textContent = 'ŷ';
+
+      // Dimension text with a knocked-out gap in the line.
+      function dimText(u, v, txt, rotate) {
+        var p = P(u, v);
+        var w = txt.length * 12 + 12, h = 22;
+        var g = el('g', { transform: 'translate(' + f(p[0]) + ' ' + f(p[1]) + ')' + (rotate ? ' rotate(-90)' : '') }, gTop);
+        el('rect', { 'class': 'sx-mask', x: -w / 2, y: -h / 2, width: w, height: h }, g);
+        var t = el('text', { 'class': 'sx-label', x: 0, y: 1, 'text-anchor': 'middle', 'dominant-baseline': 'central' }, g);
+        t.textContent = txt;
+      }
+
+      // Across dimension ("d") ahead of the input row.
+      var vA = R.x[0], vB = R.x[6], ud = vertical ? 16 : 18;
+      line(U.x - r - 5, vA, ud - 9, vA, 'sx-ext', gTop);
+      line(U.x - r - 5, vB, ud - 9, vB, 'sx-ext', gTop);
+      var dl = line(ud, vA, ud, vB, 'sx-dim', gTop);
+      dl.setAttribute('marker-start', 'url(#sx-arr)');
+      dl.setAttribute('marker-end', 'url(#sx-arr)');
+      dimText(ud, aMid, 'd', !vertical);
+
+      // Flow dimension ("L") along the near side, input row to output node.
+      var vd = vertical ? 16 : 14;
+      line(U.x, vA - r - 5, U.x, vd - 9, 'sx-ext', gTop);
+      line(U.y, aMid - r - 5, U.y, vd - 9, 'sx-ext', gTop);
+      var dl2 = line(U.x, vd, U.y, vd, 'sx-dim', gTop);
+      dl2.setAttribute('marker-start', 'url(#sx-arr)');
+      dl2.setAttribute('marker-end', 'url(#sx-arr)');
+      dimText((U.x + U.y) / 2, vd, 'L', vertical);
+
+      // Latent label beside the narrow row.
+      var zp = P(U.z, R.z[0] - r - 22);
+      var zl = el('text', { 'class': 'sx-label', x: f(zp[0]), y: f(zp[1]), 'text-anchor': 'middle', 'dominant-baseline': 'central' }, gTop);
+      zl.textContent = 'z';
+
+      // Anchors for leaders: far side of each stage, in box px.
+      function far(u, v) { var p = P(u, v); return { x: p[0], y: p[1] }; }
+      return [
+        far(U.x, R.x[6] + r),
+        far(U.h1, R.h1[5] + r),
+        far((U.bt + U.bb) / 2, aMid + (bw0 + bw1) / 4),
+        far(U.z, R.z[2] + r),
+        far(U.h2, R.h2[5] + r),
+        far(U.y, aMid + r + 6)
+      ];
+    }
+
+    function rel(elm, card, s) {
+      var a = elm.getBoundingClientRect(), c = card.getBoundingClientRect();
+      return { x: (a.left - c.left) / s, y: (a.top - c.top) / s, w: a.width / s, h: a.height / s };
+    }
+
+    /* Pick increasing stages that best match the balloons' heights, then draw leaders. */
+    function drawLeaders(card, anchors, boxPos, s) {
+      var svg = card.querySelector('.leaders');
+      svg.innerHTML = '';
+      var balloons = Array.prototype.slice.call(card.querySelectorAll('.points .balloon'));
+      if (!balloons.length || !anchors.length) return;
+      var B = balloons.map(function (b) { var p = rel(b, card, s); return { x: p.x, y: p.y + p.h / 2, r: p.w / 2 }; });
+      var A = anchors.map(function (a) { return { x: a.x + boxPos.x, y: a.y + boxPos.y }; });
+      var best = null, bestCost = Infinity;
+      (function search(i, from, pick, cost) {
+        if (cost >= bestCost) return;
+        if (i === B.length) { best = pick.slice(); bestCost = cost; return; }
+        for (var k = from; k <= A.length - (B.length - i); k++) {
+          pick.push(k);
+          search(i + 1, k + 1, pick, cost + Math.abs(A[k].y - B[i].y));
+          pick.pop();
+        }
+      })(0, 0, [], 0);
+      if (!best) return;
+      B.forEach(function (b, i) {
+        var a = A[best[i]];
+        var sx = b.x - 22;   // short horizontal shoulder into the balloon
+        el('path', { 'class': 'ld-line', d: 'M' + f(a.x + 4) + ' ' + f(a.y) + ' L' + f(sx) + ' ' + f(b.y) + ' L' + f(b.x) + ' ' + f(b.y) }, svg);
+        el('circle', { 'class': 'ld-dot', cx: f(a.x + 4), cy: f(a.y), r: 4.2 }, svg);
+      });
+    }
+
+    Card.onRender(function (data, card) {
+      var pts = Array.isArray(data.points) ? data.points.filter(function (p) { return p !== '' && p != null; }) : [];
+      card.classList.toggle('has-points', pts.length > 0);
+      card.classList.toggle('no-points', pts.length === 0);
+      // The title block already says "Source", so drop a leading "Source:" from the value.
+      var src = card.querySelector('.tb [data-field="source"]');
+      if (src && !src.hidden) {
+        var t = src.textContent.replace(/^\s*source\s*[:\-–—]\s*/i, '').trim();
+        if (t) src.textContent = t;
+      }
+      drawZones(card);
+    });
+
+    Card.ready.then(function () {
+      var card = document.getElementById('card');
+      var s = card.getBoundingClientRect().width / 1080 || 1;
+      var head = card.querySelector('.headline');
+      var lower = card.querySelector('.lower');
+      // Once the headline is fitted, shrink-wrap it and hand the spare height to the schematic.
+      if (head && !head.hidden) {
+        head.style.flex = '0 0 auto';
+        head.style.height = 'auto';
+      }
+      lower.style.flexGrow = '1';
+      lower.style.flexBasis = lower.getBoundingClientRect().height / s + 'px';
+      var pts = card.querySelector('.points');
+      if (pts && !pts.hidden) pts.style.justifyContent = 'space-evenly';
+      var box = card.querySelector('.schem-box');
+      var vertical = card.classList.contains('has-points');
+      var anchors = drawSchematic(box, vertical);
+      drawLeaders(card, anchors, rel(box, card, s), s);
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -118,8 +118,7 @@
     .headline {
       flex: 1; min-height: 0; overflow: hidden;
       margin-top: 22px;
-      display: flex; flex-direction: column;
-      justify-content: safe flex-end;
+      align-content: safe end;   /* bottom-anchored, but overflow still measurable */
       font-weight: 700;
       font-size: 96px;
       line-height: .98;
@@ -519,16 +518,30 @@
           }
         }
 
-        /* Size each title to its tile: bigger tiles start bigger; short rows go compact. */
+        /* Size each title to its tile (bigger tiles start bigger; short rows go compact),
+           then give tiles of the same shape the same size so the type scale stays calm. */
+        var groups = {};
         tiles.forEach(function (tile) {
           var w = tile.clientWidth, h = tile.clientHeight;
           tile.classList.toggle('is-compact', h < 262);
-          var max = 40;
-          if (w > 560) max = 46;
-          else if (w > 420) max = 44;
-          if (h > 420) max += 4;
+          var max = 40, kind = 'small';
+          if (w > 560) { max = 46; kind = 'wide'; }
+          else if (w > 420) { max = 44; kind = 'mid'; }
+          if (h > 420) { max += 4; kind += '-tall'; }
           if (tile.classList.contains('is-compact')) max = Math.min(max, 40);
-          tile.querySelector('.title').setAttribute('data-fit-max', String(max));
+          var title = tile.querySelector('.title');
+          if (title.hidden) return;
+          var size = max;
+          for (; size > 34; size--) {
+            title.style.fontSize = size + 'px';
+            if (fits(title)) break;
+          }
+          title.style.fontSize = '';
+          (groups[kind] = groups[kind] || []).push({ el: title, size: size });
+        });
+        Object.keys(groups).forEach(function (k) {
+          var min = Math.min.apply(null, groups[k].map(function (g) { return g.size; }));
+          groups[k].forEach(function (g) { g.el.setAttribute('data-fit-max', String(min)); });
         });
       });
     })();

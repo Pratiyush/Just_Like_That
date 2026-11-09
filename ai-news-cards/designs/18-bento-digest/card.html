@@ -97,10 +97,11 @@
     }
     .hero-top { display: flex; align-items: center; min-width: 0; }
     .kicker {
-      display: inline-flex; align-items: center; gap: 14px;
+      position: relative;
+      display: inline-block;
       max-width: 100%;
-      height: 54px;
-      padding: 0 24px 0 20px;
+      height: 54px; line-height: 54px;
+      padding: 0 24px 0 47px;
       border-radius: 999px;
       background: rgba(255, 255, 255, .08);
       box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .16);
@@ -110,7 +111,7 @@
     }
     .kicker::before {
       content: '';
-      flex: none;
+      position: absolute; left: 20px; top: 50%; margin-top: -6.5px;
       width: 13px; height: 13px; border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 18px var(--accent);
@@ -124,8 +125,8 @@
       line-height: .98;
       letter-spacing: -0.045em;
       text-wrap: balance;
-      padding-bottom: .2em;      /* room for Geist's descent inside the clip box... */
-      margin-bottom: -.14em;     /* ...without pushing the text up */
+      padding-bottom: .18em;     /* room for Geist's descent inside the clip box... */
+      margin-bottom: -.12em;     /* ...without pushing the text up */
     }
     .headline .hl {
       background-image: linear-gradient(100deg, var(--hl-from) 0%, var(--hl-mid) 48%, var(--hl-to) 100%);
@@ -223,16 +224,32 @@
       line-height: 1.06;
       letter-spacing: -0.03em;
       text-wrap: pretty;
-      padding-bottom: .2em;
-      margin-bottom: -.16em;
+      padding-bottom: .15em;
+      margin-bottom: -.11em;
     }
     .title .hl { background: none; color: inherit; text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .12em; }
 
     /* Compact tiles (short rows): icon + tag share a line */
-    .tile.is-compact { padding: 24px 28px 26px 28px; }
-    .tile.is-compact .chip { width: 50px; height: 50px; border-radius: 15px; }
-    .tile.is-compact .chip svg { width: 28px; height: 28px; }
-    .tile.is-compact .tile-body { margin-top: 10px; }
+    .tile.is-compact {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto minmax(0, 1fr);
+      column-gap: 14px; row-gap: 10px;
+      align-items: center;
+      padding: 20px 26px 20px 26px;
+    }
+    .tile.is-compact .tile-top,
+    .tile.is-compact .tile-body { display: contents; }
+    .tile.is-compact .chip { grid-column: 1; grid-row: 1; width: 46px; height: 46px; border-radius: 14px; }
+    .tile.is-compact .chip svg { width: 26px; height: 26px; }
+    .tile.is-compact .tag { grid-column: 2; grid-row: 1; margin: 0; }
+    .tile.is-compact .idx { grid-column: 3; grid-row: 1; padding: 0; }
+    .tile.is-compact .title {
+      grid-column: 1 / -1; grid-row: 2;
+      align-self: stretch;
+      align-content: safe end;
+      margin-bottom: 0;
+    }
 
     /* Palette by position (1st story = vivid blue, next to the hero) */
     .tile:nth-child(1) {
@@ -277,7 +294,17 @@
     /* Wide mode: a long headline gets the full top row; stories tile underneath. */
     .bento.wide { grid-template-rows: auto 1fr 1fr; }
     .bento.wide .hero { grid-column: 1 / span 6; grid-row: 1; }
-    .bento.wide .headline { flex: none; }
+    .bento.wide .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      column-gap: 24px;
+      padding: 34px 44px 32px;
+    }
+    .bento.wide .hero-top { grid-column: 1; grid-row: 1; }
+    .bento.wide .hero-foot { grid-column: 2; grid-row: 1; margin: 0; }
+    .bento.wide .legend { display: none; }
+    .bento.wide .headline { grid-column: 1 / -1; grid-row: 2; margin-top: 20px; }
     .bento.wide[data-n="6"] .tile:nth-child(1) { grid-column: 1 / span 2; grid-row: 2; }
     .bento.wide[data-n="6"] .tile:nth-child(2) { grid-column: 3 / span 2; grid-row: 2; }
     .bento.wide[data-n="6"] .tile:nth-child(3) { grid-column: 5 / span 2; grid-row: 2; }
@@ -312,7 +339,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: 24px;
       min-height: 62px;
     }
-    .sig { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1 1 auto; }
+    .sig { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 0 0 auto; max-width: 50%; }
     .mark {
       flex: none;
       display: grid; grid-template-columns: 17px 17px; grid-template-rows: 17px 17px; gap: 4px;
@@ -331,7 +358,7 @@
     }
     .cta {
       flex: 0 1 auto;
-      max-width: 62%;
+      min-width: 0;
       display: inline-flex; align-items: center; gap: 14px;
       min-height: 62px;
       padding: 10px 28px 10px 22px;
@@ -470,6 +497,17 @@
         return el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1;
       }
 
+      /* Largest whole px size (max..34) at which el fits; leaves that size applied. */
+      function largestFit(el, max) {
+        var size = max;
+        for (; size > 34; size--) {
+          el.style.fontSize = size + 'px';
+          if (fits(el)) return size;
+        }
+        el.style.fontSize = '34px';
+        return 34;
+      }
+
       Card.onRender(async function (data, card) {
         var grid = card.querySelector('.bento');
         var list = card.querySelector('.items');
@@ -507,14 +545,13 @@
           head.style.fontSize = '';
           if (!ok) {
             grid.classList.add('wide');
-            var limit = grid.clientHeight * 0.5;
+            var limit = grid.clientHeight * 0.48;
             var size = 104;
             for (; size > 64; size -= 2) {
               head.style.fontSize = size + 'px';
               if (hero.offsetHeight <= limit) break;
             }
-            head.style.fontSize = '';
-            head.setAttribute('data-fit-max', String(size));
+            head.setAttribute('data-fit-max', String(size));   /* keep it applied: tiles are measured next */
           }
         }
 
@@ -531,10 +568,10 @@
           if (tile.classList.contains('is-compact')) max = Math.min(max, 40);
           var title = tile.querySelector('.title');
           if (title.hidden) return;
-          var size = max;
-          for (; size > 34; size--) {
-            title.style.fontSize = size + 'px';
-            if (fits(title)) break;
+          var size = largestFit(title, max);
+          if (!fits(title) && !tile.classList.contains('is-compact')) {
+            tile.classList.add('is-compact');      /* long title: put icon + tag on one line */
+            size = largestFit(title, Math.min(max, 40));
           }
           title.style.fontSize = '';
           (groups[kind] = groups[kind] || []).push({ el: title, size: size });

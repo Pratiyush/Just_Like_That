@@ -65,9 +65,9 @@
     .headline .hl {
       color: inherit;
       background: linear-gradient(to bottom,
-        transparent 0 58%,
-        color-mix(in srgb, var(--accent) 46%, transparent) 58% 90%,
-        transparent 90%);
+        transparent 0 64%,
+        var(--accent) 64% 89%,
+        transparent 89%);
       padding: 0 .05em; margin: 0 -.05em;
       -webkit-box-decoration-break: clone; box-decoration-break: clone;
     }
@@ -300,7 +300,7 @@
         return null;
       }
       // 4) box sits above the bar: drop straight down
-      if (box.l <= cx - 36 && box.r >= cx + 36 && box.b <= top - 44) {
+      if (box.l <= cx - 36 && box.r >= cx + 36 && box.b <= top - 60) {
         return { pts: [[cx, box.b], [cx, top - 16]], len: top - 16 - box.b, elbow: false, ay: box.b, above: true };
       }
       return null;
@@ -535,8 +535,8 @@
                 }
               }
               if (bad) continue;
-              var off = ld.above ? Math.abs(tg.cx - (box.l + box.r) / 2) * 0.12 : Math.abs(ld.ay - (box.t + box.b) / 2) * 0.25;
-              var score = Math.abs(ld.len - 64) + (ld.elbow ? 36 : 0) + off + s.h * 0.12 + y * 0.03;
+              var off = ld.above ? Math.abs(tg.cx - (box.l + box.r) / 2) * 0.06 : Math.abs(ld.ay - (box.t + box.b) / 2) * 0.25;
+              var score = Math.abs(ld.len - 64) + (ld.elbow ? 36 : 0) + off + s.h * 0.4 + y * 0.03;
               if (!found || score < found.score) {
                 found = { score: score, w: s.w, h: s.h, x: box.l, y: box.t, leader: ld };
               }

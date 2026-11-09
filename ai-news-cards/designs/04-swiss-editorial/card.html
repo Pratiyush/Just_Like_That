@@ -10,75 +10,77 @@
   <link rel="stylesheet" href="../../shared/base.css">
   <style>
     /*
-     * Swiss Editorial
-     * 6-column grid: margins 80 px, columns 140 px, gutters 16 px.
-     * Column left edges: 80 236 392 548 704 860  (right edge 1000).
-     * Three working axes: 80 (headline, issue, Category), 392 (subhead, Date), 704 (disc, Source).
+     * Swiss Editorial: International Typographic Style.
+     *
+     * Grid: 6 columns, 80 px margins, 140 px columns, 16 px gutters (step 156).
+     * Column left edges: 80 236 392 548 704 860, right edge 1000.
+     * Three working axes: 80 (issue, headline, Category), 392 (subhead, Date), 704 (disc, Source).
+     * The disc is exactly two columns wide; the hero band is exactly as tall as the disc.
      */
     #card {
-      --bg: #F2EFE8;
-      --fg: #111111;
-      --accent: #1F3BFF;
-      --muted: #5C5952;          /* labels: 5.9:1 on paper */
+      --bg: #F2EFE8;              /* warm paper */
+      --fg: #111111;              /* ink */
+      --accent: #1F3BFF;          /* cobalt, the only accent */
+      --muted: #5C5952;           /* labels: 6.1:1 on paper */
       --rule: #111111;
       --guide: rgba(17, 17, 17, 0.065);
-      --m: 80px;                 /* outer margin */
-      --col: 140px;
+      --m: 80px;                  /* outer margin */
       --gut: 16px;
-      --step: 156px;             /* col + gutter */
+      --step: 156px;              /* column + gutter */
+      --hero: 296px;              /* two columns: disc diameter = hero height */
+      --num: 300px;               /* issue numeral size */
 
       background: var(--bg);
       color: var(--fg);
       font-family: 'Inter Tight', 'Inter Display', 'Inter', 'Helvetica Neue', Arial, sans-serif;
-      font-feature-settings: 'kern' 1;
       display: flex;
       flex-direction: column;
       padding: 80px var(--m) 80px;
     }
+    /* Long copy: the hero drops to one column (140 px) so the headline keeps its size. */
+    #card.is-compact { --hero: 140px; --num: 132px; }
 
     /* ---------- paper + grid ---------- */
-    .grain {
-      position: absolute; inset: 0; z-index: 6; pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='1.7' intercept='-.35'/><feFuncG type='linear' slope='1.7' intercept='-.35'/><feFuncB type='linear' slope='1.7' intercept='-.35'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      mix-blend-mode: soft-light;     /* mean-neutral: grain without greying the paper */
-      opacity: .55;
-    }
     .guides {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        repeating-linear-gradient(90deg,
-          var(--guide) 0 1px, transparent 1px var(--step));
+      background-image: repeating-linear-gradient(90deg, var(--guide) 0 1px, transparent 1px var(--step));
       background-position: var(--m) 0;
       background-size: calc(var(--step) * 6) 100%;
       background-repeat: no-repeat;
     }
-    .guides::after {           /* right margin line */
-      content: ''; position: absolute; top: 0; bottom: 0; left: calc(1080px - var(--m) - 1px); width: 1px;
+    .guides::after {            /* right margin line */
+      content: ''; position: absolute; top: 0; bottom: 0; width: 1px;
+      left: calc(1080px - var(--m) - 1px);
       background: var(--guide);
     }
-
-    #card > :not(.grain):not(.guides) { position: relative; z-index: 1; }
+    .grain {                    /* paper tooth; soft-light keeps the paper colour true */
+      position: absolute; inset: 0; z-index: 6; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='1.7' intercept='-.35'/><feFuncG type='linear' slope='1.7' intercept='-.35'/><feFuncB type='linear' slope='1.7' intercept='-.35'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: soft-light;
+      opacity: .55;
+    }
+    .mast, .hero, .headline, .lede, .meta { position: relative; z-index: 1; }
 
     /* ---------- masthead ---------- */
     .mast {
+      flex: none;
       display: flex; justify-content: space-between; align-items: baseline; gap: 32px;
-      font-size: 28px; line-height: 1; letter-spacing: -0.005em;
-      padding-bottom: 18px;
+      font-size: 28px; line-height: 1.1;
+      padding-bottom: 16px;
       border-bottom: 3px solid var(--rule);
     }
     .brand { font-weight: 700; letter-spacing: -0.02em; }
-    .handle { font-weight: 500; text-align: right; }
+    .handle { font-weight: 500; letter-spacing: -0.005em; text-align: right; margin-left: auto; }
 
     /* ---------- hero band: issue number + disc ---------- */
     .hero {
       flex: none;
-      height: calc(var(--step) * 2 - var(--gut));   /* = disc diameter, 296 */
+      height: var(--hero);
       margin-top: 28px;
-      position: relative;
     }
     .issue {
       position: absolute; left: 0; top: 0; bottom: 0;
-      width: calc(var(--step) * 4 - var(--gut));   /* cols 1-4 */
+      right: calc(var(--hero) + var(--gut));
     }
     .issue-label {
       position: absolute; left: 0; top: -4px;
@@ -86,19 +88,19 @@
       color: var(--muted);
     }
     .issue-num {
-      /* line-height 1.22 = the font's full ascent+descent, so nothing spills;
-         bottom offset puts the baseline exactly on the disc's bottom edge. */
+      /* line-height = the font's full ascent + descent, so nothing spills;
+         the bottom offset (= descent) puts the baseline on the disc's bottom edge. */
       position: absolute; left: -0.06em; bottom: -0.2421875em;
       width: calc(100% + 0.06em);
       overflow: hidden; white-space: nowrap;
-      font-size: 300px; font-weight: 200; line-height: 1.2109375;
+      font-size: var(--num); font-weight: 200; line-height: 1.2109375;
       letter-spacing: -0.065em;
       font-variant-numeric: tabular-nums;
     }
     .disc {
       position: absolute; right: 0; top: 0;
-      width: calc(var(--step) * 2 - var(--gut));    /* cols 5-6 */
-      aspect-ratio: 1; border-radius: 50%;
+      width: var(--hero); height: var(--hero);
+      border-radius: 50%;
       background: var(--accent);
     }
 
@@ -106,10 +108,12 @@
     .headline {
       flex: 1; min-height: 0; overflow: hidden;
       margin-top: 48px;
-      padding-bottom: .14em;       /* room for descenders under the tight leading */
-      font-size: 120px; font-weight: 600; line-height: .94; letter-spacing: -0.045em;
+      margin-left: -0.04em;                  /* optical flush-left for the stems */
+      padding-bottom: .14em;                 /* room for descenders under the tight leading */
+      font-size: 120px; font-weight: 600; line-height: .94;
+      /* tracking tightens as the size grows: -0.025em at 64 px, -0.046em at 110, capped at -0.055em */
+      letter-spacing: clamp(-0.055em, calc(-0.075em + 3.2px), -0.02em);
       text-wrap: pretty;
-      margin-left: -0.04em;        /* optical flush-left */
     }
     .headline .hl { color: var(--accent); }
 
@@ -129,6 +133,7 @@
       font-size: 36px; font-weight: 400; line-height: 1.25; letter-spacing: -0.012em;
       text-wrap: pretty;
     }
+    #card.is-compact .subhead { font-size: 34px; }
 
     /* ---------- meta table ---------- */
     .meta {
@@ -137,7 +142,7 @@
       padding-top: 18px;
       border-top: 1.5px solid var(--rule);
       display: grid;
-      grid-template-columns: calc(var(--step) * 2 - var(--gut)) calc(var(--step) * 2 - var(--gut)) 1fr;
+      grid-template-columns: repeat(2, calc(var(--step) * 2 - var(--gut))) 1fr;
       column-gap: var(--gut);
       font-variant-numeric: tabular-nums;
     }
@@ -145,7 +150,7 @@
     .cell:nth-child(1) { grid-column: 1; }
     .cell:nth-child(2) { grid-column: 2; }
     .cell:nth-child(3) { grid-column: 3; }
-    .lbl { font-size: 26px; font-weight: 500; line-height: 1.15; color: var(--muted); letter-spacing: 0; }
+    .lbl { font-size: 26px; font-weight: 500; line-height: 1.15; color: var(--muted); }
     .val { font-size: 28px; font-weight: 600; line-height: 1.18; letter-spacing: -0.01em; }
   </style>
 </head>
@@ -161,12 +166,12 @@
     <section class="hero">
       <div class="issue" data-if="issue">
         <span class="issue-label"></span>
-        <span class="issue-num" data-fit data-fit-max="300" data-fit-min="80"></span>
+        <span class="issue-num"></span>
       </div>
       <div class="disc"></div>
     </section>
 
-    <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="132" data-fit-min="64"></h1>
+    <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="200" data-fit-min="64"></h1>
 
     <div class="lede" data-if="subhead">
       <span class="lbl lede-lbl">
@@ -210,19 +215,43 @@
   </script>
   <script src="../../shared/card.js"></script>
   <script>
-    Card.onRender(function (data, card) {
-      // Issue: "No. 042" -> small label "No." + big numeral "042".
+    Card.onRender(async function (data, card) {
+      // Issue: "No. 042" -> small label "No." + big numeral "042". Text without digits goes in whole.
       var issue = String(data.issue || '').trim();
       var m = issue.match(/^(.*?)(\d[\d.,]*)\s*$/);
-      var label = m ? m[1].trim() : '';
-      var num = m ? m[2] : issue;
-      card.querySelector('.issue-label').textContent = label;
-      card.querySelector('.issue-label').hidden = !label;
-      card.querySelector('.issue-num').textContent = num;
+      var label = card.querySelector('.issue-label');
+      var num = card.querySelector('.issue-num');
+      label.textContent = m ? m[1].trim() : '';
+      label.hidden = !label.textContent;
+      num.textContent = m ? m[2] : issue;
 
-      // Source sits under a "Source" label, so drop a leading "Source:".
+      // The source sits under a "Source" label, so drop a leading "Source:".
       var src = card.querySelector('.src');
       if (data.source) src.innerHTML = Card.format(String(data.source).replace(/^\s*source\s*[:\-–—]\s*/i, ''));
+
+      // Measure with the real fonts.
+      void card.offsetHeight;
+      try {
+        await Promise.all(['200', '400', '500', '600', '700'].map(function (w) {
+          return document.fonts.load(w + ' 100px "Inter Tight"');
+        }));
+        await document.fonts.ready;
+      } catch (e) { /* fall back to whatever loaded */ }
+
+      // Long copy: if the headline can't hold 76 px with the full hero, switch to the compact hero.
+      var head = card.querySelector('.headline');
+      if (!head.hidden) {
+        head.style.fontSize = '76px';
+        var tooLong = head.scrollHeight > head.clientHeight + 1;
+        head.style.fontSize = '';
+        card.classList.toggle('is-compact', tooLong);
+      }
+
+      // Issue numeral: shrink to its column span if a long value would overflow.
+      num.style.fontSize = '';
+      for (var guard = 0; guard < 40 && num.scrollWidth > num.clientWidth + 1; guard++) {
+        num.style.fontSize = Math.max(64, parseFloat(getComputedStyle(num).fontSize) * 0.94) + 'px';
+      }
     });
   </script>
 </body>

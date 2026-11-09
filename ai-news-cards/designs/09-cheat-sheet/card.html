@@ -119,12 +119,16 @@
     }
     .head { position: relative; }
     .headline {
-      max-height: 470px; overflow: hidden;
+      margin-left: calc(var(--text-x) - 72px);
+      max-height: 470px; overflow: hidden; text-wrap: balance;
       font-weight: 900; font-size: 108px; line-height: 1.03; letter-spacing: -0.022em;
       color: var(--ink);
-      padding-right: 6px;
+      padding: 0 6px .2em 0;     /* room for the inline mark box so data-fit measures true overflow */
     }
+    .headline.wide { margin-left: 0; }
     .headline .hl, .points .hl { background: none; color: inherit; }
+    .bulb { position: absolute; left: 82px; width: 84px; height: 104px; }
+    .bulb .fill { fill: var(--peach); stroke: none; opacity: .95; }
 
     .sheet { position: relative; flex: 1; min-height: 0; margin-top: 18px; }
     .sheet-inner { position: relative; }
@@ -166,7 +170,10 @@
       background: var(--blob) center / 100% 100% no-repeat;
     }
     .txt { min-width: 0; font-weight: 600; color: var(--ink-soft); }
-    .txt .lead { font-weight: 800; color: var(--ink); }
+    .txt .lead { display: block; font-weight: 800; color: var(--ink); }
+    .txt .detail { display: block; }
+    .txt .star { display: inline-block; width: .9em; height: .9em; vertical-align: -.08em; margin-left: .1em; color: var(--pen); overflow: visible; }
+    .txt .star path { fill: none; stroke: currentColor; stroke-linejoin: round; }
 
     /* ---------- footer: bookmark ribbon ---------- */
     .foot {
@@ -224,7 +231,7 @@
 
     <div class="content">
       <header class="head">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="112" data-fit-min="64"></h1>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="104" data-fit-min="64"></h1>
       </header>
 
       <section class="sheet">
@@ -257,6 +264,13 @@
       </footer>
     </div>
 
+    <svg class="doodle bulb" viewBox="-12 -16 94 120" aria-hidden="true" hidden>
+      <path class="fill" d="M35 13 C22 13 15 23 15 33 C15 42 20 47 24 53 C26 56 27 59 27 62 L44 62 C44 59 45 56 47 53 C51 47 56 42 56 33 C56 23 48 13 35 13 Z"/>
+      <path stroke-width="3.6" d="M35 9 C19 9 10 20 10.5 33 C11 43 17 48 21 54.5 C23 58 24 61 24 66 L46.5 65.5 C46.5 61 47.5 58 49.5 54.5 C53.5 48 60 43 60 32.5 C60 20 51 9.5 35 9 Z"/>
+      <path stroke-width="3.4" d="M25.5 73 L45 72.4 M27.5 80.5 L43 80 M31 88 L39 87.6"/>
+      <path stroke-width="3" d="M29 65 L28 47 Q31.5 41 35 47 Q38.5 53 42 46.5 L42.5 65"/>
+      <path stroke-width="3.4" d="M35 -2 L35.6 -11 M11 6 L4.5 0 M59.5 6 L66 -0.5 M-1 31 L-9.5 30.5 M71 31 L79.5 30"/>
+    </svg>
     <svg class="doodle sparks" width="70" height="70" viewBox="0 0 70 70" aria-hidden="true" hidden>
       <path stroke-width="4" d="M12 40 L4 46"/>
       <path stroke-width="4" d="M24 22 L18 8"/>
@@ -369,7 +383,7 @@
       card.querySelectorAll('.points .txt').forEach(function (t) {
         var html = t.innerHTML, k = html.indexOf(' — ');
         if (k < 0) { t.innerHTML = '<span class="lead">' + html + '</span>'; return; }
-        t.innerHTML = '<span class="lead">' + html.slice(0, k) + '</span> <span class="detail">— ' + html.slice(k + 3) + '</span>';
+        t.innerHTML = '<span class="lead">' + html.slice(0, k) + '</span><span class="detail">' + html.slice(k + 3) + '</span>';
       });
     }
 
@@ -393,10 +407,12 @@
       var items = card.querySelectorAll('.points li');
       if (!items.length) { noteRow.hidden = note.hidden; }
       var avail = sheet.clientHeight;
+      /* [text px, line pitch ratio, blank ruled lines between items]
+         prefer a blank line between items (chunking), then bigger text, then roomier lines */
       var cands = [], fs;
-      for (fs = 48; fs >= 40; fs--) cands.push([fs, 1.42, 1]);
-      for (fs = 48; fs >= 35; fs--) cands.push([fs, 1.42, 0]);
-      for (fs = 36; fs >= 34; fs--) cands.push([fs, 1.3, 0]);
+      for (fs = 48; fs >= 36; fs--) { cands.push([fs, 1.42, 1]); cands.push([fs, 1.32, 1]); cands.push([fs, 1.25, 1]); }
+      for (fs = 48; fs >= 34; fs--) { cands.push([fs, 1.42, 0]); cands.push([fs, 1.3, 0]); }
+      for (fs = 36; fs >= 34; fs--) cands.push([fs, 1.22, 0]);
       function apply(c) {
         var R = Math.round(c[0] * c[1]);
         card.style.setProperty('--fs', c[0] + 'px');
@@ -454,7 +470,7 @@
           var rand = rng(seed++ * 97);
           var left = (r.left - c.left) / s, top = (r.top - c.top) / s, w = r.width / s, h = r.height / s;
           var padX = fs * (big ? 0.14 : 0.12);
-          var y0 = top + h * (big ? 0.36 : 0.40), y1 = top + h * (big ? 0.90 : 0.92);
+          var y0 = top + h * (big ? 0.31 : 0.38), y1 = top + h * (big ? 0.91 : 0.92);
           var sv = swipeSVG(w + padX * 2, y1 - y0, color, rand);
           sv.style.left = r1(left - padX) + 'px';
           sv.style.top = r1(y0) + 'px';
@@ -466,15 +482,40 @@
       /* emphasis sparks at the end of the headline highlight */
       var sparks = card.querySelector('.sparks');
       if (last && last.right + 40 < 1040) {
-        sparks.hidden = false;
+        sparks.removeAttribute('hidden');
         sparks.style.left = r1(last.right + 4) + 'px';
-        sparks.style.top = r1(last.top + last.fs * 0.05 - 34) + 'px';
-      } else sparks.hidden = true;
+        sparks.style.top = r1(last.top + last.fs * 0.22 - 40) + 'px';
+      } else sparks.setAttribute('hidden', '');
+    }
+
+    var STAR = '<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path stroke-width="3.4" d="M20 3.5 L24.6 15 L37 15.6 L27.4 23.4 L30.8 35.6 L20.3 28.6 L9.4 35.8 L12.9 23.6 L3 15.8 L15.6 15.2 Z"/></svg>';
+
+    /* Headline: if it can't fit the text column even at the floor size, let it use the margin too. */
+    function prepHeadline(card) {
+      var h = card.querySelector('.headline');
+      if (!h || h.hidden) return;
+      h.classList.remove('wide');
+      var min = parseFloat(h.getAttribute('data-fit-min')) || 64;
+      h.style.fontSize = min + 'px';
+      if (h.scrollHeight > h.clientHeight + 1 || h.scrollWidth > h.clientWidth + 1) h.classList.add('wide');
+      h.style.fontSize = '';
+    }
+
+    function placeBulb(card, U) {
+      var bulb = card.querySelector('.bulb'), h = card.querySelector('.headline');
+      if (!h || h.hidden || h.classList.contains('wide')) { bulb.setAttribute('hidden', ''); return; }
+      var r = U.rel(h), fs = parseFloat(h.style.fontSize) || 100;
+      bulb.removeAttribute('hidden');
+      bulb.style.top = r1(r.top + fs * 0.52 - 52) + 'px';
     }
 
     Card.onRender(async function (data, card) {
       var U = setup(card);
       splitPoints(card);
+      var lis = card.querySelectorAll('.points li');
+      if (lis.length && data.note) {
+        lis[lis.length - 1].querySelector('.lead').insertAdjacentHTML('beforeend', ' ' + STAR);
+      }
       card.querySelectorAll('.points li').forEach(function (li, i) {
         li.style.setProperty('--blob', blobURI(U.col(HL[i % 2]) || '#FFD8BE', 31 + i * 17));
       });
@@ -487,10 +528,12 @@
         ]);
         await document.fonts.ready;
       } catch (e) { /* fallbacks are fine */ }
+      prepHeadline(card);
       Card.fit();
       fitCta(card);
       layoutSheet(card, U);
       drawSwipes(card, U);
+      placeBulb(card, U);
       Card.ready.then(function () { drawSwipes(card, setup(card)); });
     });
   })();

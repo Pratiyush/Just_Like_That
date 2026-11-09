@@ -107,25 +107,33 @@
         linear-gradient(to bottom, transparent calc(var(--cap) - 1px), var(--gl) calc(var(--cap) - 1px), var(--gl) var(--cap), transparent var(--cap));
       background-size: 100% 0.94em;
       background-repeat: repeat-y;
-      --base: 0.80em;   /* tuned to Barlow Condensed metrics */
-      --cap: 0.10em;
+      --base: 0.87em;   /* baseline and cap line within each 0.94em line box (Barlow Condensed metrics) */
+      --cap: 0.165em;
+      padding-bottom: 0.14em;   /* room for the highlight's dimension line under the last line */
     }
     /* Highlight = a dimensioned feature: cyan lettering with a dimension line, extension lines and 45° drafting ticks. */
+    /* Highlight = a dimensioned feature: cyan lettering over a dimension line with extension lines and 45° drafting ticks.
+       Positions are in em from the top of the inline content area (Barlow Condensed: ascent 1.0em, so the baseline is at 1em). */
     .headline mark.hl {
       color: var(--accent);
+      --dim: 1.075em;
+      --t: 0.024em;
       background-image:
         linear-gradient(var(--accent), var(--accent)),
         linear-gradient(var(--accent), var(--accent)),
         linear-gradient(var(--accent), var(--accent)),
-        linear-gradient(45deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%),
-        linear-gradient(45deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%);
-      background-size: 100% 0.03em, 0.03em 0.19em, 0.03em 0.19em, 0.13em 0.13em, 0.13em 0.13em;
-      background-position: 0 var(--dim), 0 calc(var(--dim) + 0.07em), 100% calc(var(--dim) + 0.07em), -0.065em calc(var(--dim) - 0.05em), calc(100% + 0.065em) calc(var(--dim) - 0.05em);
-      background-position: 0 var(--dim), 0 calc(var(--dim) - 0.13em), 100% calc(var(--dim) - 0.13em), -0.05em calc(var(--dim) - 0.05em), calc(100% + 0.05em) calc(var(--dim) - 0.05em);
+        linear-gradient(135deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%),
+        linear-gradient(135deg, transparent 43%, var(--accent) 43%, var(--accent) 57%, transparent 57%);
+      background-size: 100% var(--t), var(--t) 0.17em, var(--t) 0.17em, 0.14em 0.14em, 0.14em 0.14em;
+      background-position:
+        0 var(--dim),
+        0.07em calc(var(--dim) - 0.11em),
+        calc(100% - 0.07em) calc(var(--dim) - 0.11em),
+        0 calc(var(--dim) - 0.058em),
+        100% calc(var(--dim) - 0.058em);
       background-repeat: no-repeat;
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
-      --dim: 0.93em;
     }
 
     .paper-ref {
@@ -144,7 +152,9 @@
       max-height: 2.5em; overflow: hidden;
       font: italic 500 34px/1.2 var(--text);
       color: var(--line);
+      text-wrap: balance;
     }
+    .paper-title .nw { white-space: nowrap; }
     .paper-title::before { content: '\201C'; }
     .paper-title::after  { content: '\201D'; }
 
@@ -155,11 +165,6 @@
       border: 2px solid var(--line);
       background: var(--panel);
     }
-    .tldr::before, .tldr::after {   /* registration ticks on the panel corners */
-      content: ''; position: absolute; width: 18px; height: 18px; border: 0 solid var(--accent);
-    }
-    .tldr::before { right: -9px; top: -9px; border-width: 2px 2px 0 0; }
-    .tldr::after  { right: -9px; bottom: -9px; border-width: 0 2px 2px 0; }
     .tldr .tab {
       position: absolute; left: 24px; top: -15px;
       padding: 5px 12px 4px;
@@ -325,7 +330,7 @@
       <div class="lower">
         <div class="schem">
           <div class="schem-box"></div>
-          <div class="fig"><b>Fig. 1</b>&nbsp;&nbsp;Schematic&nbsp;&nbsp;·&nbsp;&nbsp;Not to scale</div>
+          <div class="fig"><b>Fig. 1</b>&nbsp;&nbsp;Model schematic</div>
         </div>
 
         <ol class="points" data-list="points" data-fit data-fit-min="30">
@@ -434,7 +439,7 @@
       el('path', { 'class': 'sx-arrow', d: 'M0 0.6 L12 4 L0 7.4 Z' }, mk);
 
       // Reserve room: across-dimension before the input row, output arrow after; flow-dimension on the near side.
-      var fS = vertical ? 50 : 58, fE = vertical ? 44 : 64;
+      var fS = vertical ? 50 : 58, fE = vertical ? 78 : 76;
       var aS = vertical ? 58 : 44, aE = vertical ? 26 : 16;
       var a0 = aS, a1 = LA - aE, aMid = (a0 + a1) / 2, aSpan = a1 - a0;
       var u0 = fS, u1 = LF - fE, span = u1 - u0;
@@ -583,6 +588,11 @@
       if (src && !src.hidden) {
         var t = src.textContent.replace(/^\s*source\s*[:\-–—]\s*/i, '').trim();
         if (t) src.textContent = t;
+      }
+      // Keep hyphenated words (e.g. "Long-Context") on one line in the paper title.
+      var pt = card.querySelector('.paper-title');
+      if (pt && !pt.hidden && pt.innerHTML.indexOf('<') === -1) {
+        pt.innerHTML = pt.innerHTML.replace(/(\S*\w-\w\S*)/g, '<span class="nw">$1</span>');
       }
       drawZones(card);
     });

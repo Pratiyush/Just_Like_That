@@ -36,12 +36,12 @@
     /* ---------- kicker: narration box in the top-left corner ---------- */
     .kicker {
       position: absolute; left: 0; top: 0;
-      max-width: 560px;
+      max-width: 600px;
       padding: 20px 30px 17px 24px;
       background-color: var(--yellow);
       border: solid var(--ink); border-width: 0 6px 6px 0;
       box-shadow: 8px 8px 0 var(--ink);
-      font-size: 30px; font-weight: 700; line-height: 1.1;
+      font-size: 32px; font-weight: 700; line-height: 1.1;
       letter-spacing: .06em; text-transform: uppercase;
       white-space: nowrap; overflow: hidden;
       z-index: 6;
@@ -52,7 +52,7 @@
     .balloon .body { fill: var(--balloon); stroke: var(--ink); stroke-width: 8; stroke-linejoin: round; }
     .balloon .shadow { fill: url(#inkDots); }
     .balloon-text {
-      position: absolute; left: 78px; top: 322px; width: 824px; height: 374px;
+      position: absolute; left: 70px; top: 295px; width: 840px; height: 400px;
       display: flex; align-items: safe center; justify-content: center;
       overflow: hidden;
       z-index: 3;
@@ -89,8 +89,7 @@
       width: 512px; max-height: 470px;
       padding: 26px 34px 26px 30px;
       background-color: var(--yellow);
-      border: solid var(--ink); border-width: 6px 0 0 6px;
-      box-shadow: -8px -8px 0 var(--ink);
+      border: solid var(--ink); border-width: 7px 0 0 7px;
       display: flex; flex-direction: column;
       z-index: 5;
     }
@@ -109,8 +108,8 @@
 
     /* ---------- starburst (breaks out of the panel) ---------- */
     .burst {
-      position: absolute; left: 640px; top: -40px; width: 440px; height: 430px;
-      transform: rotate(-8deg);
+      position: absolute; left: 640px; top: -50px; width: 440px; height: 430px;
+      transform: rotate(-8deg) scale(.92);
       z-index: 10;
     }
     .burst svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -158,8 +157,8 @@
             <circle cx="5.5" cy="5.5" r="3.4" class="f-ink"/>
           </pattern>
         </defs>
-        <path class="shadow" transform="translate(16 16)" d="M152 200 Q490 186 828 200 C900 200 958 248 958 330 Q970 472 958 615 C958 690 905 745 828 745 L450 745 C444 790 424 830 392 862 C396 822 384 776 350 745 L152 745 C80 745 22 690 22 615 Q10 472 22 330 C22 248 80 200 152 200 Z"/>
-        <path class="body" d="M152 200 Q490 186 828 200 C900 200 958 248 958 330 Q970 472 958 615 C958 690 905 745 828 745 L450 745 C444 790 424 830 392 862 C396 822 384 776 350 745 L152 745 C80 745 22 690 22 615 Q10 472 22 330 C22 248 80 200 152 200 Z"/>
+        <path class="shadow" transform="translate(16 16)" d="M152 220 Q490 206 828 220 C900 220 958 268 958 350 Q970 485 958 620 C958 695 905 750 828 750 L450 750 C444 795 424 835 392 867 C396 827 384 781 350 750 L152 750 C80 750 22 695 22 620 Q10 485 22 350 C22 268 80 220 152 220 Z"/>
+        <path class="body" d="M152 220 Q490 206 828 220 C900 220 958 268 958 350 Q970 485 958 620 C958 695 905 750 828 750 L450 750 C444 795 424 835 392 867 C396 827 384 781 350 750 L152 750 C80 750 22 695 22 620 Q10 485 22 350 C22 268 80 220 152 220 Z"/>
       </svg>
       <div class="balloon-text" data-fit data-fit-max="168" data-fit-min="64">
         <h1 class="headline" data-field="headline" data-highlight></h1>

@@ -149,7 +149,19 @@
       font-size: 28px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
     }
     .footer .source { min-width: 0; }
-    .footer .handle { margin-left: auto; text-align: right; white-space: nowrap; }
+    .footer .handle { margin-left: auto; text-align: right; white-space: nowrap; text-transform: none; letter-spacing: .03em; }
+
+    /* ---------- density modes (set by the script below when the headline can't fit at 64px) ---------- */
+    #card.tight .headline { margin-top: 26px; }
+    #card.tight .subhead { margin-top: 18px; font-size: 35px; }
+    #card.tight .zone { padding-top: 28px; }
+    #card.tight .col { gap: 20px; }
+    #card.tight .tips { gap: 14px; }
+    #card.tight .tips span { font-size: 34px; }
+    #card.tight .footer { margin-top: 24px; }
+    #card.tighter .sign { width: 280px; height: 247px; }
+    #card.tighter .zone { gap: 32px; }
+    #card.tighter .subhead { font-size: 34px; }
 
     /* ---------- wear & tear (decorative) ---------- */
     .wear { position: absolute; inset: 0; pointer-events: none; }
@@ -189,7 +201,7 @@
         <span class="kicker-text" data-field="kicker" data-fit data-fit-min="26"></span>
       </div>
 
-      <h1 class="headline worn" data-field="headline" data-highlight data-fit data-fit-max="132" data-fit-min="64"></h1>
+      <h1 class="headline worn" data-field="headline" data-highlight data-fit data-fit-max="190" data-fit-min="64"></h1>
 
       <p class="subhead" data-field="subhead"></p>
 
@@ -248,5 +260,24 @@
   }
   </script>
   <script src="../../shared/card.js"></script>
+  <script>
+    /* Progressive density: if the headline would still overflow at its 64px floor,
+       tighten spacing first, then shrink the sign so the tips column gets wider. */
+    Card.onRender(async function (data, card) {
+      void card.offsetHeight;
+      try { await document.fonts.ready; } catch (e) { /* ignore */ }
+      var h = card.querySelector('.headline');
+      if (!h || h.hidden) return;
+      function tooLong() {
+        h.style.fontSize = '64px';
+        var over = h.scrollHeight > h.clientHeight + 1;
+        h.style.fontSize = '';
+        return over;
+      }
+      ['tight', 'tighter'].forEach(function (mode) {
+        if (tooLong()) card.classList.add(mode);
+      });
+    });
+  </script>
 </body>
 </html>

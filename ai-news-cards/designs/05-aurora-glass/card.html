@@ -18,9 +18,9 @@
       --fg: #F7F5FF;
       --muted: rgba(234, 230, 255, 0.84);
       --faint: rgba(232, 228, 255, 0.70);
-      --hl-a: #67E8F9;
-      --hl-b: #A5B4FC;
-      --hl-c: #F0ABFC;
+      --hl-a: #2EE6FF;
+      --hl-b: #B4A6FF;
+      --hl-c: #FF8AD0;
       --glow: rgba(150, 110, 255, 0.80);
       --radius: 48px;
 
@@ -106,6 +106,8 @@
       background: radial-gradient(120% 100% at 20% 0%, rgba(255,255,255,.10), rgba(255,255,255,0) 70%);
     }
 
+    .meta-row:not(:has(> :not([hidden]))) { display: none; }
+    .meta-row:not(:has(> :not([hidden]))) + .headline { margin-top: 4px; }
     .meta-row {
       display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 10px 22px;
       position: relative; z-index: 1;
@@ -250,5 +252,14 @@
   }
   </script>
   <script src="../../shared/card.js"></script>
+  <script>
+    // Short headlines start bigger so a two-word launch still fills the glass; long ones start smaller.
+    Card.onRender(function (data, card) {
+      var h = card.querySelector('.headline');
+      var len = String(data.headline || '').replace(/\*\*/g, '').length;
+      var max = len <= 16 ? 136 : len <= 26 ? 122 : len <= 44 ? 108 : 100;
+      h.setAttribute('data-fit-max', max);
+    });
+  </script>
 </body>
 </html>

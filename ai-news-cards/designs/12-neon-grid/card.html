@@ -117,6 +117,8 @@
       box-shadow: 0 0 12px 2px var(--accent);
     }
     .hud-rec b { font-weight: 600; color: var(--accent-2); }
+    #card.hud-compact .kicker-chip { max-width: 100%; }
+    #card.hud-compact .hud-rec { display: none; }
 
     .copy {
       flex: 1 1 auto; min-height: 0;
@@ -167,7 +169,7 @@
     /* ---------- the sun stat ---------- */
     .sun-stat {
       position: absolute; z-index: 2;
-      left: calc(540px - var(--sun-r) * .74); width: calc(var(--sun-r) * 1.48);
+      left: calc(540px - var(--sun-r) * .78); width: calc(var(--sun-r) * 1.56);
       top: calc(var(--sun-cy) - var(--sun-r) * .80); height: calc(var(--sun-r) * .64);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden; white-space: nowrap;
@@ -253,7 +255,7 @@
       <div class="hud-top">
         <div class="kicker-chip" data-if="kicker">
           <i class="cursor"></i>
-          <span class="kicker" data-field="kicker" data-fit data-fit-min="20"></span>
+          <span class="kicker" data-field="kicker" data-fit data-fit-min="22"></span>
         </div>
         <div class="hud-rule"></div>
         <div class="hud-rec"><i class="dot"></i>REC<b>CH·12</b></div>
@@ -264,7 +266,7 @@
       </div>
     </div>
 
-    <div class="sun-stat" data-field="stat" data-fit data-fit-min="44"></div>
+    <div class="sun-stat" data-field="stat" data-fit data-fit-min="30"></div>
 
     <div class="floor">
       <div class="stat-label" data-field="statLabel"></div>
@@ -489,23 +491,43 @@
           await document.fonts.ready;
         } catch (e) { /* fall back silently */ }
 
+        /* Silent copy of card.js's fitting loop, used to choose a layout before the real fit runs. */
+        function fits(el) { return el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1; }
+        function trialFit(el) {
+          if (el.hidden) return 0;
+          var size = parseFloat(el.getAttribute('data-fit-max')) || parseFloat(getComputedStyle(el).fontSize);
+          var min = parseFloat(el.getAttribute('data-fit-min')) || Math.round(size * .45);
+          el.style.fontSize = size + 'px';
+          while (!fits(el) && size > min) {
+            size = Math.max(min, size - Math.max(1, size * .03));
+            el.style.fontSize = size + 'px';
+          }
+          return fits(el) ? size : 0;
+        }
         function setStatMax() {
           var r = parseFloat(getComputedStyle(card).getPropertyValue('--sun-r'));
           stat.setAttribute('data-fit-max', Math.round(r * .56));
-          stat.__fitStart = undefined;
-          h.__fitStart = undefined;
         }
-        card.classList.remove('is-dense');
+
+        /* Long kicker: give it the whole HUD row. */
+        var kick = card.querySelector('.kicker');
+        if (!kick.hidden) {
+          kick.style.fontSize = '';
+          if (!fits(kick)) card.classList.add('hud-compact');
+          kick.style.fontSize = '';
+        }
+
+        /* Long headline: lower the horizon and shrink the sun to give the copy more sky. */
         setStatMax();
-        Card.fit();
-        var size = parseFloat(h.style.fontSize) || 999;
-        var overflow = h.scrollHeight > h.clientHeight + 1;
-        if (size < 84 || overflow) {
+        trialFit(card.querySelector('.subhead'));
+        var size = trialFit(h);
+        if (!size || size < 84) {
           card.classList.add('is-dense');
           setStatMax();
-          Card.fit();
         }
-        syncGlitch(h);
+        /* hand back to card.js: its own fit starts from the CSS / data-fit-max sizes */
+        card.querySelector('.subhead').style.fontSize = '';
+        h.style.fontSize = '';
         drawScene(card);
       });
 
@@ -532,6 +554,7 @@
         lines.push(cur);
         h.setAttribute('data-text', lines.map(function (s) { return s.replace(/\s+/g, ' ').trim(); }).join('\n'));
       }
+      /* runs right after card.js has fitted the text, before the card is captured */
       Card.ready.then(function () { syncGlitch(document.querySelector('#card .headline')); });
     })();
   </script>

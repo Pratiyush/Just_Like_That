@@ -99,8 +99,8 @@
     .slab {
       flex: none;
       position: relative;
-      margin: 30px -140px 0;
-      padding: 30px 140px 34px;
+      margin: 26px -140px 0;
+      padding: 30px 140px 32px;
       background: var(--ink);
       transform: rotate(-2deg);
       box-shadow: 0 10px 0 rgba(0,0,0,.22);
@@ -121,14 +121,20 @@
       text-wrap: balance;
       padding-top: .04em;
     }
-    .headline .hl { display: contents; }
-    .headline .hlw {
+    .headline .hl {
+      display: inline-block; white-space: nowrap;      /* one unbreakable unit: no inline-box overflow */
       color: #fff;
       background:
         linear-gradient(90deg, var(--left) 0 50%, var(--right) 50% 100%) no-repeat;
-      background-size: 100% .11em;
+      background-size: 100% .1em;
       background-position: 0 100%;
-      padding-bottom: .02em;
+      padding: 0 .03em .02em;
+    }
+    .headline .hl.wrap { display: inline; white-space: normal; background: none; padding: 0; }
+    .headline .hl.wrap .hlw {
+      display: inline-block; white-space: nowrap;
+      background: linear-gradient(90deg, var(--left) 0 50%, var(--right) 50% 100%) no-repeat;
+      background-size: 100% .1em; background-position: 0 100%;
     }
 
     /* arena: two corners + centre lane */
@@ -136,7 +142,7 @@
       position: relative;
       flex: 1; min-height: 0;
       display: flex;
-      margin-top: 44px;
+      margin-top: 40px;
     }
     .side { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
     .side > * { flex: none; }
@@ -157,7 +163,7 @@
 
     .name {
       width: 100%;
-      margin-top: 14px;
+      margin-top: calc(12px * var(--sc, 1));
       font-family: var(--display); font-weight: 400;
       font-size: 96px; line-height: 1.02;
       text-transform: uppercase; letter-spacing: .01em;
@@ -166,11 +172,11 @@
       text-shadow: 5px 5px 0 rgba(0,0,0,.18);
     }
     .name.one-line { white-space: nowrap; }
-    .name .w, .headline .hlw { display: inline-block; white-space: nowrap; }
+    .name .w { display: inline-block; white-space: nowrap; }
 
     .tag {
       display: inline-block;
-      margin-top: 14px;
+      margin-top: calc(12px * var(--sc, 1));
       padding: 6px 14px 7px;
       border: 3px solid currentColor;
       font-weight: 700; font-size: 26px; line-height: 1.1;
@@ -178,10 +184,12 @@
       max-width: 300px;
     }
 
-    .stats { list-style: none; margin-top: auto; width: 100%; }
+    .stats { list-style: none; margin-top: auto; padding-top: calc(28px * var(--sc, 1)); width: 100%; }
+    .compact .corner { display: none; }
+    .compact .name { margin-top: 0; }
     .stat {
       position: relative;
-      padding: 14px 0 12px;
+      padding: calc(12px * var(--sc, 1)) 0 calc(8px * var(--sc, 1));
       border-top: 3px solid rgba(255,255,255,.45);
     }
     .right .stat { border-top-color: rgba(0,0,0,.38); }
@@ -217,6 +225,7 @@
       position: absolute; left: 50%; top: var(--vs-top, 50%);
       width: 0; height: 0;
       z-index: 3;
+      transform: scale(var(--vs-sc, 1));
     }
     .vs .burst {
       position: absolute; left: -200px; top: -200px; width: 400px; height: 400px;
@@ -242,8 +251,8 @@
     /* verdict strip */
     .verdict-strip {
       flex: none;
-      margin: 40px -140px 0;
-      padding: 22px 140px 22px;
+      margin: 38px -140px 0;
+      padding: 20px 140px 20px;
       background: var(--paper); color: var(--ink);
       transform: rotate(-2deg);
       box-shadow: 0 10px 0 rgba(0,0,0,.22);
@@ -269,7 +278,7 @@
     .verdict .hl {
       font-style: normal; font-weight: 800;
       text-transform: uppercase; letter-spacing: .04em;
-      padding: 0 .22em; margin: 0 .04em;
+      padding: 0 .16em 0 .2em; margin: 0 .02em;
       background: var(--left); color: var(--left-ink);
       box-decoration-break: clone; -webkit-box-decoration-break: clone;
     }
@@ -278,7 +287,7 @@
     /* footer */
     .footer {
       flex: none;
-      margin-top: 40px;
+      margin-top: 36px;
       display: flex; justify-content: space-between; align-items: flex-end; gap: 120px;
       font-weight: 700; font-size: 26px; line-height: 1.15; letter-spacing: .06em;
     }
@@ -304,7 +313,7 @@
       </div>
 
       <div class="slab" data-if="headline">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="96" data-fit-min="64"></h1>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="86" data-fit-min="64"></h1>
       </div>
 
       <div class="arena">
@@ -365,7 +374,7 @@
   <script type="application/json" id="card-data">
   {
     "kicker": "Title fight · Open vs closed",
-    "headline": "The underdog costs **10x less** and nearly KO'd the champ",
+    "headline": "The **10x cheaper** underdog nearly KO'd the champ",
     "corners": ["Blue corner", "Orange corner"],
     "left": {
       "name": "Helix-3",
@@ -387,7 +396,7 @@
     },
     "vs": "VS",
     "verdictLabel": "Verdict",
-    "verdict": "Orion keeps the belt on brains. Helix-3 wins on price and speed. Your corner: **blue** or **orange**?",
+    "verdict": "Orion keeps the belt on brains. Helix-3 wins on price and speed. Pick a corner: **blue** or **orange**?",
     "source": "Source: Sample Arena benchmark",
     "handle": "@yourhandle"
   }
@@ -417,13 +426,6 @@
         }).join(' ');
       });
 
-      /* headline highlight: one unbreakable underlined box per word (no inline overflow) */
-      card.querySelectorAll('.headline mark.hl').forEach(function (m) {
-        m.innerHTML = m.textContent.trim().split(/\s+/).map(function (w) {
-          return '<span class="hlw">' + w.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
-        }).join(' ');
-      });
-
       /* round winners */
       ['left', 'right'].forEach(function (side) {
         var stats = (data[side] && data[side].stats) || [];
@@ -439,6 +441,19 @@
           'italic 700 100px "Barlow Condensed"'].map(function (f) { return document.fonts.load(f); }));
         await document.fonts.ready;
       } catch (e) { /* fall back to system fonts */ }
+
+      /* a highlight too long for one line falls back to one underlined box per word */
+      card.querySelectorAll('.headline mark.hl').forEach(function (m) {
+        var h = m.parentElement;
+        h.style.fontSize = h.getAttribute('data-fit-min') + 'px';
+        if (m.offsetWidth > h.clientWidth) {
+          m.classList.add('wrap');
+          m.innerHTML = m.textContent.trim().split(/\s+/).map(function (w) {
+            return '<span class="hlw">' + w.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
+          }).join(' ');
+        }
+        h.style.fontSize = '';
+      });
 
       Card.fit();                               /* headline + verdict settle the arena height */
 
@@ -485,15 +500,20 @@
       }
 
       var sides = card.querySelectorAll('.side');
-      var scales = [1, 0.92, 0.85, 0.78, 0.72, 0.66];
-      for (var k = 0; k < scales.length; k++) {
-        var sc = scales[k];
-        card.style.setProperty('--sc', sc);
-        fitNames(Math.round(120 * sc));
-        fitValues(Math.round(76 * sc));
-        alignRows();
-        var tight = Array.prototype.some.call(sides, function (s) { return s.scrollHeight > s.clientHeight + 1; });
-        if (!tight) break;
+      function tight() {
+        return Array.prototype.some.call(sides, function (s) { return s.scrollHeight > s.clientHeight + 1; });
+      }
+      var scales = [1, 0.92, 0.85, 0.78, 0.72, 0.66, 0.6];
+      for (var pass = 0; pass < 2; pass++) {             /* pass 2 drops the corner labels */
+        if (pass === 1) { if (!tight()) break; card.classList.add('compact'); }
+        for (var k = 0; k < scales.length; k++) {
+          var sc = scales[k];
+          card.style.setProperty('--sc', sc);
+          fitNames(Math.round(120 * sc));
+          fitValues(Math.round(76 * sc));
+          alignRows();
+          if (!tight()) break;
+        }
       }
 
       /* VS badge: centred in the gap between the corner headers and the stat rows */
@@ -510,6 +530,9 @@
       var botY = bots.length ? Math.max.apply(null, bots) : ar.height;
       var vsTop = Math.round((topY + botY) / 2);
       vs.style.setProperty('--vs-top', vsTop + 'px');
+      /* shrink the badge if the lane is short (burst is 400px; let spikes kiss the edges) */
+      var room = Math.min(vsTop - topY + 40, ar.height - vsTop + 40) * 2;
+      vs.style.setProperty('--vs-sc', Math.max(0.6, Math.min(1, room / 400)).toFixed(3));
 
       /* diagonal split through the badge centre */
       var cr = card.getBoundingClientRect();

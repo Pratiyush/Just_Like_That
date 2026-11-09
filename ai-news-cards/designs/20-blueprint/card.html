@@ -86,7 +86,7 @@
     }
 
     /* Scale bar: purely decorative drafting furniture. */
-    .scalebar { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; opacity: .9; }
+    .scalebar { flex: 0 0 auto; margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; opacity: .9; }
     .scalebar svg { display: block; }
     .scalebar .sb-fill { fill: var(--line); }
     .scalebar .sb-line { fill: none; stroke: var(--line); stroke-width: 1.5; }
@@ -282,11 +282,11 @@
     .tb-row { display: flex; }
     .tb-row + .tb-row { border-top: 1.5px solid rgba(205, 239, 255, .7); }
     .tb-cell { padding: 12px 18px 12px 18px; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
-    .tb-cell + .tb-cell { border-left: 1.5px solid rgba(205, 239, 255, .7); }
+    .tb-cell:not([hidden]) ~ .tb-cell { border-left: 1.5px solid rgba(205, 239, 255, .7); }
     .tb-lab { font: 400 14px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
     .tb-val { font: 600 28px/1.08 var(--text); text-transform: uppercase; letter-spacing: .02em; color: var(--fg); overflow-wrap: anywhere; }
     .tb-src  { flex: 1; }
-    .tb-proj { flex: 0 0 108px; align-items: center; justify-content: center; padding-right: 36px; padding-left: 14px; }
+    .tb-proj { flex: 0 0 108px; margin-left: auto; align-items: center; justify-content: center; padding-right: 36px; padding-left: 14px; }
     .tb-proj svg { display: block; }
     .tb-proj .pj { fill: none; stroke: var(--line); stroke-width: 1.6; }
     .tb-proj .pj-c { fill: none; stroke: var(--line); stroke-width: .9; stroke-dasharray: 6 2 1.5 2; opacity: .8; }
@@ -297,7 +297,7 @@
     .tb-by   { flex: 1 1 auto; padding-right: 36px; }
     /* Long handle: DRAWN BY drops onto its own full-width row. */
     .tb-r2.wrapped .tb-date { flex-grow: 1; padding-bottom: 12px; }
-    .tb-r2.wrapped .tb-by { flex-basis: 100%; border-left: 0; border-top: 1.5px solid rgba(205, 239, 255, .7); }
+    .tb-r2.wrapped .tb-by { flex-basis: 100%; border-left: 0 !important; border-top: 1.5px solid rgba(205, 239, 255, .7); }
     .tb-by .tb-val { font: 700 26px/1.12 var(--mono); text-transform: none; letter-spacing: 0; }
     .tb-src .tb-val { padding-right: 0; }
 

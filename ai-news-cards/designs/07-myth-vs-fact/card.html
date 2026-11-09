@@ -100,20 +100,20 @@
 
     /* ---------- Myth (top panel) ---------- */
     .zone-myth {
-      position: relative; z-index: 2;
+      position: relative;               /* no z-index: the hatch must sit under the mint panel */
       flex: 1 1 auto; min-height: 0;   /* flex-grow is set from content in JS */
       display: flex; flex-direction: column;
       padding: 36px 0 40px;
     }
     .myth-hatch {
-      position: absolute; z-index: -1;
+      position: absolute; z-index: 0;
       left: calc(-1 * var(--pad-x)); right: calc(-1 * var(--pad-x));
       top: 0; bottom: -90px;
       background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--myth) 7.5%, transparent) 0 2px, transparent 2px 18px);
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
               mask-image: linear-gradient(to bottom, transparent, #000 55%);
     }
-    .myth-fit { font-size: 88px; }   /* nominal size; data-fit-max lets short myths grow */
+    .myth-fit { position: relative; z-index: 2; font-size: 88px; }   /* nominal size; data-fit-max lets short myths grow */
     .myth-copy {
       display: block; position: relative;
       margin-top: 28px;

@@ -1,0 +1,38 @@
+{
+  "id": "11-front-page",
+  "name": "Front Page",
+  "style": "A vintage broadsheet front page on grainy, folded newsprint: blackletter masthead with an ear and a rubber-stamped EXTRA, an edition bar between double rules, a huge Playfair Display 900 banner headline with the key phrase in sepia italic, an italic deck, a duotone halftone 'wirephoto' of a retro robot, and justified two-column copy with a drop cap and a jump line.",
+  "palette": ["#EDE6D6", "#141414", "#8E3414", "#8A5A2E"],
+  "fonts": ["UnifrakturCook", "Playfair Display", "Old Standard TT", "Oswald"],
+  "bestFor": "Historic milestones and 'this changes everything' stories: a model doing something for the first time, a record broken, a launch people will remember the date of.",
+  "principles": [
+    {
+      "name": "Novelty seeking / expectation violation (Bunzeck & Düzel, 2006)",
+      "how": "In a feed of dark-mode tech graphics, a 1900s broadsheet announcing futuristic AI news is the unexpected stimulus. The clash of antique medium and modern subject (blackletter, halftone dots and an 'EXTRA!' stamp around a robot) gets the second look that novelty earns."
+    },
+    {
+      "name": "Authority (Cialdini, 1984)",
+      "how": "The card borrows the conventions of the paper of record: masthead, Vol./No. edition bar, dateline, a deck under the banner, a photo caption, a source line and justified columns. The story reads as reported, not posted, and that lends the headline credibility at a glance."
+    },
+    {
+      "name": "Nostalgia as a positive emotion (Wildschut, Sedikides, Arndt & Routledge, 2006)",
+      "how": "Aged newsprint, a fold crease, ink spread and a 'Price: One Token' joke call up the shared memory of newspapers kept for historic days, a warm feeling that softens AI anxiety and makes the card something people want to save."
+    },
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "A concrete image of the subject (a halftone robot built from SVG dots, generated in the page) sits next to the verbal story. The headline is stored both as words and as a picture, and the robot's glowing eyes give the lower half its own focal point."
+    }
+  ],
+  "hookFormula": "[Subject] [does a historic first] in [specific number] [days/hours]: e.g. 'AI Builds Its Own Successor in 9 Days', with the shocking part as the highlight.",
+  "captionTip": "Write the caption as the paper's second paragraph: open with a dateline ('NOVA CITY —'), give the one fact the headline held back, then ask 'Where were you when this dropped?' to pull comments and saves from people who want to keep the front page.",
+  "fields": ["brand", "ear", "edition", "date", "handle", "kicker", "headline", "highlight", "subhead", "body", "caption", "cta", "source", "price", "sticker"],
+  "fieldNotes": {
+    "ear": "Small boxed motto left of the masthead (\\n for line breaks, up to 4 lines).",
+    "edition": "Left cell of the edition bar, e.g. 'Vol. I · No. 313'. It is dropped automatically when the bar is too crowded.",
+    "body": "Justified two-column story with a drop cap. Start with **Dateline —** for small caps. About 60–70 words fills the columns; longer copy is cut at the foot of column two like a newspaper jump.",
+    "caption": "Photo caption; **Name** is set in bold small caps. Up to 3 lines.",
+    "cta": "Jump line under the columns, e.g. 'Continued on slide 2'.",
+    "price": "Footer right, e.g. 'Price: One Token'.",
+    "sticker": "Word on the rubber stamp (default 'Extra!'). Set to false or \"\" to remove the stamp."
+  }
+}

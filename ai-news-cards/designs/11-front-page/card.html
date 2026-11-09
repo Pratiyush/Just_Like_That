@@ -13,9 +13,8 @@
       --bg: #EDE6D6;          /* newsprint */
       --fg: #141414;          /* press ink */
       --accent: #8E3414;      /* oxblood-sepia stamp ink, also the highlight */
-      --sepia: #6A4A2C;       /* secondary sepia for small ornaments */
-      --rule: #141414;
-      --photo-ink: #141414;
+      --rule: var(--fg);
+      --photo-ink: var(--fg);
       --photo-tint: #8A5A2E;  /* second halftone screen (duotone) */
       --serif: 'Old Standard TT', 'Liberation Serif', 'DejaVu Serif', Georgia, serif;
       --display: 'Playfair Display', 'Liberation Serif', 'DejaVu Serif', Georgia, serif;
@@ -216,7 +215,7 @@
       flex: 1 1 auto; min-height: 0;
       position: relative;
       border: 2px solid var(--fg);
-      background: #E9E1CF;
+      background: transparent;
       overflow: hidden;
     }
     .photo svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

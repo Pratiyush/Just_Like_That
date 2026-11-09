@@ -478,10 +478,10 @@
 
       tightenKicker();
 
-      /* headline size ladder: two lines up to 86px, three lines up to 74px, else down to the 64px floor */
+      /* headline size ladder: one line up to 112px, two up to 86px, three up to 74px, else down to the 64px floor */
       var hl = card.querySelector('.headline');
       if (hl && !hl.hidden) {
-        var ladder = [[86, 2], [80, 2], [74, 3], [68, 3], [64, 99]];
+        var ladder = [[112, 1], [100, 1], [86, 2], [80, 2], [74, 3], [68, 3], [64, 99]];
         hl.style.maxHeight = 'none';
         for (var li = 0; li < ladder.length; li++) {
           var fs = ladder[li][0];
@@ -551,7 +551,7 @@
         Card.fit();
         for (var k = 0; k < scales.length; k++) {
           card.style.setProperty('--sc', scales[k]);
-          fitNames(Math.round(120 * scales[k]));
+          fitNames(Math.round(132 * scales[k]));
           fitValues(Math.round(68 * scales[k]));
           alignRows();
           if (!tight()) break search;

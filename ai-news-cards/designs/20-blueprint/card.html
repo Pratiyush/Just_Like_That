@@ -184,6 +184,10 @@
     #card.tight .tldr { margin-top: 32px; padding-top: 26px; padding-bottom: 20px; }
     #card.tight .lower { margin-top: 26px; }
     #card.tight .points { gap: 16px; }
+    #card.tight .tb-cell { flex-direction: row; align-items: baseline; gap: 16px; padding-top: 11px; padding-bottom: 11px; }
+    #card.tight .tb-lab { flex: 0 0 auto; }
+    #card.tight .tb-r2 .tb-cell { padding-bottom: 40px; }
+    #card.tight .tb-r2.wrapped .tb-date { padding-bottom: 11px; }
 
     /* Lower zone: schematic + findings + title block. */
     .lower {
@@ -609,17 +613,20 @@
       var pts = card.querySelector('.points');
       var hasPts = card.classList.contains('has-points');
 
-      // Title block: does DRAWN BY need its own row?
+      // Title block: does DRAWN BY need its own row? (Depends on the mode, so re-checked per plan.)
       var row2 = card.querySelector('.tb-r2'), date = card.querySelector('.tb-date'), by = card.querySelector('.tb-by');
-      row2.classList.remove('wrapped');
-      if (!date.hidden && !by.hidden && by.offsetTop > date.offsetTop + 2) row2.classList.add('wrapped');
+      function setMode(plan) {
+        card.classList.toggle('wide', plan.wide);
+        card.classList.toggle('tight', plan.tight);
+        row2.classList.remove('wrapped');
+        if (!date.hidden && !by.hidden && by.offsetTop > date.offsetTop + 2) row2.classList.add('wrapped');
+        return card.querySelector('.tb').offsetHeight;
+      }
 
       function pick(cands, headSize, ptsSize) {
         for (var i = 0; i < cands.length; i++) {
           lower.style.flexBasis = cands[i] + 'px';
-          var hok = headOK(headSize), pok = ptsOK(ptsSize);
-          if (window.__DEBUG__) console.log('try', card.className, cands[i], headSize, ptsSize, hok, pok, head.scrollHeight, head.clientHeight, pts.scrollHeight, pts.clientHeight);
-          if (hok && pok) return cands[i];
+          if (headOK(headSize) && ptsOK(ptsSize)) return cands[i];
         }
         return null;
       }
@@ -633,29 +640,30 @@
         pts.style.fontSize = size + 'px';
         return pts.scrollHeight <= pts.clientHeight + 1;
       }
-      var tbH = card.querySelector('.tb').offsetHeight;
       function atLeast(list, min) {
         var out = list.filter(function (c) { return c >= min; });
         return out.length ? out : [Math.ceil(min)];
       }
-      var side = [470, 450, 430, 410, 390, 370, 350];
-      var wideC = [560, 530, 500, 470, 440, 410, 380, 350, 320, 290];
+      function range(hi, lo, step) { var out = []; for (var v = hi; v >= lo; v -= step) out.push(v); return out; }
+      var side = range(470, 350, 10);
+      var wideC = range(600, 280, 10);
       var plans = hasPts ? [
         { wide: false, tight: false, c: side, tries: [[88, 34], [72, 34]] },
         { wide: true,  tight: false, c: wideC, tries: [[88, 34], [72, 34], [72, 32]] },
         { wide: true,  tight: true,  c: wideC, tries: [[72, 32], [64, 32], [64, 30]] }
       ] : [
-        { wide: false, tight: false, c: atLeast([400, 370, 340, 310, 280], tbH + 170), tries: [[88, 34], [72, 34], [64, 34]] },
-        { wide: false, tight: true,  c: atLeast([340, 310, 280, 250], tbH + 130), tries: [[64, 34]] }
+        { wide: false, tight: false, c: [400, 370, 340, 310, 280], min: 170, tries: [[88, 34], [72, 34], [64, 34]] },
+        { wide: false, tight: true,  c: [340, 310, 280, 250], min: 130, tries: [[64, 34]] }
       ];
-      var choice = null, plan;
+      var choice = null, plan, cands;
       for (var k = 0; k < plans.length && choice === null; k++) {
         plan = plans[k];
-        card.classList.toggle('wide', plan.wide);
-        card.classList.toggle('tight', plan.tight);
-        for (var t = 0; t < plan.tries.length && choice === null; t++) choice = pick(plan.c, plan.tries[t][0], plan.tries[t][1]);
+        var tbH = setMode(plan);
+        cands = plan.min ? atLeast(plan.c, tbH + plan.min) : plan.c;
+        for (var t = 0; t < plan.tries.length && choice === null; t++) choice = pick(cands, plan.tries[t][0], plan.tries[t][1]);
       }
-      if (choice === null) choice = plan.c[plan.c.length - 1];
+      if (choice === null) choice = cands[cands.length - 1];
+
       lower.style.flexBasis = choice + 'px';
       head.style.fontSize = '';
       pts.style.fontSize = '';

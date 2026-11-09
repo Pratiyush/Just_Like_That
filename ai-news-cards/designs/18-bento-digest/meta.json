@@ -1,0 +1,36 @@
+{
+  "id": "18-bento-digest",
+  "name": "Bento Digest",
+  "style": "Keynote-style bento grid on iOS grey (#F2F2F7): one big near-black hero tile with a gradient-highlighted headline and the week range, beside 4–6 rounded (32 px) story tiles in vivid blue, lime, orange, lilac and white, each with an inline SVG icon chip, a mono index, a tag and a title. The grid reflows for 4, 5 or 6 stories with no holes.",
+  "palette": ["#F2F2F7", "#0D0D12", "#2D5BFF", "#D9F65C", "#FF7A30", "#CDBFFF", "#FFFFFF", "#8FA8FF", "#FFB385"],
+  "fonts": ["Geist", "Geist Mono"],
+  "bestFor": "Weekly roundups and \"5 things that happened in AI this week\" digests: 4–6 short stories, each boiled down to a tag and a one-line takeaway.",
+  "principles": [
+    {
+      "name": "Chunking (Miller, 1956; Cowan, 2001)",
+      "how": "The week comes pre-split into 4–6 separate tiles, capped at 6, so the reader gets a few small chunks instead of a wall of news. Each tile holds exactly one story (icon + tag + title) and is numbered 01–0N so the eye can count through the set and finish it. The grid has its own arrangement for each count (pinwheel for 4, brickwork for 5, 3+2 rows for 6), so no hole ever reads as a missing chunk."
+    },
+    {
+      "name": "Gestalt common region & proximity (Palmer, 1992; Wertheimer, 1923)",
+      "how": "Each story sits inside its own rounded, colour-filled region, so its icon, tag and title read as one unit with no rules or bullets needed. Even 20 px gutters pull the tiles together into one digest. The single dark tile reads as the 'cover' (figure/ground). Tiles of the same shape share a header style and title size (similarity), and the colour legend in the hero repeats the tile fills in order."
+    },
+    {
+      "name": "Practical value drives saves (STEPPS; Berger, 2013)",
+      "how": "The card works as a complete summary of the week rather than one headline: every story is boiled down to a scannable takeaway with a specific number, under a dated week range. That makes it worth bookmarking and forwarding. The CTA is a bookmark-icon pill that names the use for the save (\"Save this for Monday's standup\"), which plays to the saves and sends Instagram has said it weights."
+    },
+    {
+      "name": "First-impression speed (Lindgaard et al., 2006)",
+      "how": "Within ~50 ms the card reads as a polished keynote slide: a flat iOS-grey canvas, one 32 px radius everywhere, a calm 6-column grid, a coordinated palette, and fine grain plus soft top-left light on the tiles. It signals quality before any word is read. The one near-black tile, holding the largest type and the gradient highlight, is the only focal point, so the glance lands on the hook."
+    }
+  ],
+  "hookFormula": "[Number] AI [stories / shifts] you [missed / can't skip] this week",
+  "captionTip": "Repeat the stories as a numbered list in the caption, one extra line of context each, then close with \"Save this for your Monday catch-up. Which one matters most to you?\" to invite saves and comments.",
+  "fields": ["kicker", "headline", "highlight", "date", "items", "cta", "handle"],
+  "fieldNotes": {
+    "date": "Week range, e.g. \"Nov 3 – 9, 2026\".",
+    "items": "Array of 4–6 objects { \"tag\": \"Pricing\", \"title\": \"Nova Labs cut API prices 80% overnight\", \"icon\": \"price\" }. Keep titles to ~8 words and tags to 1–2 words. A 7th+ item is dropped; 1–3 items also lay out cleanly; plain strings work as titles.",
+    "items[].icon": "Optional. One of: sparkle, chip, price, robot, shield, code, flask, rocket, bolt, money, chart, agent, image, mic, heart, users, search, globe (aliases: model, hardware, tag, policy, research, launch, speed, funding, market, video, voice, health, jobs). If it is omitted, an icon is picked from keywords in the tag, then the title.",
+    "headline": "Bottom-anchored in the 4x2 hero and fitted between 64 and 112 px. If it cannot fit at 64 px, the hero switches to a full-width top row and the stories reflow underneath.",
+    "theme": "Recolour with --blue, --lime, --orange, --lilac, --white, --hero, --bg, --accent and --hl-from / --hl-mid / --hl-to (headline highlight gradient)."
+  }
+}

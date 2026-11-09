@@ -1,0 +1,14 @@
+{
+  "name": "ai-news-cards",
+  "version": "1.0.0",
+  "private": true,
+  "description": "20 Instagram card templates for AI news, built on attention science. Render to 1080x1350 PNG with Playwright.",
+  "scripts": {
+    "render": "node render.js",
+    "sheet": "node render.js --sheet",
+    "gallery": "node build-gallery.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

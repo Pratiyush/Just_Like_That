@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starter: copy me</title>
+  <!-- Google Fonts are fine; always give local fallbacks. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #101014;
+      --fg: #ffffff;
+      --accent: #ffcc00;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      padding: 96px 88px 88px;
+    }
+    .kicker { font-weight: 800; font-size: 30px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .headline {
+      flex: 1; min-height: 0; overflow: hidden;           /* constrained box so data-fit can shrink */
+      margin-top: 40px;
+      font-weight: 800; font-size: 104px; line-height: 1.02; letter-spacing: -0.02em;
+    }
+    .headline .hl { color: var(--accent); }
+    .subhead { margin-top: 32px; font-size: 38px; line-height: 1.3; opacity: .8; }
+    .points { list-style: none; margin-top: 32px; font-size: 34px; }
+    .points li::before { content: counter(list-item) '. '; color: var(--accent); }
+    .footer { margin-top: 48px; display: flex; justify-content: space-between; gap: 32px; font-size: 28px; opacity: .7; }
+    .footer span:last-child { text-align: right; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="kicker" data-field="kicker"></div>
+    <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="120" data-fit-min="56"></h1>
+    <p class="subhead" data-field="subhead"></p>
+    <ul class="points" data-list="points"><li data-item></li></ul>
+    <div class="footer">
+      <span data-field="handle"></span>
+      <span data-field="source"></span>
+    </div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Starter",
+    "headline": "Copy this folder to start a **new** design",
+    "highlight": "",
+    "subhead": "Bind text with data-field, lists with data-list, and let data-fit shrink long headlines.",
+    "points": ["First point", "Second point"],
+    "source": "Source: sample",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    // Optional: custom rendering (charts, SVG, variable layouts).
+    // Card.onRender(function (data, card) { ... });
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+/*
+ * Shared base for every card design.
+ * Card size: 1080 x 1350 (Instagram 4:5 portrait, the largest feed format).
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: #1a1a1a;
+}
+
+#card {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  font-kerning: normal;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Default look for highlighted words; designs override `.hl` freely. */
+mark.hl {
+  background: none;
+  color: inherit;
+}
+
+/* Preview mode (opening card.html in a browser): card.js scales the card to fit the window. */
+.card-stage {
+  position: relative;
+  margin: 0 auto;
+}
+.card-stage > #card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}

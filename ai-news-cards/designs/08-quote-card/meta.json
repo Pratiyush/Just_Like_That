@@ -2,9 +2,19 @@
   "id": "08-quote-card",
   "name": "Quote Card",
   "style": "Warm terracotta paper (light falloff, pigment mottle, fine grain and flecks) with a giant brick-red Fraunces quotation mark bleeding off the top-left corner, a cream high-contrast serif quote whose highlight is set in italic with a gold underline, and a byline with a cream initials-monogram seal.",
-  "palette": ["#C8553D", "#F6E8D6", "#983723", "#9C3A26", "#F3C08A"],
-  "fonts": ["Fraunces", "Instrument Sans"],
+  "palette": [
+    "#C8553D",
+    "#F6E8D6",
+    "#983723",
+    "#9C3A26",
+    "#F3C08A"
+  ],
+  "fonts": [
+    "Fraunces",
+    "Instrument Sans"
+  ],
   "bestFor": "Attributable quotes from researchers, founders and policymakers: keynote lines, interview pull-quotes, hearing testimony, a paper author explaining what a result means.",
+  "goal": "trust",
   "principles": [
     {
       "name": "Authority (Cialdini, 1984)",
@@ -25,6 +35,15 @@
   ],
   "hookFormula": "The real [risk / opportunity] isn't [the thing everyone fears]. It's [the quieter thing that affects you].",
   "captionTip": "Start with who said it, where and when, and name or link the original source so readers can check it. Then ask one stance question ('Agree or disagree?'). A quote invites people to take a side, and replies and sends follow.",
-  "fields": ["kicker", "quote", "highlight", "author", "authorRole", "source", "date", "handle"],
+  "fields": [
+    "kicker",
+    "quote",
+    "highlight",
+    "author",
+    "authorRole",
+    "source",
+    "date",
+    "handle"
+  ],
   "notes": "Flat #C8553D against cream #F6E8D6 is only about 3.6:1. Even white would be about 4.4:1. So --bg stays #C8553D in the lit top-left corner where the glyph sits, and a warm shade (--shade) deepens the text zones to a measured 4.6:1 or better. Long quotes pull the light back automatically. The quote auto-fits and stays clear of the giant mark. Only quotes that would fall below 84 px take the full height, with the mark as a watermark. Initials come from 'author', skipping honorifics. Quote marks in the copy are stripped and straight quotes are curled. Set the theme '--echo' to 'transparent' to hide the hairline echo of the mark. If 'quote' is empty, 'headline' is used."
 }

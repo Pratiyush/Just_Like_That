@@ -2,9 +2,21 @@
   "id": "01-breaking-alert",
   "name": "Breaking Alert",
   "style": "Live broadcast news urgency: a pure-black studio field with scanlines and red speed lines, a signal-red BREAKING bug with a LIVE chip, an oversized condensed all-caps headline, a white lower-third strap with a source/time bar, and a full-bleed news ticker.",
-  "palette": ["#000000", "#FF1E1E", "#FFFFFF", "#CC1818", "#F2F2F0", "#0E0E0E"],
-  "fonts": ["Anton", "Barlow Condensed", "JetBrains Mono"],
+  "palette": [
+    "#000000",
+    "#FF1E1E",
+    "#FFFFFF",
+    "#CC1818",
+    "#F2F2F0",
+    "#0E0E0E"
+  ],
+  "fonts": [
+    "Anton",
+    "Barlow Condensed",
+    "JetBrains Mono"
+  ],
   "bestFor": "Breaking announcements, model launches, surprise releases, major industry events: anything that is new right now and worth sending to someone.",
+  "goal": "scroll",
   "principles": [
     {
       "name": "Pre-attentive processing (Treisman & Gelade, 1980)",
@@ -25,6 +37,15 @@
   ],
   "hookFormula": "The [thing] that just [did something huge] [twist that lands on you]. Example: 'The AI that just beat the giants runs on your phone' (highlight the twist).",
   "captionTip": "Open the caption with the one fact the headline holds back (the name, the number or the 'how') within the first line, then close with 'Send this to someone who needs to hear it first', because breaking news spreads through DMs.",
-  "fields": ["kicker", "headline", "highlight", "subhead", "ticker", "source", "date", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "ticker",
+    "source",
+    "date",
+    "handle"
+  ],
   "notes": "`ticker` takes a string with items separated by ·, • or |, or an array of strings. Items are restyled with red diamond separators and repeated to fill the band. `handle` sits in the ticker's red label block, and `date` sits at the right of the source bar. All-caps headlines read best at 12 words or fewer; longer ones shrink to fit (64 px floor). Fills that carry white text use `--accent-deep`, which is derived from `--accent`. If you recolour `--accent` to a light hue, also set `--accent-deep` to a shade that keeps white text at 4.5:1 or better."
 }

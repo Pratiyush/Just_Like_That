@@ -2,9 +2,21 @@
   "id": "12-neon-grid",
   "name": "Neon Grid",
   "style": "Synthwave / cyberpunk arcade horizon: a deep purple-black sky with stars, a striped yellow-to-magenta sun rising over wireframe mountains and a glowing magenta perspective grid, framed by cyan HUD corner brackets, a targeting reticle and small data readouts, with an RGB-split glitch headline (one VHS tracking tear) set in heavy Chakra Petch, all under scanlines and grain.",
-  "palette": ["#0D0221", "#FF2A6D", "#05D9E8", "#FFE45E", "#FF9A3C", "#F8F4FF", "#D2C6F5"],
-  "fonts": ["Chakra Petch", "Orbitron"],
+  "palette": [
+    "#0D0221",
+    "#FF2A6D",
+    "#05D9E8",
+    "#FFE45E",
+    "#FF9A3C",
+    "#F8F4FF",
+    "#D2C6F5"
+  ],
+  "fonts": [
+    "Chakra Petch",
+    "Orbitron"
+  ],
   "bestFor": "Robotics, AGI talk, futuristic breakthroughs and AI hardware (chips, humanoids, compute): news that should feel like the future arriving. The stat is printed on the sun, so keep it to about 5 characters (\"4:12\", \"40×\", \"1M\"); longer values still fit but shrink. Long headlines automatically switch to sentence case and lower the horizon to give the copy more sky.",
+  "goal": "scroll",
   "principles": [
     {
       "name": "Novelty seeking",
@@ -25,6 +37,15 @@
   ],
   "hookFormula": "headline = \"This [machine] [did something human] before your [everyday moment] was done\"; highlight = the verb that surprises (\"taught itself\"); stat = the time or multiplier that proves it (\"4:12\", \"40×\"); statLabel = what the number measures, in plain words.",
   "captionTip": "Lead with the stat as a timestamp (\"4 minutes, 12 seconds.\"), add one line on how it was done, then a send prompt: \"Send this to the friend who still says robots can't walk.\" The card sells the awe; the caption gives people a reason to pass it on.",
-  "fields": ["kicker", "headline", "highlight", "subhead", "stat", "statLabel", "source", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "stat",
+    "statLabel",
+    "source",
+    "handle"
+  ],
   "notes": "Theme colours (--accent, --accent-2, --sun-1/2/3, --sky-1/2, --haze, --ink) are read by the scene script, so a theme override recolours the sun, grid and HUD too. The stat label and the caret under the horizon appear only when statLabel is set; the REC readout gives way to long kickers."
 }

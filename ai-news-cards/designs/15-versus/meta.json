@@ -2,9 +2,19 @@
   "id": "15-versus",
   "name": "Versus",
   "style": "Fight-poster face-off: a diagonal electric-blue vs blaze-orange split with sunburst rays, halftone and ink grain, a tilted black title slab, a white VS disc on a black starburst at dead centre, mirrored tale-of-the-tape stat rows and a tilted white verdict strip.",
-  "palette": ["#2962FF", "#FF6D00", "#0B0B10", "#FFFFFF", "#120A04"],
-  "fonts": ["Anton", "Barlow Condensed"],
+  "palette": [
+    "#2962FF",
+    "#FF6D00",
+    "#0B0B10",
+    "#FFFFFF",
+    "#120A04"
+  ],
+  "fonts": [
+    "Anton",
+    "Barlow Condensed"
+  ],
   "bestFor": "Model vs model, company vs company, open vs closed, human vs AI: any story that is really a head-to-head with two or three comparable numbers per side.",
+  "goal": "comment",
   "principles": [
     {
       "name": "Social identity / in-group bias (Tajfel & Turner, 1979)",
@@ -25,7 +35,19 @@
   ],
   "hookFormula": "The [N]x [cheaper / faster / smaller] [underdog] just [nearly KO'd / went the distance with] the [champ]",
   "captionTip": "End the caption with the same binary choice as the card ('Blue or orange? One word in the comments.'), then pin the best reply from each side so both camps keep the thread going.",
-  "fields": ["kicker", "headline", "highlight", "corners", "left", "right", "vs", "verdictLabel", "verdict", "source", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "corners",
+    "left",
+    "right",
+    "vs",
+    "verdictLabel",
+    "verdict",
+    "source",
+    "handle"
+  ],
   "fieldNotes": {
     "left / right": "{ \"name\": \"Helix-3\", \"tag\": \"Open weights\", \"stats\": [{ \"label\": \"Price / 1M tokens\", \"value\": \"$0.40\", \"win\": true }] }. Three stats per side reads best; keep labels short (2 to 3 words) and values compact. Optional \"win\": true puts a check badge on the side that takes that round.",
     "corners": "Optional pair of team labels shown above the names, e.g. [\"Blue corner\", \"Orange corner\"]. Change them if you recolour --left / --right.",

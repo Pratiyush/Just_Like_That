@@ -2,9 +2,20 @@
   "id": "16-pop-comic",
   "name": "Pop Comic",
   "style": "A 1960s pop-art comic panel on cream newsprint: thick black panel rules, a cyan Ben-Day halftone field whose dots shrink toward the headline, yellow narration boxes with a red dot screen, a white speech balloon with an ink-dot shadow, a mis-registered red-and-yellow starburst that breaks out of the frame, and an original wide-eyed robot looking up at the balloon.",
-  "palette": ["#FFF4D6", "#141414", "#E63946", "#00A6ED", "#FFD23F", "#FFFFFF"],
-  "fonts": ["Bangers", "Comic Neue"],
+  "palette": [
+    "#FFF4D6",
+    "#141414",
+    "#E63946",
+    "#00A6ED",
+    "#FFD23F",
+    "#FFFFFF"
+  ],
+  "fonts": [
+    "Bangers",
+    "Comic Neue"
+  ],
   "bestFor": "Surprising, funny or weird AI news: agents doing absurd things, robots with unexpected habits, delightful failures and 'wait, really?' research results.",
+  "goal": "send",
   "principles": [
     {
       "name": "Gaze cueing (Friesen & Kingstone, 1998)",
@@ -25,5 +36,12 @@
   ],
   "hookFormula": "An AI [did something absurd and specific, with a number] to [do something ordinary]. Pair it with a sound-effect `exclaim` that teases the punchline (QUACK!, BEEP?!, NOPE!).",
   "captionTip": "Open the caption with the setup ('Nobody told the agent there was a budget.'), give the payoff on line two, then end with a send prompt that names a person ('Send this to the coworker who talks to their rubber duck'), because DM shares push the post to non-followers.",
-  "fields": ["kicker", "exclaim", "headline", "highlight", "subhead", "handle"]
+  "fields": [
+    "kicker",
+    "exclaim",
+    "headline",
+    "highlight",
+    "subhead",
+    "handle"
+  ]
 }

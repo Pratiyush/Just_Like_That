@@ -2,9 +2,20 @@
   "id": "14-data-story",
   "name": "Data Story",
   "style": "Clean editorial data viz: light paper (#F7F9FC), navy ink, a bar chart drawn from the data with muted-teal bars and one coral bar, called out by an auto-placed annotation card and leader line; IBM Plex Sans with tabular figures, hairline gridlines and a solid zero baseline.",
-  "palette": ["#F7F9FC", "#0B1F3A", "#00B3A4", "#FF6B6B", "#4E5E76", "#DFE5EE", "#FFFFFF"],
-  "fonts": ["IBM Plex Sans"],
+  "palette": [
+    "#F7F9FC",
+    "#0B1F3A",
+    "#00B3A4",
+    "#FF6B6B",
+    "#4E5E76",
+    "#DFE5EE",
+    "#FFFFFF"
+  ],
+  "fonts": [
+    "IBM Plex Sans"
+  ],
   "bestFor": "Benchmark results, adoption trends, cost and price curves, latency or efficiency comparisons: any story where one number in a short series (4 to 8 values) is the news.",
+  "goal": "trust",
   "principles": [
     {
       "name": "Picture superiority / dual coding (Paivio, 1971)",
@@ -25,7 +36,19 @@
   ],
   "hookFormula": "[Specific number] of [group the reader belongs to] now [do X]. The headline states the number, the annotation adds the contrast: 'Up from [old number] in [year]. Not doing it yet? You're the outlier now.'",
   "captionTip": "Open the caption with the coral number and one line of method (who was measured, when, how many), then ask 'Which bar is your team on?' to invite comments and DM shares. Put the full source in the caption too.",
-  "fields": ["kicker", "headline", "highlight", "chartTitle", "chart", "chartUnit", "chartHighlight", "annotation", "source", "date", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "chartTitle",
+    "chart",
+    "chartUnit",
+    "chartHighlight",
+    "annotation",
+    "source",
+    "date",
+    "handle"
+  ],
   "fieldNotes": {
     "chart": "Array of 4 to 8 { \"label\": \"\", \"value\": 0 }. Values can be numbers or numeric strings (\"1,250\"). Negatives and zeros work. Values of 100,000 or more show compact (152K, 2.45M). Labels wrap to two lines, and \\n forces a break.",
     "chartHighlight": "0-based index of the coral bar. Defaults to the last bar; negative counts from the end (-1 = last).",

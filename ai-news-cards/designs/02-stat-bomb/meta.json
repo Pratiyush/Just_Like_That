@@ -2,9 +2,17 @@
   "id": "02-stat-bomb",
   "name": "Stat Bomb",
   "style": "One gigantic electric-lime number that is auto-fitted on Archivo's variable width axis to fill the frame edge to edge, on a near-black grid with film grain and a soft lime bloom, sitting on a measuring rule above a white headline that explains why it matters.",
-  "palette": ["#0B0B0F", "#C6FF00", "#FFFFFF"],
-  "fonts": ["Archivo", "JetBrains Mono"],
+  "palette": [
+    "#0B0B0F",
+    "#C6FF00",
+    "#FFFFFF"
+  ],
+  "fonts": [
+    "Archivo",
+    "JetBrains Mono"
+  ],
   "bestFor": "Benchmarks, funding rounds, user counts, cost drops: any story where one number is the news. Shorter stats set bigger, so write \"$4.2B\" rather than \"$4,200,000,000\". Currency signs, %, ×, and unit letters (B, M, K, hrs) are automatically set smaller so the digits get the scale.",
+  "goal": "scroll",
   "principles": [
     {
       "name": "Isolation (Von Restorff) effect",
@@ -21,5 +29,14 @@
   ],
   "hookFormula": "statLabel = what was measured (\"Raised by ___ in one ___\"); stat = the number, as short as possible; headline = \"[small or unexpected subject], [contrast], and [the so-what]\", e.g. \"11 people, no product, and the biggest seed check AI has ever seen\".",
   "captionTip": "Open the caption with the comparison the card leaves out (what the number was a year ago, or what it equals in everyday terms) and close with a send prompt such as \"Send this to the friend who still thinks AI is a fad\"; the card carries one number and the caption carries the context.",
-  "fields": ["kicker", "stat", "statLabel", "headline", "highlight", "source", "date", "handle"]
+  "fields": [
+    "kicker",
+    "stat",
+    "statLabel",
+    "headline",
+    "highlight",
+    "source",
+    "date",
+    "handle"
+  ]
 }

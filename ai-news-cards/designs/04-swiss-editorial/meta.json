@@ -2,9 +2,17 @@
   "id": "04-swiss-editorial",
   "name": "Swiss Editorial",
   "style": "International Typographic Style on warm paper: a visible six-column grid, a huge flush-left Inter Tight headline, a hairline issue numeral, one cobalt disc exactly two columns wide, thin rules and a tabular Category / Date / Source footer.",
-  "palette": ["#F2EFE8", "#111111", "#1F3BFF", "#5C5952"],
-  "fonts": ["Inter Tight"],
+  "palette": [
+    "#F2EFE8",
+    "#111111",
+    "#1F3BFF",
+    "#5C5952"
+  ],
+  "fonts": [
+    "Inter Tight"
+  ],
   "bestFor": "Serious analysis: research findings and their implications, policy and regulation, benchmark audits, 'what this actually means' explainers.",
+  "goal": "trust",
   "principles": [
     {
       "name": "Processing fluency (Reber & Schwarz, 1999)",
@@ -25,7 +33,18 @@
   ],
   "hookFormula": "[Big share] of [thing people trust] [vanishes / fails / flips] when [small, everyday change]",
   "captionTip": "Let the card carry the claim and use the caption for the method: one line on who tested what and how, the key number, one honest caveat, then a question experts will want to answer ('Which benchmark do you still trust?'). Nuance in the caption earns saves and expert replies, and those replies drive reach.",
-  "fields": ["brand", "handle", "issue", "kicker", "headline", "highlight", "subhead", "source", "date", "labels"],
+  "fields": [
+    "brand",
+    "handle",
+    "issue",
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "source",
+    "date",
+    "labels"
+  ],
   "fieldNotes": {
     "issue": "Shown as a small label plus a big hairline numeral: 'No. 042' becomes 'No.' + '042', 'Issue 7' becomes 'Issue' + '7'. A value without digits ('Special Edition') is set whole and shrinks to fit its four columns. Empty hides it; the disc stays.",
     "kicker": "Shown as the 'Category' value in the footer table.",

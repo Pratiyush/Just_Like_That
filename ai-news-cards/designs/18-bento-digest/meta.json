@@ -2,9 +2,23 @@
   "id": "18-bento-digest",
   "name": "Bento Digest",
   "style": "Keynote-style bento grid on iOS grey (#F2F2F7): one big near-black hero tile with a gradient-highlighted headline and the week range, beside 4–6 rounded (32 px) story tiles in vivid blue, lime, orange, lilac and white, each with an inline SVG icon chip, a mono index, a tag and a title. The grid reflows for 4, 5 or 6 stories with no holes.",
-  "palette": ["#F2F2F7", "#0D0D12", "#2D5BFF", "#D9F65C", "#FF7A30", "#CDBFFF", "#FFFFFF", "#8FA8FF", "#FFB385"],
-  "fonts": ["Geist", "Geist Mono"],
+  "palette": [
+    "#F2F2F7",
+    "#0D0D12",
+    "#2D5BFF",
+    "#D9F65C",
+    "#FF7A30",
+    "#CDBFFF",
+    "#FFFFFF",
+    "#8FA8FF",
+    "#FFB385"
+  ],
+  "fonts": [
+    "Geist",
+    "Geist Mono"
+  ],
   "bestFor": "Weekly roundups and \"5 things that happened in AI this week\" digests: 4–6 short stories, each boiled down to a tag and a one-line takeaway.",
+  "goal": "save",
   "principles": [
     {
       "name": "Chunking (Miller, 1956; Cowan, 2001)",
@@ -25,7 +39,15 @@
   ],
   "hookFormula": "[Number] AI [stories / shifts] you [missed / can't skip] this week",
   "captionTip": "Repeat the stories as a numbered list in the caption, one extra line of context each, then close with \"Save this for your Monday catch-up. Which one matters most to you?\" to invite saves and comments.",
-  "fields": ["kicker", "headline", "highlight", "date", "items", "cta", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "date",
+    "items",
+    "cta",
+    "handle"
+  ],
   "fieldNotes": {
     "date": "Week range, e.g. \"Nov 3 – 9, 2026\".",
     "items": "Array of 4–6 objects { \"tag\": \"Pricing\", \"title\": \"Nova Labs cut API prices 80% overnight\", \"icon\": \"price\" }. Keep titles to ~8 words and tags to 1–2 words. A 7th+ item is dropped; 1–3 items also lay out cleanly; plain strings work as titles.",

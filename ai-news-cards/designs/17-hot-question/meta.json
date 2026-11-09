@@ -2,9 +2,19 @@
   "id": "17-hot-question",
   "name": "Hot Question",
   "style": "Engagement poll card: a deep royal-purple gradient with a giant halftone chat bubble, a huge Bricolage Grotesque question whose key phrase is underlined by a yellow dry-brush swash, glassy quiz bars lettered A–D, and a yellow speech-bubble CTA that asks for a comment.",
-  "palette": ["#4C1D95", "#6D28D9", "#FDE047", "#FFFFFF", "#2E1065"],
-  "fonts": ["Bricolage Grotesque", "Lexend"],
+  "palette": [
+    "#4C1D95",
+    "#6D28D9",
+    "#FDE047",
+    "#FFFFFF",
+    "#2E1065"
+  ],
+  "fonts": [
+    "Bricolage Grotesque",
+    "Lexend"
+  ],
   "bestFor": "Ethical debates, predictions and \"would you...?\" prompts sparked by an AI news story: anything where people will happily pick a side in the comments.",
+  "goal": "comment",
   "principles": [
     {
       "name": "Self-reference effect (Rogers, Kuiper & Kirker, 1977)",
@@ -29,7 +39,15 @@
   ],
   "hookFormula": "Would you let [AI thing] [do something personal] ___? (+ context: [Fictional lab] says it [specific result])",
   "captionTip": "Restate the question in the first caption line, give each option one line with its letter, and reply to the first comments to get a debate going. A pinned 'Tag the friend who'd pick B' adds DM sends.",
-  "fields": ["kicker", "question", "highlight", "subhead", "options", "cta", "handle"],
+  "fields": [
+    "kicker",
+    "question",
+    "highlight",
+    "subhead",
+    "options",
+    "cta",
+    "handle"
+  ],
   "fieldNotes": {
     "question": "Aim for at most 12-15 words. It shrinks from 200px to fit (minimum 64px).",
     "highlight": "The phrase inside the question to underline with the brush swash; '**word**' in the question works too.",

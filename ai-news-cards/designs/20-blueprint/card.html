@@ -73,17 +73,17 @@
       display: inline-block;
       transform: rotate(-2.4deg);
       transform-origin: left center;
-      padding: 11px 18px 9px 22px;
+      padding: 12px 18px 10px 24px;
       border: 3px solid var(--fg);
       box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4.5px var(--fg);
-      font: 700 25px/1 var(--mono);
-      letter-spacing: .2em;
+      font: 700 27px/1 var(--mono);
+      letter-spacing: .19em;
       text-transform: uppercase;
       white-space: nowrap;
       color: var(--fg);
-      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.5'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
       -webkit-mask-size: 600px 120px;
-      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -3.2 0 0 0 2.5'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
       mask-size: 600px 120px;
     }
 
@@ -386,7 +386,7 @@
     "headline": "A 3B model beat a 70B giant by learning to forget",
     "highlight": "learning to forget",
     "paper": "Prune to Remember: Learned Token Eviction for Long-Context Recall",
-    "tldr": "Teach a small model to throw away most of what it reads, and it recalls long documents better than one 20× its size.",
+    "tldr": "Train a small model to discard most of what it reads, and it out-remembers one 23× its size on long documents.",
     "points": [
       "Drops **60%** of tokens before they reach memory",
       "Recall on 1M-token docs: **91%** vs 74% for the 70B",
@@ -690,7 +690,20 @@
         for (var t = 0; t < plan.tries.length && choice === null; t++) choice = pick(cands, plan.tries[t][0], plan.tries[t][1]);
       }
       // Nothing fits (absurdly long copy): keep the headline whole at its minimum and give the rest to the findings.
-      if (choice === null) choice = pick(cands, 64, 0) || cands[cands.length - 1];
+      if (choice === null) {
+        choice = pick(cands.slice().sort(function (x, y) { return y - x; }), 64, 0) || Math.min.apply(null, cands);
+        // Still too much: leave out trailing findings whole rather than clip one in half, and say so.
+        if (hasPts && !pts.hidden) {
+          lower.style.flexBasis = choice + 'px';
+          pts.style.fontSize = '30px';
+          var items = pts.children, dropped = 0;
+          for (var i = items.length - 1; i > 0 && pts.scrollHeight > pts.clientHeight + 1; i--) { items[i].hidden = true; dropped++; }
+          if (dropped) {
+            Card.warnings.push(dropped + ' finding(s) did not fit and were left out');
+            console.warn('[card] ' + dropped + ' finding(s) did not fit and were left out');
+          }
+        }
+      }
 
       lower.style.flexBasis = choice + 'px';
       head.style.fontSize = '';
@@ -725,7 +738,7 @@
       try {
         await Promise.all([
           '700 100px "Barlow Condensed"', '500 35px "Barlow Semi Condensed"', 'italic 500 34px "Barlow Semi Condensed"',
-          '600 28px "Barlow Semi Condensed"', '700 25px "Space Mono"', '400 14px "Space Mono"'
+          '600 28px "Barlow Semi Condensed"', '700 27px "Space Mono"', '400 14px "Space Mono"'
         ].map(function (fnt) { return document.fonts.load(fnt); }));
         await document.fonts.ready;
       } catch (e) { /* fall back to whatever is loaded */ }
@@ -746,10 +759,10 @@
       lower.style.flexBasis = lower.getBoundingClientRect().height / s + 'px';
       var pts = card.querySelector('.points');
       if (pts && !pts.hidden) {
-        if (card.classList.contains('wide')) {
+        if (card.classList.contains('wide') && pts.scrollHeight <= pts.clientHeight + 1) {
           // Findings keep their fitted height; the spare height goes to the schematic row.
           lower.style.gridTemplateRows = 'auto minmax(0, 1fr)';
-        } else pts.style.justifyContent = 'space-evenly';
+        } else if (pts.scrollHeight <= pts.clientHeight + 1) pts.style.justifyContent = 'space-evenly';
       }
       drawGuides(card, s);
       var box = card.querySelector('.schem-box');

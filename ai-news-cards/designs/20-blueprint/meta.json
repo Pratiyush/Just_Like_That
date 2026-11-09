@@ -1,0 +1,30 @@
+{
+  "id": "20-blueprint",
+  "name": "Blueprint",
+  "style": "An engineering drawing on blueprint blue: fine white grid inside a zoned drawing border, a rubber-stamped kicker, condensed uppercase lettering with drafter's guidelines, the highlight dimensioned like a part, a hatched neural-network schematic with dimension lines and numbered balloons, and a title block in the bottom-right corner.",
+  "palette": ["#0B3D91", "#062A6B", "#FFFFFF", "#CDEFFF", "#5CE1FF", "#A9C6EC"],
+  "fonts": ["Barlow Condensed", "Barlow Semi Condensed", "Space Mono"],
+  "bestFor": "Research paper breakdowns and technical explainers: a new architecture, training trick or benchmark result where 'how it works' is the hook.",
+  "principles": [
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "Every finding is encoded twice: as words in the numbered notes and as a place on the schematic, joined by a leader line from its balloon to a stage of the network. The hot path through the diagram gives the eye a visual story of the mechanism to remember alongside the text."
+    },
+    {
+      "name": "Authority of a scientific aesthetic (Cialdini, 1984)",
+      "how": "The card borrows the visual language of engineering documentation (zoned border, title block with source/date/drawn-by, projection symbol, dimension lines, hatching, figure caption, REF. tag for the paper). These cues signal expertise and rigour before a word is read, lending the breakdown the credibility of a technical document."
+    },
+    {
+      "name": "Information-gap curiosity (Loewenstein, 1994)",
+      "how": "The headline states a surprising outcome without the mechanism ('beat a 70B giant by learning to forget'), and the schematic shows that a mechanism exists without explaining it: crossed-out input nodes, a hatched block, numbered callouts. The reader can see there is a 'how' and has to read the notes to close the gap."
+    },
+    {
+      "name": "Chunking (Miller, 1956; Cowan, 2001)",
+      "how": "The content is split into chunks working memory can hold: one TL;DR box, then exactly three findings, each in its own balloon-numbered note of two lines or less. Three notes sit inside Cowan's ~4-chunk limit, so the whole paper can be taken in at a glance."
+    }
+  ],
+  "hookFormula": "A [small/cheap/unexpected thing] beat [big/expensive thing] by [counter-intuitive mechanism]",
+  "captionTip": "Open the caption with the mechanism in one plain sentence ('It works by throwing tokens away'), credit the paper and lab by name, then ask 'Want the full breakdown of #2?' to pull replies and saves.",
+  "fields": ["kicker", "headline", "highlight", "paper", "tldr", "points", "source", "date", "handle"],
+  "notes": "Points take 3 items best (1-5 work). With no points, the schematic turns horizontal and runs full width. The layout planner shrinks the schematic, moves the findings to full width, then tightens spacing to keep long copy legible. A leading 'Source:' is stripped in the title block, and long handles break after dots."
+}

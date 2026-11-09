@@ -2,9 +2,20 @@
   "id": "07-myth-vs-fact",
   "name": "Myth vs Fact",
   "style": "A split card on dark slate: the myth is set big in DM Serif Display and crossed out line by line with a hand-drawn coral marker under a coral ✕ MYTH pill; a diagonal cut with a notch opens onto a bright mint FACT panel with a ✓ pill and the correction in DM Sans. Film grain, a faint coral caution hatch and a dot grid give it texture.",
-  "palette": ["#1E2330", "#FF5A5F", "#2EC4B6", "#F3F4F7", "#A3ABBC"],
-  "fonts": ["DM Serif Display", "Outfit", "DM Sans"],
+  "palette": [
+    "#1E2330",
+    "#FF5A5F",
+    "#2EC4B6",
+    "#F3F4F7",
+    "#A3ABBC"
+  ],
+  "fonts": [
+    "DM Serif Display",
+    "Outfit",
+    "DM Sans"
+  ],
   "bestFor": "Debunking hype and common misconceptions about AI: what detectors, chatbots, bigger models or 'AI will take every job' claims can and can't actually do.",
+  "goal": "send",
   "principles": [
     {
       "name": "Cognitive dissonance / expectation violation (Festinger, 1957)",
@@ -25,7 +36,17 @@
   ],
   "hookFormula": "Headline: 'The AI myth that's [failing / costing / fooling] [specific group]'. Myth: the belief, worded the way people actually say it. Fact: why it's wrong, then **one thing to do instead**.",
   "captionTip": "Open with the myth as a question ('Still think AI detectors can prove cheating?'), add one line on why it's wrong, then end with a direct send prompt that names who needs it: 'Send this to a teacher who should see it.'",
-  "fields": ["kicker", "headline", "highlight", "myth", "fact", "source", "handle", "mythLabel", "factLabel"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "myth",
+    "fact",
+    "source",
+    "handle",
+    "mythLabel",
+    "factLabel"
+  ],
   "fieldNotes": {
     "myth": "The claim being debunked, ideally under 60 characters. The card adds the opening quote mark and a hand-drawn strike on each line, and removes any quote marks the text already has. Short myths grow up to 150 px.",
     "fact": "The correction, ideally 100–200 characters. Wrap the actionable takeaway in **double asterisks** to put it on a marker band.",

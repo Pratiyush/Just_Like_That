@@ -2,9 +2,17 @@
   "id": "13-minimal-luxe",
   "name": "Minimal Luxe",
   "style": "Quiet luxury: near-black velvet with film grain and a soft warm pool of light, a large light Cormorant Garamond headline in ivory with the key phrase in champagne-gold italic, wide-tracked Jost small caps, a gold monogram seal, hairline rules, a tiny gold star ornament and gallery-mount corner marks, all on one centred axis.",
-  "palette": ["#0A0A0A", "#F5F1E8", "#C9A96E"],
-  "fonts": ["Cormorant Garamond", "Jost"],
+  "palette": [
+    "#0A0A0A",
+    "#F5F1E8",
+    "#C9A96E"
+  ],
+  "fonts": [
+    "Cormorant Garamond",
+    "Jost"
+  ],
   "bestFor": "Major announcements, premium brand moments and a single profound line: a flagship model launch, a landmark result, a milestone, a year-in-review statement.",
+  "goal": "trust",
   "principles": [
     {
       "name": "Isolation (Von Restorff) effect",
@@ -25,5 +33,14 @@
   ],
   "hookFormula": "[Big investment]. [One thing]. [Unexpected small payoff in **your** world]. Example: \"Four years. One model. It fits in your pocket.\" Highlight the last phrase; use \\n to give each beat its own line.",
   "captionTip": "Match the card's restraint: open with the one-line hook, give the single most important fact in a second line, then stop. End with a send prompt (\"Send this to the friend who still thinks AI needs the cloud\"); DM shares are a strong ranking signal.",
-  "fields": ["brand", "kicker", "headline", "highlight", "subhead", "date", "handle", "monogram (optional: 1-3 letters for the seal; defaults to the brand's initials)"]
+  "fields": [
+    "brand",
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "date",
+    "handle",
+    "monogram (optional: 1-3 letters for the seal; defaults to the brand's initials)"
+  ]
 }

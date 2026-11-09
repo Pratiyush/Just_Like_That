@@ -2,9 +2,20 @@
   "id": "11-front-page",
   "name": "Front Page",
   "style": "A vintage broadsheet front page on grainy, folded newsprint: blackletter masthead with an ear and a rubber-stamped EXTRA, an edition bar between double rules, a huge Playfair Display 900 banner headline with the key phrase in sepia italic, an italic deck, a duotone halftone 'wirephoto' of a retro robot, and justified two-column copy with a drop cap and a jump line.",
-  "palette": ["#EDE6D6", "#141414", "#8E3414", "#8A5A2E"],
-  "fonts": ["UnifrakturCook", "Playfair Display", "Old Standard TT", "Oswald"],
+  "palette": [
+    "#EDE6D6",
+    "#141414",
+    "#8E3414",
+    "#8A5A2E"
+  ],
+  "fonts": [
+    "UnifrakturCook",
+    "Playfair Display",
+    "Old Standard TT",
+    "Oswald"
+  ],
   "bestFor": "Historic milestones and 'this changes everything' stories: a model doing something for the first time, a record broken, a launch people will remember the date of.",
+  "goal": "scroll",
   "principles": [
     {
       "name": "Novelty seeking / expectation violation (Bunzeck & Düzel, 2006)",
@@ -25,7 +36,23 @@
   ],
   "hookFormula": "[Subject] [does a historic first] in [specific number] [days/hours]: e.g. 'AI Builds Its Own Successor in 9 Days', with the shocking part as the highlight.",
   "captionTip": "Write the caption as the paper's second paragraph: open with a dateline ('NOVA CITY —'), give the one fact the headline held back, then ask 'Where were you when this dropped?' to pull comments and saves from people who want to keep the front page.",
-  "fields": ["brand", "ear", "edition", "date", "handle", "kicker", "headline", "highlight", "subhead", "body", "caption", "cta", "source", "price", "sticker"],
+  "fields": [
+    "brand",
+    "ear",
+    "edition",
+    "date",
+    "handle",
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "body",
+    "caption",
+    "cta",
+    "source",
+    "price",
+    "sticker"
+  ],
   "fieldNotes": {
     "ear": "Small boxed motto left of the masthead (\\n for line breaks, up to 4 lines).",
     "edition": "Left cell of the edition bar, e.g. 'Vol. I · No. 313'. It is dropped automatically when the bar is too crowded.",

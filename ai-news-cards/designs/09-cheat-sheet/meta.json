@@ -1,0 +1,57 @@
+{
+  "id": "09-cheat-sheet",
+  "name": "Cheat Sheet",
+  "style": "A page torn from a lined notebook: off-white ruled paper with a red margin line and punch holes, a lavender washi-tape label, peach and lavender highlighter swipes, marker numerals in the margin, blue-ballpoint doodles and a peach 'save this' bookmark ribbon holding the CTA.",
+  "palette": [
+    "#FBF7EE",
+    "#25232D",
+    "#FFD8BE",
+    "#CDB4DB",
+    "#E47C74",
+    "#BCD2E7",
+    "#2B4A9E"
+  ],
+  "fonts": [
+    "Nunito",
+    "Caveat",
+    "Permanent Marker"
+  ],
+  "bestFor": "Tool lists, prompt tips and how-tos ('5 AI tools that...', 'Stop typing X, do this instead'). Works with 3 to 6 points.",
+  "goal": "save",
+  "principles": [
+    {
+      "name": "STEPPS: practical value (Berger, 2013)",
+      "how": "The card is a reference people keep, not news they scroll past. The CTA sits on a bookmark ribbon with Instagram's own save glyph, and a hand-drawn arrow points at it. Saves (and DM sends) are signals Instagram's Adam Mosseri has publicly said help reach non-followers."
+    },
+    {
+      "name": "Chunking (Miller, 1956; Cowan, 2001)",
+      "how": "3 to 6 points, each one chunk: a bold lead line plus one softer detail line, with a blank ruled line between items. The layout script picks a text size and line pitch that keep that blank line, and only drops it for very long lists."
+    },
+    {
+      "name": "Serial position effect (Murdock, 1962)",
+      "how": "The sample puts the most familiar, high-value tip first and the most novel one last. The optional handwritten note ('the last one is the one nobody does') and a pen star on the final item send the eye to the last item before the reader starts the list."
+    },
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "The structure is drawn as well as written: ballpoint doodles (a lightbulb beside the headline, a star linking the note to its item, an arrow into the save ribbon, emphasis ticks after the highlight) and marker numerals on alternating peach and lavender dabs that match each item's keyword highlight. Visual plus verbal encoding makes the tips easier to recall and the card easier to spot again in a saved folder."
+    }
+  ],
+  "hookFormula": "Your [thing] isn't [bad]. Your [overlooked cause] is.  /  [N] [tools/prompts] that [outcome you want], and #[N] is the one nobody uses",
+  "captionTip": "Repeat the list in plain text in the caption, end with 'Save this for your next ___', and ask people to comment the number they'll try first (comments plus saves).",
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "note",
+    "points",
+    "cta",
+    "handle"
+  ],
+  "fieldNotes": {
+    "points": "3 to 6 strings. Write 'Lead — detail' (space, em dash, space) to get a bold lead line and a softer detail line; wrap a word in **double asterisks** for a highlighter swipe.",
+    "note": "Optional handwritten aside above the list (e.g. 'the last one is the one nobody does'). It also puts a pen star on the last item. Dropped automatically if space runs out.",
+    "highlight": "Word(s) in the headline that get the double-pass peach highlighter (the focal point).",
+    "kicker": "Written in marker on the washi tape. Keep it short; long kickers wrap to two lines.",
+    "cta": "Sits on the 'save' bookmark ribbon. Shrinks, then wraps to two lines if long."
+  }
+}

@@ -2,9 +2,22 @@
   "id": "05-aurora-glass",
   "name": "Aurora Glass",
   "style": "Glassmorphism over a night-sky aurora: a deep indigo field lit by blurred violet, cyan and magenta blobs and a rayed aurora curtain, a frosted glass panel with a light-catching edge and inner top highlight, a glossy orb that sinks behind the glass, glass-pill takeaways, a glowing gradient keyword and fine film grain.",
-  "palette": ["#0A0628", "#7C3AED", "#22D3EE", "#F472B6", "#F7F5FF", "#2EE6FF", "#B4A6FF", "#FF8AD0"],
-  "fonts": ["Sora", "Manrope"],
+  "palette": [
+    "#0A0628",
+    "#7C3AED",
+    "#22D3EE",
+    "#F472B6",
+    "#F7F5FF",
+    "#2EE6FF",
+    "#B4A6FF",
+    "#FF8AD0"
+  ],
+  "fonts": [
+    "Sora",
+    "Manrope"
+  ],
   "bestFor": "Product and model launches, new features and capability upgrades: news that should feel like the future just arrived.",
+  "goal": "scroll",
   "principles": [
     {
       "name": "Aesthetic-usability effect (Kurosu & Kashimura, 1995)",
@@ -25,5 +38,14 @@
   ],
   "hookFormula": "[Product] just made [thing everyone depends on] **[optional / obsolete / free]**",
   "captionTip": "Open the caption with the most concrete chip (e.g. '40× smaller, and it runs offline') and close with 'Send this to the friend still paying for cloud AI': a send prompt that turns awe into DM shares.",
-  "fields": ["kicker", "headline", "highlight", "subhead", "points", "source", "date", "handle"]
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "points",
+    "source",
+    "date",
+    "handle"
+  ]
 }

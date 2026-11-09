@@ -2,9 +2,19 @@
   "id": "03-terminal",
   "name": "Terminal",
   "style": "Retro amber-phosphor CRT terminal: a zsh window where the headline prints as command output in glowing heavy mono with an inverse-video highlight, takeaways arrive as [ OK ]/[INFO]/[WARN] log lines and a block cursor waits at the prompt, all under scanlines, phosphor bloom, grain and vignette.",
-  "palette": ["#0A0700", "#FFB000", "#FFCF60", "#BF8402"],
-  "fonts": ["JetBrains Mono", "IBM Plex Mono", "VT323"],
+  "palette": [
+    "#0A0700",
+    "#FFB000",
+    "#FFCF60",
+    "#BF8402"
+  ],
+  "fonts": [
+    "JetBrains Mono",
+    "IBM Plex Mono",
+    "VT323"
+  ],
   "bestFor": "Model releases, dev tools, open-source drops and API launches: news a developer would forward to their team chat.",
+  "goal": "send",
   "principles": [
     {
       "name": "STEPPS: social currency and in-group identity",
@@ -25,6 +35,16 @@
   ],
   "hookFormula": "A [small, specific spec] [open model / tool] just [beat / replaced] [bigger rival], [N× contrast]: e.g. \"A 4 GB open model just beat giants 20× its size\". Put the N× contrast in `highlight`, and make the last point a [WARN] that teases one unanswered detail.",
   "captionTip": "Open the caption by paying off the [WARN] line (\"Benchmark #3: here's why devs are arguing ↓\"). Put a one-line try-it command or link in the second line, then close with a question developers will answer in the comments (\"Would you run this locally?\").",
-  "fields": ["kicker", "headline", "highlight", "points", "source", "date", "handle", "command", "windowTitle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "points",
+    "source",
+    "date",
+    "handle",
+    "command",
+    "windowTitle"
+  ],
   "notes": "points render as log lines (max 4, per chunking). A point can start with [OK], [INFO], [WARN], [DONE], [FAIL], [ERR], [NEW] or [TIP] (or 'WARN: ...') to set its tag. Untagged points get [ OK ] for the first and [INFO] for the rest. If the headline can't fit at 64 px, the log clamps each line to 2 rows and then drops trailing lines, so the headline always wins. `source` sits on the right of the final prompt line (like zsh's RPROMPT); `handle` and `date` sit in the status bar. Design-specific fields: `command` (the typed command, default 'ai-news --latest') and `windowTitle` (default 'ai-news — zsh — 80×24'). Recolour with theme {\"--fg\": \"#39FF7A\", \"--bg\": \"#010A04\"} for green phosphor; every glow, rule and dim tone derives from --fg."
 }

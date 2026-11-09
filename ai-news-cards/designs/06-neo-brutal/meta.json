@@ -2,9 +2,20 @@
   "id": "06-neo-brutal",
   "name": "Neo-Brutal",
   "style": "Loud, flat neo-brutalism: bubblegum-pink dot-grid field, a white 'app window' with an electric-blue title bar, 6 px black outlines and hard offset shadows, a rotated sunshine-yellow starburst sticker, chunky grotesk type and hand-drawn doodles. No gradients.",
-  "palette": ["#FF90E8", "#000000", "#FFFFFF", "#FFD60A", "#3D5AFE"],
-  "fonts": ["Bricolage Grotesque", "Space Grotesk", "Archivo Black"],
+  "palette": [
+    "#FF90E8",
+    "#000000",
+    "#FFFFFF",
+    "#FFD60A",
+    "#3D5AFE"
+  ],
+  "fonts": [
+    "Bricolage Grotesque",
+    "Space Grotesk",
+    "Archivo Black"
+  ],
   "bestFor": "Hot takes, opinions, contrarian calls and quirky AI news that people will want to argue about or send to a friend.",
+  "goal": "comment",
   "principles": [
     {
       "name": "Novelty seeking / pattern interrupt (Bunzeck & Düzel, 2006)",
@@ -25,5 +36,13 @@
   ],
   "hookFormula": "[Thing everyone is obsessed with] is dead. [Underrated skill or idea] is the new [moat / edge / superpower].",
   "captionTip": "Open the caption with your single best reason in one line, then end with 'Agree or disagree?' so people either reply or send it to the friend they would argue with.",
-  "fields": ["kicker", "sticker", "headline", "highlight", "subhead", "cta", "handle"]
+  "fields": [
+    "kicker",
+    "sticker",
+    "headline",
+    "highlight",
+    "subhead",
+    "cta",
+    "handle"
+  ]
 }

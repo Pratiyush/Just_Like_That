@@ -2,9 +2,18 @@
   "id": "19-hazard-warning",
   "name": "Hazard",
   "style": "A worn industrial safety sign: a hazard-yellow plate bolted inside black diagonal-stripe tape, an ANSI-style 'HEADS UP' signal plate, a stencil-sprayed headline with a black cap-height highlight band, and shield-check tips beside a big chipped warning triangle.",
-  "palette": ["#FFD400", "#141414", "#C9C9C2"],
-  "fonts": ["Big Shoulders Stencil Display", "Saira Stencil One", "Barlow Condensed"],
+  "palette": [
+    "#FFD400",
+    "#141414",
+    "#C9C9C2"
+  ],
+  "fonts": [
+    "Big Shoulders Stencil Display",
+    "Saira Stencil One",
+    "Barlow Condensed"
+  ],
   "bestFor": "AI scams, deepfakes, voice cloning, privacy and security risks: any story where the reader can do something concrete to protect themselves or the people they care about.",
+  "goal": "send",
   "principles": [
     {
       "name": "Negativity bias (Baumeister et al., 2001)",
@@ -25,6 +34,15 @@
   ],
   "hookFormula": "The next [scam / fake] will [sound / look] exactly like [someone or something you trust]",
   "captionTip": "Repeat the tips as a numbered checklist in the caption so the post is worth saving, keep the tone calm and specific (skip words like 'terrifying'), and end with a named share ask: 'Send this to the person in your family who always picks up unknown numbers.'",
-  "fields": ["kicker", "headline", "highlight", "subhead", "points", "cta", "source", "handle"],
+  "fields": [
+    "kicker",
+    "headline",
+    "highlight",
+    "subhead",
+    "points",
+    "cta",
+    "source",
+    "handle"
+  ],
   "notes": "points: 2-4 short tips read best (about 45 characters each balances onto two lines). cta is optional. If the headline would not fit at 64px, the card tightens spacing in three steps (the last step shrinks the sign). For content far too long for one card, it hides the cta and then the subhead rather than clip the headline, and logs a warning."
 }

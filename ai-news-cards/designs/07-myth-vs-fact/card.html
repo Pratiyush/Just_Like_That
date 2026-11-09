@@ -79,8 +79,15 @@
       letter-spacing: .2em; text-transform: uppercase;
     }
     .pill svg { width: 40px; height: 40px; flex: none; }
+    .pill span { margin-right: -.2em; }   /* cancel trailing letter-spacing so the pill looks even */
     .pill-myth { background: var(--myth); color: var(--ink); }
     .pill-fact { background: var(--ink); color: var(--fact); }
+    .pill-myth .ico-bg { fill: var(--ink); }
+    .pill-myth .ico    { stroke: var(--myth); }
+    .pill-fact .ico-bg { fill: var(--fact); }
+    .pill-fact .ico    { stroke: var(--ink); }
+    .mark .m1 { fill: var(--myth); }
+    .mark .m2 { fill: var(--fact); }
 
     /* Fit containers: data-fit scales the copy (em) inside; the group centres itself
        with auto margins, which fall back to top-aligned when space runs out. */
@@ -102,7 +109,7 @@
       position: absolute; z-index: -1;
       left: calc(-1 * var(--pad-x)); right: calc(-1 * var(--pad-x));
       top: 0; bottom: -90px;
-      background: repeating-linear-gradient(135deg, rgba(255, 90, 95, .075) 0 2px, transparent 2px 18px);
+      background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--myth) 7.5%, transparent) 0 2px, transparent 2px 18px);
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
               mask-image: linear-gradient(to bottom, transparent, #000 55%);
     }
@@ -142,7 +149,7 @@
       /* diagonal cut with a small notch that points down at the FACT label */
       clip-path: polygon(0 64px, 70px 59.9px, 106px 88px, 142px 55.6px, 100% 0, 100% 100%, 0 100%);
       background:
-        radial-gradient(circle, rgba(30, 35, 48, .07) 1.6px, transparent 2px) 0 0 / 24px 24px,
+        radial-gradient(circle, color-mix(in srgb, var(--ink) 7%, transparent) 1.6px, transparent 2px) 0 0 / 24px 24px,
         linear-gradient(172deg, rgba(255, 255, 255, .12), transparent 45%),
         var(--fact);
       overflow: hidden;
@@ -173,7 +180,7 @@
       display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
       margin-top: 30px;
       padding-top: 22px;
-      border-top: 2px solid rgba(30, 35, 48, .22);
+      border-top: 2px solid color-mix(in srgb, var(--ink) 22%, transparent);
       font-size: 27px; line-height: 1.25;
       color: var(--ink);
     }
@@ -192,8 +199,8 @@
         <svg class="mark" viewBox="0 0 34 34" aria-hidden="true">
           <defs><clipPath id="mk"><circle cx="17" cy="17" r="15"/></clipPath></defs>
           <g clip-path="url(#mk)">
-            <rect width="34" height="34" fill="#2EC4B6"/>
-            <path d="M0 0H34L0 34Z" fill="#FF5A5F"/>
+            <rect class="m2" width="34" height="34"/>
+            <path class="m1" d="M0 0H34L0 34Z"/>
           </g>
         </svg>
         <span class="kicker" data-field="kicker"></span>
@@ -208,8 +215,8 @@
         <div class="group">
           <div class="pill pill-myth">
             <svg viewBox="0 0 40 40" aria-hidden="true">
-              <circle cx="20" cy="20" r="20" fill="#1E2330"/>
-              <path d="M13.5 13.5l13 13M26.5 13.5l-13 13" stroke="#FF5A5F" stroke-width="4.4" stroke-linecap="round"/>
+              <circle class="ico-bg" cx="20" cy="20" r="20"/>
+              <path class="ico" d="M13.5 13.5l13 13M26.5 13.5l-13 13" fill="none" stroke-width="4.4" stroke-linecap="round"/>
             </svg>
             <span data-field="mythLabel" data-default="Myth"></span>
           </div>
@@ -226,8 +233,8 @@
         <div class="group">
           <div class="pill pill-fact">
             <svg viewBox="0 0 40 40" aria-hidden="true">
-              <circle cx="20" cy="20" r="20" fill="#2EC4B6"/>
-              <path d="M12.5 20.5l5.2 5.2 10-11" fill="none" stroke="#1E2330" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="ico-bg" cx="20" cy="20" r="20"/>
+              <path class="ico" d="M12.5 20.5l5.2 5.2 10-11" fill="none" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span data-field="factLabel" data-default="Fact"></span>
           </div>
@@ -391,7 +398,7 @@
         d += 'A' + rStart.toFixed(1) + ' ' + rStart.toFixed(1) + ' 0 0 1 ' + f(L[0]) + 'Z';
         var path = document.createElementNS(NS, 'path');
         path.setAttribute('d', d);
-        path.setAttribute('fill', 'var(--myth)');
+        path.style.fill = 'var(--myth)';
         return path;
       }
 

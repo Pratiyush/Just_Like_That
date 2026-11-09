@@ -1,0 +1,30 @@
+{
+  "id": "08-quote-card",
+  "name": "Quote Card",
+  "style": "Warm terracotta paper (light falloff, pigment mottle, fine grain and flecks) with a giant brick-red Fraunces quotation mark bleeding off the top-left corner, a cream high-contrast serif quote whose highlight is set in italic with a gold underline, and a byline with a cream initials-monogram seal.",
+  "palette": ["#C8553D", "#F6E8D6", "#983723", "#9C3A26", "#F3C08A"],
+  "fonts": ["Fraunces", "Instrument Sans"],
+  "bestFor": "Attributable quotes from researchers, founders and policymakers: keynote lines, interview pull-quotes, hearing testimony, a paper author explaining what a result means.",
+  "principles": [
+    {
+      "name": "Authority (Cialdini, 1984)",
+      "how": "The speaker's credentials get their own graphic unit: an initials monogram ringed like a seal, the name set in the same serif as the quote, and the role line directly beneath. The 'On the record' kicker frames the line as an attributable statement, so the reader takes in who is speaking right after the words themselves."
+    },
+    {
+      "name": "Stories / human voice (STEPPS: Berger, Contagious, 2013)",
+      "how": "The card carries a person's words, not a headline. Warm paper, a bookish serif, typographer's curly quotes and a closing mark make it read as someone talking. A memorable line from a named expert is easy to retell and repost, and that makes it social currency."
+    },
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "The roughly 470 px quotation mark, cropped by the card edge, is a picture before it is a character. It says 'this is a quote' before any reading starts and still reads in the 360 px grid preview. Pairing the image with the words gives the card a visual memory hook in a feed full of text cards."
+    },
+    {
+      "name": "Processing fluency (Reber & Schwarz, 1999)",
+      "how": "There is one big, high-contrast block of serif text. It auto-fits from 164 px for a single line down to 64 px for about 45 words. Short quotes get balanced line breaks, a widow guard keeps a lone word off the last line, and the italic, underlined highlight gives the eye one entry point. A 'kiln shade' keeps cream on terracotta at 4.5:1 or better behind every line. Easy-to-read statements feel truer, which matters for a quote you want people to agree with."
+    }
+  ],
+  "hookFormula": "The real [risk / opportunity] isn't [the thing everyone fears]. It's [the quieter thing that affects you].",
+  "captionTip": "Start with who said it, where and when, and name or link the original source so readers can check it. Then ask one stance question ('Agree or disagree?'). A quote invites people to take a side, and replies and sends follow.",
+  "fields": ["kicker", "quote", "highlight", "author", "authorRole", "source", "date", "handle"],
+  "notes": "Flat #C8553D against cream #F6E8D6 is only about 3.6:1. Even white would be about 4.4:1. So --bg stays #C8553D in the lit top-left corner where the glyph sits, and a warm shade (--shade) deepens the text zones to a measured 4.6:1 or better. Long quotes pull the light back automatically. The quote auto-fits and stays clear of the giant mark. Only quotes that would fall below 84 px take the full height, with the mark as a watermark. Initials come from 'author', skipping honorifics. Quote marks in the copy are stripped and straight quotes are curled. Set the theme '--echo' to 'transparent' to hide the hairline echo of the mark. If 'quote' is empty, 'headline' is used."
+}

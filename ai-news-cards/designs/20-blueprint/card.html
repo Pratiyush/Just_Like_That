@@ -175,6 +175,7 @@
       max-height: 4.9em; overflow: hidden;
       font: 500 36px/1.22 var(--text);
       color: var(--fg);
+      text-wrap: pretty;
     }
     .tldr-text mark.hl { color: var(--accent); }
 
@@ -184,10 +185,11 @@
     #card.tight .tldr { margin-top: 32px; padding-top: 26px; padding-bottom: 20px; }
     #card.tight .lower { margin-top: 26px; }
     #card.tight .points { gap: 16px; }
-    #card.tight .tb-cell { flex-direction: row; align-items: baseline; gap: 16px; padding-top: 11px; padding-bottom: 11px; }
-    #card.tight .tb-lab { flex: 0 0 auto; }
+    #card.tight .tb-cell { gap: 5px; padding-top: 9px; padding-bottom: 9px; }
+    #card.tight .tb-proj { display: none; }
+    #card.tight .tb-src { padding-right: 36px; }
     #card.tight .tb-r2 .tb-cell { padding-bottom: 40px; }
-    #card.tight .tb-r2.wrapped .tb-date { padding-bottom: 11px; }
+    #card.tight .tb-r2.wrapped .tb-date { padding-bottom: 9px; }
 
     /* Lower zone: schematic + findings + title block. */
     .lower {
@@ -264,7 +266,7 @@
       display: flex; align-items: center; justify-content: center;
       font: 700 21px/1 var(--mono); color: var(--accent);
     }
-    .points .txt { flex: 1; min-width: 0; color: var(--fg); }
+    .points .txt { flex: 1; min-width: 0; color: var(--fg); text-wrap: pretty; }
     .points mark.hl { color: var(--accent); font-weight: 600; }
 
     /* Engineering title block, sharing the border's bottom-right corner. */
@@ -636,7 +638,7 @@
         return head.scrollHeight <= head.clientHeight + 1 && head.scrollWidth <= head.clientWidth + 1;
       }
       function ptsOK(size) {
-        if (!hasPts || pts.hidden) return true;
+        if (!hasPts || pts.hidden || !size) return true;
         pts.style.fontSize = size + 'px';
         return pts.scrollHeight <= pts.clientHeight + 1;
       }
@@ -662,7 +664,8 @@
         cands = plan.min ? atLeast(plan.c, tbH + plan.min) : plan.c;
         for (var t = 0; t < plan.tries.length && choice === null; t++) choice = pick(cands, plan.tries[t][0], plan.tries[t][1]);
       }
-      if (choice === null) choice = cands[cands.length - 1];
+      // Nothing fits (absurdly long copy): keep the headline whole at its minimum and give the rest to the findings.
+      if (choice === null) choice = pick(cands, 64, 0) || cands[cands.length - 1];
 
       lower.style.flexBasis = choice + 'px';
       head.style.fontSize = '';

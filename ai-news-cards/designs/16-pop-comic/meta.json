@@ -1,0 +1,29 @@
+{
+  "id": "16-pop-comic",
+  "name": "Pop Comic",
+  "style": "A 1960s pop-art comic panel on cream newsprint: thick black panel rules, a cyan Ben-Day halftone field whose dots shrink toward the headline, yellow narration boxes with a red dot screen, a white speech balloon with an ink-dot shadow, a mis-registered red-and-yellow starburst that breaks out of the frame, and an original wide-eyed robot looking up at the balloon.",
+  "palette": ["#FFF4D6", "#141414", "#E63946", "#00A6ED", "#FFD23F", "#FFFFFF"],
+  "fonts": ["Bangers", "Comic Neue"],
+  "bestFor": "Surprising, funny or weird AI news: agents doing absurd things, robots with unexpected habits, delightful failures and 'wait, really?' research results.",
+  "principles": [
+    {
+      "name": "Gaze cueing (Friesen & Kingstone, 1998)",
+      "how": "The robot's pupils sit in the upper-right of its eyes and its head is tilted 7 degrees toward the balloon, so its gaze points straight at the headline. People follow a face's gaze reflexively, even a cartoon one, so the eye goes face, then headline. The balloon's tail points back down at the robot, which closes the loop and keeps attention on the card."
+    },
+    {
+      "name": "Amusement drives sharing (Berger & Milkman, 2012)",
+      "how": "Amusement is a high-arousal emotion, and high-arousal content gets shared more. The comic format signals 'this is funny' before a word is read: the startled robot with blushing Ben-Day cheeks, a sound-effect burst ('QUACK!') and an absurd but specific headline. Funny AI news is what people send to a friend, and DM sends are a strong reach signal on Instagram."
+    },
+    {
+      "name": "Novelty / pattern interrupt (Bunzeck & Düzel, 2006)",
+      "how": "AI-news feeds are full of dark gradients and screenshots. A cream newsprint panel with halftone dots, hand-lettered type and a starburst that breaks the frame looks like a different kind of object, and novel stimuli earn the second look that stops the thumb."
+    },
+    {
+      "name": "Picture superiority / dual coding (Paivio, 1971)",
+      "how": "The story is carried by a picture as well as words: a character reacts to the headline and the burst acts it out. Image plus text is remembered better than text alone, and the recurring robot becomes a recognisable mascot across a series of posts."
+    }
+  ],
+  "hookFormula": "An AI [did something absurd and specific, with a number] to [do something ordinary]. Pair it with a sound-effect `exclaim` that teases the punchline (QUACK!, BEEP?!, NOPE!).",
+  "captionTip": "Open the caption with the setup ('Nobody told the agent there was a budget.'), give the payoff on line two, then end with a send prompt that names a person ('Send this to the coworker who talks to their rubber duck'), because DM shares push the post to non-followers.",
+  "fields": ["kicker", "exclaim", "headline", "highlight", "subhead", "handle"]
+}

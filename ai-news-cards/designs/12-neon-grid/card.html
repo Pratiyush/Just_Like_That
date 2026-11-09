@@ -64,7 +64,7 @@
     .bracket {
       position: absolute; z-index: 6; width: 62px; height: 62px;
       border: 0 solid var(--accent-2);
-      filter: drop-shadow(0 0 6px rgba(5, 217, 232, .85));
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-2) 85%, transparent));
     }
     .bracket.tl { top: 38px; left: 38px; border-top-width: 4px; border-left-width: 4px; }
     .bracket.tr { top: 38px; right: 38px; border-top-width: 4px; border-right-width: 4px; }
@@ -84,10 +84,10 @@
       flex: 0 1 auto; min-width: 0; max-width: 700px;
       display: flex; align-items: center; gap: 14px;
       height: 52px; padding: 0 22px 0 18px;
-      background: linear-gradient(90deg, rgba(5, 217, 232, .16), rgba(5, 217, 232, .04));
+      background: linear-gradient(90deg, color-mix(in srgb, var(--accent-2) 16%, transparent), color-mix(in srgb, var(--accent-2) 4%, transparent));
       border: 2px solid var(--accent-2);
       clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-      box-shadow: inset 0 0 18px rgba(5, 217, 232, .25);
+      box-shadow: inset 0 0 18px color-mix(in srgb, var(--accent-2) 25%, transparent);
     }
     .kicker-chip .cursor {
       flex: none; width: 12px; height: 26px; background: var(--accent);
@@ -98,13 +98,13 @@
       font-family: 'Orbitron', 'DejaVu Sans', sans-serif; font-weight: 800;
       font-size: 26px; line-height: 1.4; letter-spacing: .16em; text-transform: uppercase;
       color: var(--accent-2);
-      text-shadow: 0 0 12px rgba(5, 217, 232, .7);
+      text-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 70%, transparent);
     }
     .hud-rule {
       flex: 1 1 40px; min-width: 40px; height: 14px; align-self: center;
       background:
         linear-gradient(var(--accent-2), var(--accent-2)) left center / 100% 2px no-repeat,
-        repeating-linear-gradient(90deg, rgba(5, 217, 232, .75) 0 2px, transparent 2px 14px) left center / 100% 10px no-repeat;
+        repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent-2) 75%, transparent) 0 2px, transparent 2px 14px) left center / 100% 10px no-repeat;
       opacity: .55;
     }
     .hud-rec {
@@ -134,7 +134,7 @@
       font-size: 118px; line-height: .98; letter-spacing: -.012em;
       text-transform: uppercase; text-align: center; text-wrap: balance;
       color: var(--fg);
-      text-shadow: 0 0 2px rgba(255, 255, 255, .55), 0 0 26px rgba(255, 42, 109, .45);
+      text-shadow: 0 0 2px rgba(255, 255, 255, .55), 0 0 26px color-mix(in srgb, var(--accent) 45%, transparent);
     }
     #card.is-dense .copy { padding-top: 16px; }
     #card.is-dense .headline { text-transform: none; line-height: 1.0; letter-spacing: -.005em; padding-bottom: .2em; }
@@ -214,15 +214,15 @@
         linear-gradient(var(--c), var(--c)) right bottom / 20px 4px no-repeat,
         linear-gradient(var(--c), var(--c)) right bottom / 4px 20px no-repeat,
         rgba(13, 2, 33, .88);
-      box-shadow: inset 0 0 0 1.5px rgba(5, 217, 232, .4), 0 0 30px rgba(5, 217, 232, .22);
-      text-shadow: 0 0 10px rgba(5, 217, 232, .55);
+      box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent-2) 40%, transparent), 0 0 30px color-mix(in srgb, var(--accent-2) 22%, transparent);
+      text-shadow: 0 0 10px color-mix(in srgb, var(--accent-2) 55%, transparent);
     }
 
     .footer {
       position: relative; flex: none; align-self: stretch; margin-top: auto;
       display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
       padding-top: 18px;
-      border-top: 2px solid rgba(5, 217, 232, .5);
+      border-top: 2px solid color-mix(in srgb, var(--accent-2) 50%, transparent);
       font-size: 27px; line-height: 1.25;
     }
     .footer::before {
@@ -238,12 +238,12 @@
       min-width: 0; display: flex; align-items: flex-start; gap: 12px;
       font-weight: 500; color: var(--muted);
     }
-    .src svg { flex: none; width: 26px; height: 26px; margin-top: 3px; }
+    .src svg { flex: none; width: 26px; height: 26px; margin-top: 3px; color: var(--accent-2); }
     .handle {
       flex: none; max-width: 52%; overflow-wrap: anywhere; text-align: right;
       font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 700;
       letter-spacing: .04em; color: var(--accent-2);
-      text-shadow: 0 0 12px rgba(5, 217, 232, .55);
+      text-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 55%, transparent);
     }
   </style>
 </head>
@@ -277,7 +277,7 @@
       <div class="stat-label" data-field="statLabel" data-fit data-fit-min="26"></div>
       <div class="footer">
       <div class="src" data-if="source">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#05D9E8" stroke-width="2" stroke-linecap="square"><path d="M12 13v8M8.5 21h7"/><circle cx="12" cy="11" r="2"/><path d="M7.8 6.8a6 6 0 0 0 0 8.4M16.2 6.8a6 6 0 0 1 0 8.4M4.9 3.9a10 10 0 0 0 0 14.2M19.1 3.9a10 10 0 0 1 0 14.2"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M12 13v8M8.5 21h7"/><circle cx="12" cy="11" r="2"/><path d="M7.8 6.8a6 6 0 0 0 0 8.4M16.2 6.8a6 6 0 0 1 0 8.4M4.9 3.9a10 10 0 0 0 0 14.2M19.1 3.9a10 10 0 0 1 0 14.2"/></svg>
         <span data-field="source"></span>
       </div>
       <div class="handle" data-field="handle"></div>

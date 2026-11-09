@@ -38,8 +38,8 @@
     .kicker {
       position: absolute; left: 0; top: 0;
       max-width: 600px;
-      max-height: calc(2.2em + 44px);            /* two lines at most, then data-fit shrinks */
-      padding: 20px 30px 17px 24px;
+      max-height: calc(2.2em + 45px);            /* two lines at most, then data-fit shrinks */
+      padding: 22px 30px 16px 24px;
       background-color: var(--yellow);
       background-image: radial-gradient(circle, var(--tint) 0 2.4px, transparent 2.9px);
       background-size: 11px 11px;
@@ -297,12 +297,25 @@
   </script>
   <script src="../../shared/card.js"></script>
   <script>
-    /* Ben-Day halftone field: real variable-size dots on a 45° screen,
-       big at the panel edges, shrinking toward the balloon so the whole
-       field "points" at the headline. Colour comes from --dots. */
-    Card.onRender(function (data, card) {
+    Card.onRender(async function (data, card) {
+      /* Drop the bottom narration box entirely when it would be empty. */
       var cap = card.querySelector('.caption');
       if (cap) cap.hidden = !data.subhead && !data.handle;
+
+      /* Kicker: prefer one line (data-fit shrinks it to 26px); only wrap to a
+         second line when even 26px can't hold it. Needs the real font metrics. */
+      var kicker = card.querySelector('.kicker');
+      if (kicker && !kicker.hidden) {
+        try { await document.fonts.load('700 32px "Comic Neue"', kicker.textContent); } catch (e) { /* fallback font */ }
+        kicker.style.whiteSpace = 'nowrap';
+        kicker.style.fontSize = '26px';
+        if (kicker.scrollWidth > kicker.clientWidth + 1) kicker.style.whiteSpace = '';
+        kicker.style.fontSize = '';
+      }
+
+      /* Ben-Day halftone field: real variable-size dots on a 45° screen,
+         big at the panel edges, shrinking toward the balloon so the whole
+         field "points" at the headline. Colour comes from --dots. */
       var host = card.querySelector('.halftone');
       if (!host) return;
       var W = 980, H = 1250, pitch = 22;

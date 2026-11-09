@@ -78,16 +78,20 @@
       flex: none;
     }
     .ear {
+      grid-column: 1;
       align-self: center;
-      border: 1.5px solid var(--fg);
-      outline: 1px solid var(--fg); outline-offset: 3px;
-      padding: 10px 8px 11px;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden;
+      border-style: solid; border-color: transparent;
+      border-width: 10px 8px 11px;          /* spacing outside the clip box, so clamped lines never peek */
+      box-shadow: 0 0 0 1.5px var(--fg);
+      outline: 1px solid var(--fg); outline-offset: 4.5px;
       font: italic 400 26px/1.18 var(--serif);
       text-align: center;
       text-wrap: balance;
       margin: 4px;
     }
     .brand {
+      grid-column: 2;
       height: 156px;
       display: flex; align-items: center; justify-content: center;
       white-space: nowrap;
@@ -99,7 +103,9 @@
       letter-spacing: 0;
       padding-top: 6px;
     }
+    .mast-slot { grid-column: 3; }
     #card.brand-wide .mast { grid-template-columns: minmax(0, 1fr); }
+    #card.brand-wide .brand { grid-column: 1; }
     #card.brand-wide .ear, #card.brand-wide .mast-slot { display: none; }
 
     /* ---------- edition bar ---------- */
@@ -224,7 +230,9 @@
       font: italic 400 26px/1.2 var(--serif);
       text-align: left;
       hyphens: auto;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
     }
+    #card.no-body .caption { -webkit-line-clamp: 2; }
     .caption .hl { font-style: normal; font-weight: 700; font-variant: small-caps; letter-spacing: .04em; }
 
     .cols {
@@ -260,11 +268,13 @@
     .body .hl { font-weight: 700; font-variant: small-caps; letter-spacing: .05em; }
     .jump {
       flex: none;
+      max-width: 100%;
       margin-top: 8px;
       align-self: flex-end;
       font: italic 400 26px/1.2 var(--serif);
       display: flex; align-items: center; gap: 10px;
     }
+    .jump span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .jump svg { width: 30px; height: 18px; flex: none; }
 
     /* ---------- footer ---------- */
@@ -274,7 +284,8 @@
       padding-top: 10px;
       font: 400 26px/1.2 var(--serif);
     }
-    .foot-row .src { font-style: italic; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .foot-row .src { font-style: italic; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+    .foot-row .handle { white-space: nowrap; }
     .foot-row .handle { flex: none; font-weight: 700; letter-spacing: .06em; }
 
     /* ---------- the EXTRA stamp ---------- */
@@ -299,7 +310,7 @@
     .stamp-stars { display: flex; justify-content: center; gap: 12px; height: 15px; }
     .stamp-stars svg { width: 15px; height: 15px; }
     .stamp-word {
-      display: block;
+      display: flex; align-items: center; justify-content: center;
       height: 74px;
       overflow: hidden;
       white-space: nowrap;
@@ -373,7 +384,7 @@
 
     <div class="stamp" aria-hidden="true">
       <div class="stamp-stars"></div>
-      <span class="stamp-word" data-fit data-fit-max="74" data-fit-min="34"></span>
+      <span class="stamp-word" data-fit data-fit-max="74" data-fit-min="26"></span>
       <span class="stamp-line"></span>
     </div>
 
@@ -391,7 +402,7 @@
     "headline": "AI Builds Its Own Successor in 9 Days",
     "highlight": "Its Own Successor",
     "subhead": "Helix-3 wrote, trained and tested its replacement with zero human code. The new model beat it on all 14 benchmarks.",
-    "body": "**Nova City —** Nova Labs engineers came in Monday to find their jobs already done. Told only to “build a better version of yourself,” Helix-3 wrote 41,000 lines of training code, ran 2,300 experiments and shipped its own successor. No human touched a line. “We’re still reading the logs,” one researcher said. What it changed on day three, nobody can explain.",
+    "body": "**Nova City —** Nova Labs engineers came in Monday to find their jobs already done. Told only to “build a better version of yourself,” Helix-3 wrote 41,000 lines of training code, ran 2,300 experiments and shipped its own successor. No human touched a line. “We’re still reading the logs,” one researcher said. What it changed on day three, nobody can explain. Not even Helix-3.",
     "caption": "**Helix-4**, the model no human wrote.",
     "cta": "Continued on slide 2",
     "source": "Source: Nova Labs technical report",
@@ -613,8 +624,8 @@
         it.forEach(function (o) { W += o.r.width; if (!o.w.__skip) chars += o.w.textContent.length; });
         var gaps = it.length - 1, gap = (span - W) / gaps;
         if (gap < nat * 1.55 || !chars) return;
-        var want = (span - W) - gaps * nat * 1.35;
-        var ls = Math.min(want / chars, fs * 0.085);
+        var want = (span - W) - gaps * nat * 1.4;
+        var ls = Math.min(want / chars, fs * 0.065);
         it.forEach(function (o) { if (!o.w.__skip) o.w.style.letterSpacing = 'calc(-.01em + ' + ls.toFixed(2) + 'px)'; });
       });
     }
@@ -627,7 +638,8 @@
       var txt = function (k) { return String(empty(data[k]) ? '' : data[k]).replace(/\*\*/g, ''); };
 
       // masthead: long brand names take the whole row (the ear hides, the stamp moves onto the photo)
-      card.classList.toggle('brand-wide', txt('brand').length > 11);
+      var noStamp = data.sticker !== undefined && empty(data.sticker);
+      card.classList.toggle('brand-wide', txt('brand').length > 11 || (empty(data.ear) && noStamp));
       card.classList.toggle('kicker-long', txt('kicker').length > 22);
 
       // long headlines/decks get more room: the photo + columns band gets shorter

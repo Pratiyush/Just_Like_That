@@ -1,0 +1,30 @@
+{
+  "id": "12-neon-grid",
+  "name": "Neon Grid",
+  "style": "Synthwave / cyberpunk arcade horizon: a deep purple-black sky with stars, a striped yellow-to-magenta sun rising over wireframe mountains and a glowing magenta perspective grid, framed by cyan HUD corner brackets, a targeting reticle and small data readouts, with an RGB-split glitch headline (one VHS tracking tear) set in heavy Chakra Petch, all under scanlines and grain.",
+  "palette": ["#0D0221", "#FF2A6D", "#05D9E8", "#FFE45E", "#FF9A3C", "#F8F4FF", "#D2C6F5"],
+  "fonts": ["Chakra Petch", "Orbitron"],
+  "bestFor": "Robotics, AGI talk, futuristic breakthroughs and AI hardware (chips, humanoids, compute): news that should feel like the future arriving. The stat is printed on the sun, so keep it to about 5 characters (\"4:12\", \"40×\", \"1M\"); longer values still fit but shrink. Long headlines automatically switch to sentence case and lower the horizon to give the copy more sky.",
+  "principles": [
+    {
+      "name": "Novelty seeking",
+      "how": "Bunzeck & Düzel (2006): novel stimuli engage the brain's reward circuitry, so unfamiliar formats earn a second look. In a feed of flat news cards, a full 80s arcade horizon (striped sun, receding grid, wireframe mountains) is an unexpected genre, and the small surprises that reward closer inspection (the reticle locked on the sun, the REC readout, the one torn line of the headline) keep the novelty going past the first glance."
+    },
+    {
+      "name": "High-arousal emotion drives sharing",
+      "how": "Berger & Milkman (2012): content that evokes high-arousal emotions such as awe and excitement is shared more than low-arousal content. Everything here is tuned to excitement: saturated neon on near-black, a sunrise-over-the-future metaphor, and a hook written as a jaw-drop moment (\"before your coffee was ready\"). It suits the robotics and hardware milestones people forward to friends, and DM sends are a strong reach signal on Instagram."
+    },
+    {
+      "name": "Pre-attentive processing",
+      "how": "Treisman & Gelade (1980): colour and luminance contrast are picked up before conscious reading. The sun is the only large warm, bright, saturated mass on a dark violet field, so it pops out instantly, and the stat sits on it in near-black ink, which makes the number the single focal point. The headline's highlight reuses the same sunset gradient, so the eye links the hook to the proof without being told."
+    },
+    {
+      "name": "Pattern interrupt",
+      "how": "A deliberate visual 'error' breaks the scanning rhythm of a scrolling thumb. The headline is crisp white, but cyan and magenta copies are offset on either side (RGB split) and one line carries a VHS tracking tear that knocks a slice of colour sideways. It reads as a glitch on the screen rather than a designed card, which is exactly what makes people stop. The glitch sits behind the white letterforms, so legibility is preserved even at thumbnail size."
+    }
+  ],
+  "hookFormula": "headline = \"This [machine] [did something human] before your [everyday moment] was done\"; highlight = the verb that surprises (\"taught itself\"); stat = the time or multiplier that proves it (\"4:12\", \"40×\"); statLabel = what the number measures, in plain words.",
+  "captionTip": "Lead with the stat as a timestamp (\"4 minutes, 12 seconds.\"), add one line on how it was done, then a send prompt: \"Send this to the friend who still says robots can't walk.\" The card sells the awe; the caption gives people a reason to pass it on.",
+  "fields": ["kicker", "headline", "highlight", "subhead", "stat", "statLabel", "source", "handle"],
+  "notes": "Theme colours (--accent, --accent-2, --sun-1/2/3, --sky-1/2, --haze, --ink) are read by the scene script, so a theme override recolours the sun, grid and HUD too. The stat label and the caret under the horizon appear only when statLabel is set; the REC readout gives way to long kickers."
+}

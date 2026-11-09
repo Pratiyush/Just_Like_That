@@ -80,8 +80,8 @@
     }
     .tape-strip {
       position: relative;
-      display: flex; align-items: center;
-      min-width: 380px; max-width: 560px; height: 84px; padding: 0 40px 0 44px;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 300px; max-width: 560px; min-height: 84px; padding: 0 40px 0 44px;
       background:
         repeating-linear-gradient(-55deg, rgba(255,255,255,.32) 0 9px, rgba(255,255,255,0) 9px 23px),
         linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 45%, rgba(0,0,0,.04)),
@@ -93,9 +93,11 @@
       display: block; width: 100%; overflow: hidden; white-space: nowrap;
       font-family: 'Permanent Marker', 'Caveat', cursive;
       font-size: 36px; line-height: 1.25; letter-spacing: .04em; text-transform: uppercase;
-      color: var(--ink);
+      color: var(--ink); text-align: center;
       padding-top: 4px;
     }
+    .tape-strip.two { padding: 10px 40px 12px 44px; }
+    .tape-strip.two .kicker { line-height: 1.12; white-space: normal; text-wrap: balance; }
 
     .name {
       position: absolute; z-index: 3; top: 74px; right: 72px; width: 330px; text-align: right;
@@ -172,6 +174,7 @@
     .txt { min-width: 0; font-weight: 600; color: var(--ink-soft); }
     .txt .lead { display: block; font-weight: 800; color: var(--ink); }
     .txt .detail { display: block; }
+    .points.compact .detail { display: none; }
     .txt .star { display: inline-block; width: .9em; height: .9em; vertical-align: -.08em; margin-left: .1em; color: var(--pen); overflow: visible; }
     .txt .star path { fill: none; stroke: currentColor; stroke-linejoin: round; }
 
@@ -205,7 +208,7 @@
     .cta {
       position: relative; display: block; max-width: 600px; overflow: hidden;
       font-family: 'Caveat', cursive; font-weight: 700; font-size: 52px; line-height: 1.02;
-      color: var(--ink); white-space: nowrap;
+      color: var(--ink); white-space: nowrap; text-wrap: balance;
     }
 
     /* doodles */
@@ -223,7 +226,7 @@
     <div class="swipes"></div>
 
     <div class="tape" data-if="kicker">
-      <div class="tape-strip"><span class="kicker" data-field="kicker" data-fit data-fit-min="26"></span></div>
+      <div class="tape-strip"><span class="kicker" data-field="kicker"></span></div>
     </div>
     <div class="name" data-if="handle">
       <span class="handle" data-field="handle" data-fit data-fit-min="30"></span>
@@ -461,7 +464,7 @@
       function search() {
         recs = [];
         if (!h || h.hidden) { var c0 = chooseList(card); if (c0) recs.push({ maxH: 0, hs: 0, lc: c0 }); return; }
-        var steps = [470, 430, 390, 350, 310, 280, 250, 220, 200];
+        var steps = [620, 560, 510, 470, 430, 390, 350, 310, 280, 250, 220, 200];
         for (var i = 0; i < steps.length; i++) {
           var hs = simFit(h, steps[i]);
           if (!hs) break;
@@ -471,14 +474,17 @@
           if (lc[2] === 1 && lc[0] >= 38 && hs >= 76) break;
         }
       }
+      var list = card.querySelector('.points');
+      list.classList.remove('compact');
       search();
       if (!recs.length && !noteRow.hidden) { noteRow.hidden = true; search(); }
+      if (!recs.length && list.querySelector('.detail')) { list.classList.add('compact'); search(); }
       var pick = null;
       recs.forEach(function (r) { if (!pick && r.lc[2] === 1 && r.lc[0] >= 38 && r.hs >= 76) pick = r; });
       recs.forEach(function (r) { if (!pick && r.lc[0] >= 40) pick = r; });
       if (!pick) recs.forEach(function (r) { if (!pick || r.lc[0] > pick.lc[0]) pick = r; });
       if (h && !h.hidden) {
-        h.style.maxHeight = (pick ? pick.maxH : 470) + 'px';
+        h.style.maxHeight = (pick ? pick.maxH : 620) + 'px';
         h.style.fontSize = '';
       }
       return pick;
@@ -489,7 +495,11 @@
       var noteRow = card.querySelector('.note-row'), note = card.querySelector('.note');
       var items = card.querySelectorAll('.points li');
       var c = pick ? pick.lc : chooseList(card);
-      if (!c) { c = LIST_CANDS[LIST_CANDS.length - 1]; console.warn('[card] points overflow the sheet'); }
+      if (!c) {
+        c = LIST_CANDS[LIST_CANDS.length - 1];
+        card.querySelector('.sheet').style.overflow = 'hidden';
+        console.warn('[card] points overflow the sheet');
+      }
       var R = applyList(card, c);
 
       var firstTxt = card.querySelector('.points li .txt');
@@ -546,6 +556,28 @@
       } else sparks.setAttribute('hidden', '');
     }
 
+    /* Name field hugs the handle; the washi tape gets the rest of the top row.
+       The kicker shrinks on one line, then wraps to two lines on a taller strip. */
+    function fitTop(card) {
+      var name = card.querySelector('.name'), handle = card.querySelector('.handle'), nameW = 0, sz;
+      if (name && !name.hidden) {
+        name.style.width = '330px';
+        nameW = Math.max(220, Math.min(330, handle.scrollWidth + 24));
+        name.style.width = nameW + 'px';
+      }
+      var tape = card.querySelector('.tape'), strip = card.querySelector('.tape-strip'), k = card.querySelector('.kicker');
+      if (!tape || tape.hidden || k.hidden) return;
+      strip.style.maxWidth = Math.min(660, (nameW ? 1008 - nameW - 44 : 1008) - 84) + 'px';
+      strip.classList.remove('two');
+      for (sz = 36; sz >= 28; sz--) { k.style.fontSize = sz + 'px'; if (k.scrollWidth <= k.clientWidth + 1) return; }
+      strip.classList.add('two');
+      for (sz = 31; sz >= 26; sz--) {
+        k.style.fontSize = sz + 'px';
+        if (k.scrollWidth <= k.clientWidth + 1 && k.offsetHeight <= sz * 1.12 * 2 + 2) return;
+      }
+      console.warn('[card] kicker overflows the tape');
+    }
+
     var STAR = '<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path stroke-width="3.4" d="M20 3.5 L24.6 15 L37 15.6 L27.4 23.4 L30.8 35.6 L20.3 28.6 L9.4 35.8 L12.9 23.6 L3 15.8 L15.6 15.2 Z"/></svg>';
 
     /* Headline: if it can't fit the text column even at the floor size, let it use the margin too. */
@@ -554,9 +586,11 @@
       if (!h || h.hidden) return;
       h.classList.remove('wide');
       var min = parseFloat(h.getAttribute('data-fit-min')) || 64;
+      h.style.maxHeight = 'none';
       h.style.fontSize = min + 'px';
-      if (h.scrollHeight > h.clientHeight + 1 || h.scrollWidth > h.clientWidth + 1) h.classList.add('wide');
+      if (h.scrollHeight > 430 || h.scrollWidth > h.clientWidth + 1) h.classList.add('wide');
       h.style.fontSize = '';
+      h.style.maxHeight = '';
     }
 
     function placeBulb(card, U) {
@@ -586,6 +620,7 @@
         ]);
         await document.fonts.ready;
       } catch (e) { /* fallbacks are fine */ }
+      fitTop(card);
       prepHeadline(card);
       fitCta(card);
       var pick = planLayout(card);

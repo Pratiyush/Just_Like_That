@@ -1,0 +1,36 @@
+{
+  "id": "15-versus",
+  "name": "Versus",
+  "style": "Fight-poster face-off: a diagonal electric-blue vs blaze-orange split with sunburst rays, halftone and ink grain, a tilted black title slab, a white VS disc on a black starburst at dead centre, mirrored tale-of-the-tape stat rows and a tilted white verdict strip.",
+  "palette": ["#2962FF", "#FF6D00", "#0B0B10", "#FFFFFF", "#120A04"],
+  "fonts": ["Anton", "Barlow Condensed"],
+  "bestFor": "Model vs model, company vs company, open vs closed, human vs AI: any story that is really a head-to-head with two or three comparable numbers per side.",
+  "principles": [
+    {
+      "name": "Social identity / in-group bias (Tajfel & Turner, 1979)",
+      "how": "Each contender owns a team colour and a corner label ('Blue corner' / 'Orange corner'), and the verdict closes by asking readers to pick a corner. Even arbitrary group labels make people favour 'their' side, so the card invites comments from both camps instead of passive scrolling."
+    },
+    {
+      "name": "Pre-attentive processing via complementary colour contrast (Treisman & Gelade, 1980)",
+      "how": "Blue and orange sit opposite each other on the colour wheel, so the diagonal split registers before a single word is read. The white VS disc on a black starburst is the one highest-contrast object, it sits on the seam at the optical centre, and the sunburst rays all point at it."
+    },
+    {
+      "name": "Contrast principle (Cialdini, 1984)",
+      "how": "Things are judged relative to what they are set beside, so comparison makes the judgment easy. Stats are mirrored row by row with the same label, row height and type size per row, so every 'round' is read as a straight left-vs-right comparison, and a check badge marks who took it."
+    },
+    {
+      "name": "Commitment & consistency (Cialdini, 1984)",
+      "how": "The verdict strip asks for a tiny public commitment ('Pick a corner: BLUE or ORANGE?'), with each word set in its team colour. Once someone has commented a side they tend to stay consistent with it: they come back to defend it and share the card with people who agree."
+    }
+  ],
+  "hookFormula": "The [N]x [cheaper / faster / smaller] [underdog] just [nearly KO'd / went the distance with] the [champ]",
+  "captionTip": "End the caption with the same binary choice as the card ('Blue or orange? One word in the comments.'), then pin the best reply from each side so both camps keep the thread going.",
+  "fields": ["kicker", "headline", "highlight", "corners", "left", "right", "vs", "verdictLabel", "verdict", "source", "handle"],
+  "fieldNotes": {
+    "left / right": "{ \"name\": \"Helix-3\", \"tag\": \"Open weights\", \"stats\": [{ \"label\": \"Price / 1M tokens\", \"value\": \"$0.40\", \"win\": true }] }. Three stats per side reads best; keep labels short (2 to 3 words) and values compact. Optional \"win\": true puts a check badge on the side that takes that round.",
+    "corners": "Optional pair of team labels shown above the names, e.g. [\"Blue corner\", \"Orange corner\"]. Change them if you recolour --left / --right.",
+    "verdict": "One or two sentences; **word** marks become team-colour chips (1st blue, 2nd orange), e.g. 'Pick a corner: **blue** or **orange**?'",
+    "vs, verdictLabel": "Decorative labels, default 'VS' and 'Verdict'.",
+    "theme": "Recolour with --left, --right, --left-ink (text on the left colour) and --right-ink (text on the right colour); keep each ink at 4.5:1 or better against its side."
+  }
+}

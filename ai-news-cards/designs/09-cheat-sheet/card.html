@@ -161,7 +161,7 @@
     .num b {
       position: relative; display: inline-block;
       font-family: 'Permanent Marker', 'Caveat', cursive; font-weight: 400;
-      font-size: calc(var(--fs) * 1.3); line-height: 1;
+      font-size: calc(var(--fs) * var(--num-k, 1.3)); line-height: 1;
       color: var(--ink);
       transform: translateY(var(--num-dy, 0px)) rotate(-4deg);
     }
@@ -441,7 +441,9 @@
       card.style.setProperty('--R', R + 'px');
       card.style.setProperty('--gap', (c[2] * R) + 'px');
       /* with no blank line between items, shrink the number dabs so they never touch */
-      card.style.setProperty('--blob-k', c[2] ? 1 : r1(Math.min(1, 0.92 * c[1] / 1.95)));
+      var numK = c[2] ? 1.3 : 1.1;
+      card.style.setProperty('--num-k', numK);
+      card.style.setProperty('--blob-k', c[2] ? 1 : Math.round(Math.min(1, 0.96 * c[1] / (1.5 * numK)) * 100) / 100);
       return R;
     }
 

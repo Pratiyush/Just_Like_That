@@ -1,0 +1,36 @@
+{
+  "id": "07-myth-vs-fact",
+  "name": "Myth vs Fact",
+  "style": "A split card on dark slate: the myth is set big in DM Serif Display and crossed out line by line with a hand-drawn coral marker under a coral ✕ MYTH pill; a diagonal cut with a notch opens onto a bright mint FACT panel with a ✓ pill and the correction in DM Sans. Film grain, a faint coral caution hatch and a dot grid give it texture.",
+  "palette": ["#1E2330", "#FF5A5F", "#2EC4B6", "#F3F4F7", "#A3ABBC"],
+  "fonts": ["DM Serif Display", "Outfit", "DM Sans"],
+  "bestFor": "Debunking hype and common misconceptions about AI: what detectors, chatbots, bigger models or 'AI will take every job' claims can and can't actually do.",
+  "principles": [
+    {
+      "name": "Cognitive dissonance / expectation violation (Festinger, 1957)",
+      "how": "The myth is shown large and confident, in the words people actually use, so readers recognise a belief they may hold. Then it's visibly crossed out. Seeing your own belief struck through is uncomfortable, and the quickest way to resolve that is to read the FACT panel right below."
+    },
+    {
+      "name": "Contrast and isolation (Von Restorff effect, von Restorff, 1933)",
+      "how": "The coral marker strike is the only hand-drawn, irregular mark on an otherwise geometric card, so it's seen first and becomes the focal point. The two panels differ in lightness (dark slate vs bright mint), icon (✕ vs ✓) and label (MYTH vs FACT), so the split still reads for colour-blind viewers and in greyscale. It doesn't depend on red vs green."
+    },
+    {
+      "name": "Information-gap curiosity (Loewenstein, 1994)",
+      "how": "The headline names a myth without giving the answer ('The AI myth that's failing students'), and the struck-through claim only says what's wrong. That leaves the reader asking 'so what is true?', and the notch in the divider points straight at the answer."
+    },
+    {
+      "name": "Practical value drives sends and saves (STEPPS, Berger, 2013)",
+      "how": "The FACT panel ends on something the reader can act on, set in bold on a marker band ('treat any score as a hint, never as evidence'). Useful corrections are what people save and forward to the friend, teacher or boss who still believes the myth. Instagram weights those sends and saves heavily."
+    }
+  ],
+  "hookFormula": "Headline: 'The AI myth that's [failing / costing / fooling] [specific group]'. Myth: the belief, worded the way people actually say it. Fact: why it's wrong, then **one thing to do instead**.",
+  "captionTip": "Open with the myth as a question ('Still think AI detectors can prove cheating?'), add one line on why it's wrong, then end with a direct send prompt that names who needs it: 'Send this to a teacher who should see it.'",
+  "fields": ["kicker", "headline", "highlight", "myth", "fact", "source", "handle", "mythLabel", "factLabel"],
+  "fieldNotes": {
+    "myth": "The claim being debunked, ideally under 60 characters. The card adds the opening quote mark and a hand-drawn strike on each line, and removes any quote marks the text already has. Short myths grow up to 150 px.",
+    "fact": "The correction, ideally 100–200 characters. Wrap the actionable takeaway in **double asterisks** to put it on a marker band.",
+    "highlight": "Optional word(s) in the headline to colour mint.",
+    "mythLabel": "Optional, defaults to 'Myth' (use it to translate the label).",
+    "factLabel": "Optional, defaults to 'Fact'."
+  }
+}

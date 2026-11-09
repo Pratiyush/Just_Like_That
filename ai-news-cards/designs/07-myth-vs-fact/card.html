@@ -343,7 +343,7 @@
         svg.appendChild(g);
 
         var rand = rng(hash(copy.textContent));
-        var maxX = W + fs * 0.05;
+        var maxX = W;   /* never past the right safe-zone edge */
         lineBoxes(copy, fit).forEach(function (ln, i) {
           var x0 = (ln.l - z.left) / scale - fs * (0.10 + rand() * 0.06);
           var x1 = Math.min(maxX, (ln.r - z.left) / scale + fs * (0.08 + rand() * 0.08));

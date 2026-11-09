@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Swiss Editorial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;400;500;600;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    /*
+     * Swiss Editorial
+     * 6-column grid: margins 80 px, columns 140 px, gutters 16 px.
+     * Column left edges: 80 236 392 548 704 860  (right edge 1000).
+     * Three working axes: 80 (headline, issue, Category), 392 (subhead, Date), 704 (disc, Source).
+     */
+    #card {
+      --bg: #F2EFE8;
+      --fg: #111111;
+      --accent: #1F3BFF;
+      --muted: #5C5952;          /* labels: 5.9:1 on paper */
+      --rule: #111111;
+      --guide: rgba(17, 17, 17, 0.065);
+      --m: 80px;                 /* outer margin */
+      --col: 140px;
+      --gut: 16px;
+      --step: 156px;             /* col + gutter */
+
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter Tight', 'Inter Display', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-feature-settings: 'kern' 1;
+      display: flex;
+      flex-direction: column;
+      padding: 80px var(--m) 80px;
+    }
+
+    /* ---------- paper + grid ---------- */
+    .grain {
+      position: absolute; inset: 0; z-index: 6; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: soft-light;     /* mean-neutral: grain without greying the paper */
+      opacity: .7;
+    }
+    .guides {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(90deg,
+          var(--guide) 0 1px, transparent 1px var(--step));
+      background-position: var(--m) 0;
+      background-size: calc(var(--step) * 6) 100%;
+      background-repeat: no-repeat;
+    }
+    .guides::after {           /* right margin line */
+      content: ''; position: absolute; top: 0; bottom: 0; left: calc(1080px - var(--m) - 1px); width: 1px;
+      background: var(--guide);
+    }
+
+    #card > :not(.grain):not(.guides) { position: relative; z-index: 1; }
+
+    /* ---------- masthead ---------- */
+    .mast {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 32px;
+      font-size: 28px; line-height: 1; letter-spacing: -0.005em;
+      padding-bottom: 18px;
+      border-bottom: 3px solid var(--rule);
+    }
+    .brand { font-weight: 700; letter-spacing: -0.02em; }
+    .handle { font-weight: 500; text-align: right; }
+
+    /* ---------- hero band: issue number + disc ---------- */
+    .hero {
+      flex: none;
+      height: calc(var(--step) * 2 - var(--gut));   /* = disc diameter, 296 */
+      margin-top: 28px;
+      position: relative;
+    }
+    .issue {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: calc(var(--step) * 4 - var(--gut));   /* cols 1-4 */
+    }
+    .issue-label {
+      position: absolute; left: 0; top: -4px;
+      font-size: 28px; font-weight: 500; line-height: 1; letter-spacing: -0.005em;
+      color: var(--muted);
+    }
+    .issue-num {
+      /* line-height 1.22 = the font's full ascent+descent, so nothing spills;
+         bottom offset puts the baseline exactly on the disc's bottom edge. */
+      position: absolute; left: -0.06em; bottom: -0.2421875em;
+      width: calc(100% + 0.06em);
+      overflow: hidden; white-space: nowrap;
+      font-size: 300px; font-weight: 200; line-height: 1.2109375;
+      letter-spacing: -0.065em;
+      font-variant-numeric: tabular-nums;
+    }
+    .disc {
+      position: absolute; right: 0; top: 0;
+      width: calc(var(--step) * 2 - var(--gut));    /* cols 5-6 */
+      aspect-ratio: 1; border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ---------- headline ---------- */
+    .headline {
+      flex: 1; min-height: 0; overflow: hidden;
+      margin-top: 52px;
+      padding-bottom: .14em;       /* room for descenders under the tight leading */
+      font-size: 120px; font-weight: 600; line-height: .94; letter-spacing: -0.045em;
+      text-wrap: pretty;
+      margin-left: -0.04em;        /* optical flush-left */
+    }
+    .headline .hl { color: var(--accent); }
+
+    /* ---------- lede: side label + subhead ---------- */
+    .lede {
+      flex: none;
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: calc(var(--step) * 2 - var(--gut)) 1fr;
+      column-gap: var(--gut);
+      align-items: start;
+    }
+    .lede-lbl { padding-top: 6px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+    .arrow { display: block; width: 72px; height: 20px; fill: none; stroke: var(--fg); stroke-width: 2; }
+    .subhead {
+      grid-column: 2;
+      font-size: 36px; font-weight: 400; line-height: 1.25; letter-spacing: -0.012em;
+      text-wrap: pretty;
+    }
+
+    /* ---------- meta table ---------- */
+    .meta {
+      flex: none;
+      margin-top: 44px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--rule);
+      display: grid;
+      grid-template-columns: calc(var(--step) * 2 - var(--gut)) calc(var(--step) * 2 - var(--gut)) 1fr;
+      column-gap: var(--gut);
+      font-variant-numeric: tabular-nums;
+    }
+    .cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .cell:nth-child(1) { grid-column: 1; }
+    .cell:nth-child(2) { grid-column: 2; }
+    .cell:nth-child(3) { grid-column: 3; }
+    .lbl { font-size: 26px; font-weight: 500; line-height: 1.15; color: var(--muted); letter-spacing: 0; }
+    .val { font-size: 28px; font-weight: 600; line-height: 1.18; letter-spacing: -0.01em; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="guides"></div>
+
+    <header class="mast">
+      <span class="brand" data-field="brand"></span>
+      <span class="handle" data-field="handle"></span>
+    </header>
+
+    <section class="hero">
+      <div class="issue" data-if="issue">
+        <span class="issue-label"></span>
+        <span class="issue-num" data-fit data-fit-max="300" data-fit-min="80"></span>
+      </div>
+      <div class="disc"></div>
+    </section>
+
+    <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="132" data-fit-min="64"></h1>
+
+    <div class="lede" data-if="subhead">
+      <span class="lbl lede-lbl">
+        <span data-field="labels.subhead"></span>
+        <svg class="arrow" viewBox="0 0 72 20" aria-hidden="true"><path d="M0 10H69M60 1.5L69 10L60 18.5"/></svg>
+      </span>
+      <p class="subhead" data-field="subhead"></p>
+    </div>
+
+    <footer class="meta">
+      <div class="cell" data-if="kicker">
+        <span class="lbl" data-field="labels.category"></span>
+        <span class="val" data-field="kicker"></span>
+      </div>
+      <div class="cell" data-if="date">
+        <span class="lbl" data-field="labels.date"></span>
+        <span class="val" data-field="date"></span>
+      </div>
+      <div class="cell" data-if="source">
+        <span class="lbl" data-field="labels.source"></span>
+        <span class="val src" data-field="source"></span>
+      </div>
+    </footer>
+
+    <div class="grain"></div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "brand": "AI Brief",
+    "handle": "@yourhandle",
+    "issue": "No. 042",
+    "kicker": "Research",
+    "headline": "Half of AI's benchmark wins vanish when you reword the question",
+    "highlight": "vanish",
+    "subhead": "Nova Labs re-ran 2,400 published scores with reworded prompts. Only 51% held up, and the biggest models fell furthest.",
+    "source": "Source: Nova Labs robustness study",
+    "date": "Nov 9, 2026",
+    "labels": { "subhead": "In brief", "category": "Category", "date": "Date", "source": "Source" }
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    Card.onRender(function (data, card) {
+      // Issue: "No. 042" -> small label "No." + big numeral "042".
+      var issue = String(data.issue || '').trim();
+      var m = issue.match(/^(.*?)(\d[\d.,]*)\s*$/);
+      var label = m ? m[1].trim() : '';
+      var num = m ? m[2] : issue;
+      card.querySelector('.issue-label').textContent = label;
+      card.querySelector('.issue-label').hidden = !label;
+      card.querySelector('.issue-num').textContent = num;
+
+      // Source sits under a "Source" label, so drop a leading "Source:".
+      var src = card.querySelector('.src');
+      if (data.source) src.innerHTML = Card.format(String(data.source).replace(/^\s*source\s*[:\-–—]\s*/i, ''));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "id": "06-neo-brutal",
+  "name": "Neo-Brutal",
+  "style": "Loud, flat neo-brutalism: bubblegum-pink dot-grid field, a white 'app window' with an electric-blue title bar, 6 px black outlines and hard offset shadows, a rotated sunshine-yellow starburst sticker, chunky grotesk type and hand-drawn doodles. No gradients.",
+  "palette": ["#FF90E8", "#000000", "#FFFFFF", "#FFD60A", "#3D5AFE"],
+  "fonts": ["Bricolage Grotesque", "Space Grotesk", "Archivo Black"],
+  "bestFor": "Hot takes, opinions, contrarian calls and quirky AI news that people will want to argue about or send to a friend.",
+  "principles": [
+    {
+      "name": "Novelty seeking / pattern interrupt (Bunzeck & Düzel, 2006)",
+      "how": "Feeds are mostly photos, screenshots and soft gradients. A flat pink field, thick black outlines, hard shadows and a sticker slapped on at 12 degrees reads as a different kind of object, and an unexpected format earns the second look that stops the thumb."
+    },
+    {
+      "name": "Isolation (Von Restorff) effect (von Restorff, 1933)",
+      "how": "The headline is pure black on white; only the `highlight` word sits in a yellow, outlined, shadowed block. That single different item is what the eye lands on and what people remember: the take itself in one word."
+    },
+    {
+      "name": "Social currency (STEPPS; Berger, Contagious, 2013)",
+      "how": "The `sticker` frames the post as a bold opinion, not neutral news, so sharing it says something about the sharer ('I saw this coming', 'I have taste'). The CTA asks for a send to the group chat, the kind of DM share Instagram treats as a strong ranking signal."
+    },
+    {
+      "name": "Gestalt continuation and common region (Wertheimer, 1923; Palmer, 1992)",
+      "how": "The app window groups headline and context into one region, and the hand-drawn arrow drops out of that window and lands on the CTA button, so the reading path ends at the action."
+    }
+  ],
+  "hookFormula": "[Thing everyone is obsessed with] is dead. [Underrated skill or idea] is the new [moat / edge / superpower].",
+  "captionTip": "Open the caption with your single best reason in one line, then end with 'Agree or disagree?' so people either reply or send it to the friend they would argue with.",
+  "fields": ["kicker", "sticker", "headline", "highlight", "subhead", "cta", "handle"]
+}

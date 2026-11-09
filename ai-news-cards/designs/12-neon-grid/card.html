@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>12 · Neon Grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Orbitron:wght@600;800;900&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      /* palette */
+      --bg: #0D0221;
+      --fg: #F8F4FF;
+      --muted: #D2C6F5;
+      --accent: #FF2A6D;      /* neon magenta */
+      --accent-2: #05D9E8;    /* neon cyan    */
+      --sun-1: #FFE45E;
+      --sun-2: #FF9A3C;
+      --sun-3: #FF2A6D;
+      --sky-1: #12032C;
+      --sky-2: #2A0752;
+      --haze: #7C1270;
+      --ink: #1A0433;         /* text printed on the sun */
+
+      /* scene geometry (switched to .is-dense for long copy) */
+      --hz: 990px;            /* horizon line          */
+      --sun-cy: 902px;        /* sun centre            */
+      --sun-r: 216px;         /* sun radius            */
+
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif;
+    }
+    #card.is-dense {
+      --hz: 1072px;
+      --sun-cy: 1004px;
+      --sun-r: 166px;
+    }
+
+    /* ---------- background layers ---------- */
+    #scene { position: absolute; inset: 0; width: 1080px; height: 1350px; z-index: 0; display: block; }
+    .fx { position: absolute; inset: 0; pointer-events: none; }
+    .fx-scan {
+      z-index: 1;
+      background: repeating-linear-gradient(180deg, rgba(4, 0, 12, .30) 0 2px, transparent 2px 5px);
+      mix-blend-mode: multiply;
+    }
+    .fx-noise {
+      z-index: 1;
+      opacity: .09;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .fx-vignette {
+      z-index: 1;
+      background: radial-gradient(ellipse 80% 72% at 50% 46%, transparent 58%, rgba(4, 0, 14, .62) 100%);
+    }
+
+    /* ---------- HUD corner brackets ---------- */
+    .bracket {
+      position: absolute; z-index: 3; width: 62px; height: 62px;
+      border: 0 solid var(--accent-2);
+      filter: drop-shadow(0 0 6px rgba(5, 217, 232, .85));
+    }
+    .bracket.tl { top: 38px; left: 38px; border-top-width: 4px; border-left-width: 4px; }
+    .bracket.tr { top: 38px; right: 38px; border-top-width: 4px; border-right-width: 4px; }
+    .bracket.bl { bottom: 38px; left: 38px; border-bottom-width: 4px; border-left-width: 4px; }
+    .bracket.br { bottom: 38px; right: 38px; border-bottom-width: 4px; border-right-width: 4px; }
+
+    /* ---------- text stage (sky area, above the sun) ---------- */
+    .stage {
+      position: absolute; z-index: 4;
+      top: 72px; left: 72px; right: 72px;
+      bottom: calc(1350px - var(--sun-cy) + var(--sun-r) + 62px);
+      display: flex; flex-direction: column;
+    }
+
+    .hud-top { display: flex; align-items: center; gap: 22px; flex: none; height: 52px; }
+    .kicker-chip {
+      flex: 0 1 auto; min-width: 0; max-width: 700px;
+      display: flex; align-items: center; gap: 14px;
+      height: 52px; padding: 0 22px 0 18px;
+      background: linear-gradient(90deg, rgba(5, 217, 232, .16), rgba(5, 217, 232, .04));
+      border: 2px solid var(--accent-2);
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      box-shadow: inset 0 0 18px rgba(5, 217, 232, .25);
+    }
+    .kicker-chip .cursor {
+      flex: none; width: 12px; height: 26px; background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .kicker {
+      min-width: 0; overflow: hidden; white-space: nowrap;
+      font-family: 'Orbitron', 'DejaVu Sans', sans-serif; font-weight: 800;
+      font-size: 26px; line-height: 1.4; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent-2);
+      text-shadow: 0 0 12px rgba(5, 217, 232, .7);
+    }
+    .hud-rule {
+      flex: 1 1 40px; min-width: 40px; height: 14px; align-self: center;
+      background:
+        linear-gradient(var(--accent-2), var(--accent-2)) left center / 100% 2px no-repeat,
+        repeating-linear-gradient(90deg, rgba(5, 217, 232, .75) 0 2px, transparent 2px 14px) left center / 100% 10px no-repeat;
+      opacity: .55;
+    }
+    .hud-rec {
+      flex: none; display: flex; align-items: center; gap: 12px;
+      font-family: 'Orbitron', 'DejaVu Sans', sans-serif; font-weight: 600;
+      font-size: 26px; letter-spacing: .14em; color: var(--muted);
+    }
+    .hud-rec .dot {
+      width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 12px 2px var(--accent);
+    }
+    .hud-rec b { font-weight: 600; color: var(--accent-2); }
+
+    .copy {
+      flex: 1 1 auto; min-height: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 18px;
+    }
+
+    .headline {
+      position: relative; isolation: isolate;
+      flex: 0 1 auto; min-height: 0; overflow: hidden;
+      margin: 0 -18px; padding: .04em 18px .22em;
+      font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 700;
+      font-size: 118px; line-height: .98; letter-spacing: -.012em;
+      text-transform: uppercase; text-align: center; text-wrap: balance;
+      color: var(--fg);
+      text-shadow: 0 0 2px rgba(255, 255, 255, .55), 0 0 26px rgba(255, 42, 109, .45);
+    }
+    #card.is-dense .headline { text-transform: none; line-height: 1.04; letter-spacing: -.005em; }
+    /* RGB-split copies of the headline (text mirrored into data-text by JS) */
+    .headline::before,
+    .headline::after {
+      content: attr(data-text);
+      position: absolute; top: .04em; left: 18px; right: 18px;
+      z-index: -1; pointer-events: none;
+      white-space: pre-line; text-wrap: balance; text-shadow: none;
+    }
+    .headline::before { color: var(--accent-2); transform: translate(-5px, 1px); opacity: .95; }
+    .headline::after  { color: var(--accent);   transform: translate(5px, -1px); opacity: .95; }
+    .headline .hl {
+      color: transparent;
+      background: linear-gradient(180deg, var(--sun-1) 8%, var(--sun-2) 52%, var(--sun-3) 92%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+      text-shadow: none;
+    }
+
+    .subhead {
+      flex: none;
+      margin-top: 26px; max-height: 190px; overflow: hidden;
+      font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 500;
+      font-size: 37px; line-height: 1.28; text-align: center; text-wrap: balance;
+      color: var(--muted);
+      text-shadow: 0 2px 10px rgba(13, 2, 33, .9);
+    }
+
+    /* ---------- the sun stat ---------- */
+    .sun-stat {
+      position: absolute; z-index: 2;
+      left: calc(540px - var(--sun-r) * .74); width: calc(var(--sun-r) * 1.48);
+      top: calc(var(--sun-cy) - var(--sun-r) * .80); height: calc(var(--sun-r) * .64);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; white-space: nowrap;
+      font-family: 'Orbitron', 'DejaVu Sans', sans-serif; font-weight: 900;
+      font-size: 120px; line-height: 1.25; letter-spacing: -.02em;
+      color: var(--ink);
+      text-shadow: 0 2px 0 rgba(255, 255, 255, .28);
+    }
+
+    /* ---------- floor labels ---------- */
+    .stat-label {
+      position: absolute; z-index: 4;
+      left: 50%; top: calc(var(--hz) + 30px); transform: translateX(-50%);
+      width: max-content; max-width: 840px;
+      padding: 10px 30px 11px;
+      font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 600;
+      font-size: 28px; line-height: 1.22; letter-spacing: .1em; text-transform: uppercase; text-align: center;
+      color: var(--accent-2);
+      background: rgba(13, 2, 33, .9);
+      box-shadow: 0 0 0 2px rgba(5, 217, 232, .55), 0 0 26px rgba(5, 217, 232, .35);
+      text-shadow: 0 0 10px rgba(5, 217, 232, .55);
+    }
+    .stat-label::before {
+      content: ''; position: absolute; left: 50%; top: -15px; transform: translateX(-50%);
+      border: 8px solid transparent; border-bottom: 9px solid var(--accent-2);
+      border-top: 0;
+      filter: drop-shadow(0 0 4px var(--accent-2));
+    }
+
+    .footer {
+      position: absolute; z-index: 4;
+      left: 72px; right: 72px; bottom: 72px;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
+      padding-top: 18px;
+      border-top: 2px solid rgba(5, 217, 232, .5);
+      font-size: 27px; line-height: 1.25;
+    }
+    .footer::before {
+      content: ''; position: absolute; z-index: -1;
+      left: -72px; right: -72px; top: -70px; bottom: -72px;
+      background: linear-gradient(0deg, rgba(10, 1, 26, .96) 0%, rgba(10, 1, 26, .9) 55%, rgba(10, 1, 26, 0) 100%);
+    }
+    .footer::after {
+      content: ''; position: absolute; left: 0; top: -2px; width: 120px; height: 2px;
+      background: var(--accent); box-shadow: 0 0 10px var(--accent);
+    }
+    .src {
+      min-width: 0; display: flex; align-items: flex-start; gap: 12px;
+      font-weight: 500; color: var(--muted);
+    }
+    .src svg { flex: none; width: 26px; height: 26px; margin-top: 3px; }
+    .handle {
+      flex: none; max-width: 52%; overflow-wrap: anywhere; text-align: right;
+      font-family: 'Chakra Petch', 'DejaVu Sans', sans-serif; font-weight: 700;
+      letter-spacing: .04em; color: var(--accent-2);
+      text-shadow: 0 0 12px rgba(5, 217, 232, .55);
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <svg id="scene" viewBox="0 0 1080 1350" aria-hidden="true"></svg>
+    <div class="fx fx-noise"></div>
+    <div class="fx fx-scan"></div>
+    <div class="fx fx-vignette"></div>
+
+    <i class="bracket tl"></i><i class="bracket tr"></i><i class="bracket bl"></i><i class="bracket br"></i>
+
+    <div class="stage">
+      <div class="hud-top">
+        <div class="kicker-chip" data-if="kicker">
+          <i class="cursor"></i>
+          <span class="kicker" data-field="kicker" data-fit data-fit-min="20"></span>
+        </div>
+        <div class="hud-rule"></div>
+        <div class="hud-rec"><i class="dot"></i>REC<b>CH·12</b></div>
+      </div>
+      <div class="copy">
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="122" data-fit-min="64"></h1>
+        <p class="subhead" data-field="subhead" data-fit data-fit-min="34"></p>
+      </div>
+    </div>
+
+    <div class="sun-stat" data-field="stat" data-fit data-fit-min="44"></div>
+    <div class="stat-label" data-field="statLabel"></div>
+
+    <div class="footer">
+      <div class="src" data-if="source">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#05D9E8" stroke-width="2" stroke-linecap="square"><path d="M12 13v8M8.5 21h7"/><circle cx="12" cy="11" r="2"/><path d="M7.8 6.8a6 6 0 0 0 0 8.4M16.2 6.8a6 6 0 0 1 0 8.4M4.9 3.9a10 10 0 0 0 0 14.2M19.1 3.9a10 10 0 0 1 0 14.2"/></svg>
+        <span data-field="source"></span>
+      </div>
+      <div class="handle" data-field="handle"></div>
+    </div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Robotics",
+    "headline": "This robot taught itself to walk before your coffee was ready",
+    "highlight": "taught itself",
+    "subhead": "Nova Labs' Helix-3 got zero human demos. Just a simulator, a reward signal and one rule: don't fall.",
+    "stat": "4:12",
+    "statLabel": "Min:sec from first boot to a steady jog",
+    "source": "Source: Nova Labs technical report",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      function rng(seed) {
+        return function () {
+          seed = (seed * 1664525 + 1013904223) % 4294967296;
+          return seed / 4294967296;
+        };
+      }
+      function f(n) { return Math.round(n * 10) / 10; }
+
+      function drawScene(card) {
+        var cs = getComputedStyle(card);
+        var num = function (n) { return parseFloat(cs.getPropertyValue(n)); };
+        var col = function (n) { return cs.getPropertyValue(n).trim(); };
+        var W = 1080, H = 1350, cx = 540;
+        var hz = num('--hz'), cy = num('--sun-cy'), r = num('--sun-r');
+        var mag = col('--accent'), cyan = col('--accent-2'), bg = col('--bg');
+        var s1 = col('--sun-1'), s2 = col('--sun-2'), s3 = col('--sun-3');
+        var sky1 = col('--sky-1'), sky2 = col('--sky-2'), haze = col('--haze');
+        var k = r / 216;
+        var out = [];
+
+        /* defs */
+        out.push(
+          '<defs>' +
+          '<linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="' + hz + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="' + bg + '"/>' +
+            '<stop offset=".42" stop-color="' + sky1 + '"/>' +
+            '<stop offset=".78" stop-color="' + sky2 + '"/>' +
+            '<stop offset="1" stop-color="' + haze + '"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="g-sun" x1="0" y1="' + (cy - r) + '" x2="0" y2="' + (cy + r * .5) + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="' + s1 + '"/>' +
+            '<stop offset=".5" stop-color="' + s2 + '"/>' +
+            '<stop offset="1" stop-color="' + s3 + '"/>' +
+          '</linearGradient>' +
+          '<radialGradient id="g-halo" cx="' + cx + '" cy="' + cy + '" r="' + (r * 2.1) + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset=".35" stop-color="' + s3 + '" stop-opacity=".55"/>' +
+            '<stop offset=".6" stop-color="' + s3 + '" stop-opacity=".16"/>' +
+            '<stop offset="1" stop-color="' + s3 + '" stop-opacity="0"/>' +
+          '</radialGradient>' +
+          '<linearGradient id="g-floor" x1="0" y1="' + hz + '" x2="0" y2="' + H + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="#2B0650"/>' +
+            '<stop offset=".35" stop-color="#160335"/>' +
+            '<stop offset="1" stop-color="' + bg + '"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="g-fade" x1="0" y1="' + hz + '" x2="0" y2="' + H + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="#fff" stop-opacity=".15"/>' +
+            '<stop offset=".14" stop-color="#fff" stop-opacity=".85"/>' +
+            '<stop offset="1" stop-color="#fff" stop-opacity="1"/>' +
+          '</linearGradient>' +
+          '<mask id="m-fade" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' +
+            '<rect x="0" y="' + hz + '" width="' + W + '" height="' + (H - hz) + '" fill="url(#g-fade)"/>' +
+          '</mask>' +
+          '<linearGradient id="g-mtn" x1="0" y1="' + (hz - 110 * k) + '" x2="0" y2="' + hz + '" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="#2A0A55"/>' +
+            '<stop offset="1" stop-color="#0E0226"/>' +
+          '</linearGradient>' +
+          '<filter id="f-glow" filterUnits="userSpaceOnUse" x="-50" y="-50" width="' + (W + 100) + '" height="' + (H + 100) + '">' +
+            '<feGaussianBlur stdDeviation="5"/>' +
+          '</filter>' +
+          '<filter id="f-soft" filterUnits="userSpaceOnUse" x="-50" y="-50" width="' + (W + 100) + '" height="' + (H + 100) + '">' +
+            '<feGaussianBlur stdDeviation="18"/>' +
+          '</filter>'
+        );
+
+        /* sun stripes: gaps that thicken toward the horizon */
+        var y0 = cy - r * .1, zone = hz - y0 + r * .1, n = 7;
+        var stripes = '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+        for (var i = 0; i < n; i++) {
+          var per = zone / n;
+          var gap = per * (.14 + .58 * i / (n - 1));
+          var top = y0 + per * i + (per - gap) * .5;
+          stripes += '<rect x="0" y="' + f(top) + '" width="' + W + '" height="' + f(gap) + '" fill="#000"/>';
+        }
+        out.push('<mask id="m-sun" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">' + stripes + '</mask>');
+        out.push('</defs>');
+
+        /* sky */
+        out.push('<rect width="' + W + '" height="' + (hz + 1) + '" fill="url(#g-sky)"/>');
+
+        /* stars */
+        var rand = rng(12), stars = '';
+        for (var s = 0; s < 70; s++) {
+          var sx = rand() * W, sy = 40 + Math.pow(rand(), 1.3) * (hz - 140);
+          var dx = sx - cx, dy = sy - cy;
+          if (Math.sqrt(dx * dx + dy * dy) < r * 1.25) continue;
+          var sr = rand() < .12 ? 2.2 : .8 + rand() * 1.1;
+          var sc = rand() < .25 ? cyan : '#ffffff';
+          stars += '<circle cx="' + f(sx) + '" cy="' + f(sy) + '" r="' + f(sr) + '" fill="' + sc + '" opacity="' + f(.25 + rand() * .6) + '"/>';
+        }
+        out.push('<g>' + stars + '</g>');
+
+        /* sun: halo, disc, rim */
+        out.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 2.1) + '" fill="url(#g-halo)"/>');
+        out.push('<g mask="url(#m-sun)">' +
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + s3 + '" filter="url(#f-soft)" opacity=".9"/>' +
+          '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="url(#g-sun)"/>' +
+          '</g>');
+
+        /* targeting reticle around the sun (upper half only) */
+        var rr = r + 26 * k, ret = '';
+        var arc = function (a0, a1, rad) {
+          var p = function (a) { return [cx + rad * Math.cos(a), cy + rad * Math.sin(a)]; };
+          var A = p(a0), B = p(a1);
+          return 'M' + f(A[0]) + ' ' + f(A[1]) + ' A' + rad + ' ' + rad + ' 0 0 1 ' + f(B[0]) + ' ' + f(B[1]);
+        };
+        var deg = Math.PI / 180;
+        ret += '<path d="' + arc(-172 * deg, -104 * deg, rr) + '"/>';
+        ret += '<path d="' + arc(-76 * deg, -8 * deg, rr) + '"/>';
+        [-90, -135, -45, -180, 0].forEach(function (a) {
+          var ca = Math.cos(a * deg), sa = Math.sin(a * deg);
+          var len = a === -90 ? 22 : 12;
+          ret += '<line x1="' + f(cx + (rr + 6) * ca) + '" y1="' + f(cy + (rr + 6) * sa) + '" x2="' + f(cx + (rr + 6 + len) * ca) + '" y2="' + f(cy + (rr + 6 + len) * sa) + '"/>';
+        });
+        out.push('<g fill="none" stroke="' + cyan + '" stroke-width="2.5" opacity=".9">' + ret + '</g>');
+        out.push('<g fill="none" stroke="' + cyan + '" stroke-width="2.5" opacity=".6" filter="url(#f-glow)">' + ret + '</g>');
+
+        /* mountains */
+        var L = [[-30, 0], [40, 44], [96, 26], [170, 96], [236, 46], [300, 70], [360, 24], [412, 8], [452, 0]];
+        var R = [[628, 0], [690, 22], [748, 64], [806, 34], [884, 108], [952, 52], [1010, 78], [1060, 40], [1110, 0]];
+        function ridge(pts) { return pts.map(function (p) { return f(p[0]) + ',' + f(hz - p[1] * k); }).join(' '); }
+        function wire(pts) {
+          var d = '';
+          for (var j = 1; j < pts.length - 1; j++) {
+            var p = pts[j];
+            if (p[1] < 30) continue;
+            d += 'M' + f(p[0]) + ' ' + f(hz - p[1] * k) + ' L' + f(p[0] + (j % 2 ? -1 : 1) * p[1] * .35) + ' ' + hz + ' ';
+            d += 'M' + f(p[0]) + ' ' + f(hz - p[1] * k) + ' L' + f(p[0] + (j % 2 ? 1 : -1) * p[1] * .2) + ' ' + hz + ' ';
+          }
+          return d;
+        }
+        [L, R].forEach(function (pts) {
+          out.push('<polygon points="' + ridge(pts) + '" fill="url(#g-mtn)"/>');
+          out.push('<path d="' + wire(pts) + '" stroke="' + mag + '" stroke-width="1.4" opacity=".45" fill="none"/>');
+          out.push('<polyline points="' + ridge(pts) + '" fill="none" stroke="' + mag + '" stroke-width="5" opacity=".55" filter="url(#f-glow)"/>');
+          out.push('<polyline points="' + ridge(pts) + '" fill="none" stroke="' + mag + '" stroke-width="2.2"/>');
+        });
+
+        /* floor */
+        out.push('<rect x="0" y="' + hz + '" width="' + W + '" height="' + (H - hz) + '" fill="url(#g-floor)"/>');
+        out.push('<ellipse cx="' + cx + '" cy="' + (hz + 18) + '" rx="' + (r * 1.15) + '" ry="' + (34 * k + 10) + '" fill="' + s2 + '" opacity=".28" filter="url(#f-soft)"/>');
+
+        var lines = '', depth = H - hz;
+        for (var z = 0; z < 60; z++) {
+          var zz = 1 + z * .38;
+          var y = hz + (depth + 70) / zz;
+          if (y > H + 4) continue;
+          if (y - hz < 3) break;
+          var w = Math.max(1, 3.4 / Math.sqrt(zz));
+          lines += '<line x1="0" x2="' + W + '" y1="' + f(y) + '" y2="' + f(y) + '" stroke-width="' + f(w) + '"/>';
+        }
+        var bottom = H + 70, step = 150;
+        for (var v = -22; v <= 22; v++) {
+          var xb = cx + v * step;
+          lines += '<line x1="' + cx + '" y1="' + hz + '" x2="' + xb + '" y2="' + bottom + '" stroke-width="2"/>';
+        }
+        out.push('<g mask="url(#m-fade)">' +
+          '<g stroke="' + mag + '" opacity=".85" filter="url(#f-glow)">' + lines + '</g>' +
+          '<g stroke="' + mag + '">' + lines + '</g>' +
+          '</g>');
+
+        /* horizon line */
+        out.push('<rect x="0" y="' + (hz - 3) + '" width="' + W + '" height="6" fill="' + mag + '" filter="url(#f-glow)"/>');
+        out.push('<rect x="0" y="' + (hz - 1) + '" width="' + W + '" height="2.5" fill="#FFD1E1"/>');
+
+        /* side rulers */
+        var tick = '';
+        for (var t = 0; t <= 24; t++) {
+          var ty = 360 + t * 14, tl = t % 6 === 0 ? 18 : 9;
+          tick += '<line x1="40" x2="' + (40 + tl) + '" y1="' + ty + '" y2="' + ty + '"/>';
+          tick += '<line x1="' + (W - 40) + '" x2="' + (W - 40 - tl) + '" y1="' + ty + '" y2="' + ty + '"/>';
+        }
+        out.push('<g stroke="' + cyan + '" stroke-width="2" opacity=".45">' + tick + '</g>');
+
+        card.querySelector('#scene').innerHTML = out.join('');
+      }
+
+      Card.onRender(async function (data, card) {
+        var h = card.querySelector('.headline');
+        var stat = card.querySelector('.sun-stat');
+        var plain = String(data.headline || '').replace(/\*\*(.+?)\*\*/g, '$1');
+        h.setAttribute('data-text', plain);
+
+        /* Wait for fonts, try the roomy layout, and drop the horizon if the copy needs more sky. */
+        void card.offsetHeight;
+        try {
+          await Promise.all([
+            document.fonts.load('700 100px "Chakra Petch"'),
+            document.fonts.load('500 37px "Chakra Petch"'),
+            document.fonts.load('900 100px "Orbitron"'),
+            document.fonts.load('800 26px "Orbitron"')
+          ]);
+          await document.fonts.ready;
+        } catch (e) { /* fall back silently */ }
+
+        function setStatMax() {
+          var r = parseFloat(getComputedStyle(card).getPropertyValue('--sun-r'));
+          stat.setAttribute('data-fit-max', Math.round(r * .56));
+          stat.__fitStart = undefined;
+          h.__fitStart = undefined;
+        }
+        card.classList.remove('is-dense');
+        setStatMax();
+        Card.fit();
+        var size = parseFloat(h.style.fontSize) || 999;
+        var overflow = h.scrollHeight > h.clientHeight + 1;
+        if (size < 84 || overflow) {
+          card.classList.add('is-dense');
+          setStatMax();
+        }
+        drawScene(card);
+      });
+    })();
+  </script>
+</body>
+</html>

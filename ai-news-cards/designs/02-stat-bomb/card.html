@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stat Bomb</title>
+  <!-- Archivo (variable: width 62-125, weight 100-900) carries the number and headline;
+       JetBrains Mono carries the data labels. Both have local fallbacks. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@500;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #0B0B0F;
+      --fg: #FFFFFF;
+      --accent: #C6FF00;
+      --on-accent: #0B0B0F;
+      --muted: rgba(255, 255, 255, .64);
+      --rule: rgba(255, 255, 255, .16);
+      --grid: rgba(255, 255, 255, .05);
+      --display: 'Archivo', 'Archivo Black', 'Arial Narrow', 'Liberation Sans Narrow', 'Liberation Sans', Arial, sans-serif;
+      --mono: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+      --gx: 50%;
+      --gy: 42%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--display);
+    }
+
+    /* ---------- texture layers (decoration may bleed) ---------- */
+    .tex { position: absolute; inset: 0; pointer-events: none; }
+    .tex-grid {
+      background-image:
+        linear-gradient(var(--grid) 2px, transparent 2px),
+        linear-gradient(90deg, var(--grid) 2px, transparent 2px);
+      background-size: 54px 54px;
+      background-position: -1px -1px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 62% at var(--gx) var(--gy), #000 25%, rgba(0,0,0,.35) 70%, transparent 100%);
+              mask-image: radial-gradient(ellipse 80% 62% at var(--gx) var(--gy), #000 25%, rgba(0,0,0,.35) 70%, transparent 100%);
+    }
+    .tex-glow {
+      background:
+        radial-gradient(ellipse 46% 26% at var(--gx) var(--gy), color-mix(in srgb, var(--accent) 17%, transparent), transparent 100%),
+        radial-gradient(ellipse 90% 60% at var(--gx) var(--gy), color-mix(in srgb, var(--accent) 6%, transparent), transparent 100%);
+    }
+    .tex-vignette {
+      background: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, .55) 100%);
+    }
+    /* Film grain over everything: overlay leaves the near-black alone and adds grit to lime and white ink. */
+    .tex-grain {
+      opacity: .22;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+    .tex-dust {
+      opacity: .05;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+    /* Registration crosshairs in the four corners. */
+    .marks {
+      position: absolute; inset: 30px; pointer-events: none;
+      --x: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><path d='M14 0v28M0 14h28' stroke='white' stroke-opacity='.34' stroke-width='2'/><circle cx='14' cy='14' r='6' fill='none' stroke='white' stroke-opacity='.34' stroke-width='2'/></svg>");
+      background: var(--x) left top / 28px no-repeat, var(--x) right top / 28px no-repeat,
+                  var(--x) left bottom / 28px no-repeat, var(--x) right bottom / 28px no-repeat;
+    }
+
+    /* ---------- layout ---------- */
+    .frame {
+      position: absolute;
+      inset: 84px 80px 80px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top {
+      display: flex; align-items: center; justify-content: space-between; gap: 28px;
+      height: 54px; flex: none;
+    }
+    .chip {
+      display: flex; align-items: center; gap: 12px;
+      height: 54px; padding: 0 20px 0 15px; min-width: 0;
+      background: var(--accent); color: var(--on-accent);
+    }
+    .chip svg { width: 24px; height: 24px; flex: none; }
+    .kicker {
+      min-width: 0; overflow: hidden; white-space: nowrap;
+      font-family: var(--display); font-weight: 800; font-stretch: 80%;
+      font-size: 30px; line-height: 1.2; letter-spacing: .09em; text-transform: uppercase;
+    }
+    .date {
+      flex: none; white-space: nowrap;
+      font-family: var(--mono); font-weight: 500; font-size: 26px;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    }
+
+    .stage {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8px 0;
+    }
+
+    .label {
+      display: flex; align-items: flex-start; gap: 14px; flex: none;
+      color: rgba(255, 255, 255, .86);
+    }
+    .label svg { width: 32px; height: 32px; flex: none; margin-top: 4px; color: var(--accent); }
+    .label span {
+      min-width: 0; max-height: 84px; overflow: hidden;
+      font-family: var(--mono); font-weight: 500; font-size: 32px; line-height: 1.3;
+      letter-spacing: .03em; text-transform: uppercase;
+    }
+
+    /* The number. Width axis + size are solved in JS so it always fills the frame. */
+    .stat-wrap { flex: none; margin-top: 30px; }
+    .stat {
+      display: inline-flex; align-items: flex-end; white-space: nowrap;
+      font-family: var(--display); font-weight: 900; font-size: 400px; font-stretch: 100%;
+      line-height: 1; letter-spacing: -0.025em;
+      color: var(--accent);
+    }
+    .stat > span { display: block; text-box: trim-both cap alphabetic; }
+    .stat .u { font-size: .5em; letter-spacing: 0; }
+    .stat .u-x { font-size: .6em; }
+    .stat .u-top { align-self: flex-start; }
+    .stat .u-base { align-self: flex-end; }
+    .stat .u-pre { margin-right: .04em; }
+    .stat .u-suf { margin-left: .05em; }
+    .stat .u-suf.u-gap { margin-left: .16em; }
+
+    /* Measuring rule under the number: ticks + a lime bar exactly as wide as the number's ink. */
+    .axis {
+      flex: none; position: relative; height: 22px; margin-top: 34px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.34) 0 2px, transparent 2px 115px) left bottom / 100% 22px no-repeat,
+        repeating-linear-gradient(90deg, rgba(255,255,255,.2) 0 2px, transparent 2px 23px) left bottom / 100% 11px no-repeat,
+        linear-gradient(var(--rule), var(--rule)) left bottom / 100% 2px no-repeat;
+    }
+    .axis::before {
+      content: ''; position: absolute; left: var(--ink-x, 0px); bottom: 0;
+      width: var(--ink-w, 100%); height: 6px; background: var(--accent);
+    }
+    .axis::after {
+      content: ''; position: absolute; left: calc(var(--ink-x, 0px) + var(--ink-w, 100%) - 2px); bottom: 0;
+      width: 2px; height: 22px; background: var(--accent);
+    }
+
+    .headline {
+      flex: none; overflow: hidden; margin-top: 40px;
+      font-family: var(--display); font-weight: 800; font-stretch: 86%;
+      font-size: 92px; line-height: 1.03; letter-spacing: -0.018em; word-spacing: .04em;
+      text-wrap: balance;
+    }
+    .headline .hl { color: var(--accent); }
+
+    .foot {
+      flex: none; margin-top: 36px; padding-top: 24px;
+      border-top: 2px solid var(--rule);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 36px;
+      font-family: var(--mono); font-size: 26px; line-height: 1.3; letter-spacing: .02em;
+    }
+    .source { min-width: 0; color: var(--muted); max-height: 68px; overflow: hidden; }
+    .handle {
+      flex: none; display: flex; align-items: center; gap: 12px;
+      font-weight: 700; color: var(--fg); white-space: nowrap; margin-left: auto;
+    }
+    .handle::before { content: ''; width: 14px; height: 14px; background: var(--accent); flex: none; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="tex tex-glow"></div>
+    <div class="tex tex-grid"></div>
+    <div class="tex tex-vignette"></div>
+    <div class="marks"></div>
+
+    <div class="frame">
+      <header class="top">
+        <div class="chip" data-if="kicker">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 1 3.5 13.6h7L9.6 23 20.5 9.8h-7.2z" fill="currentColor"/></svg>
+          <span class="kicker" data-field="kicker" data-fit data-fit-min="26"></span>
+        </div>
+        <span class="date" data-field="date"></span>
+      </header>
+
+      <main class="stage">
+        <div class="label" data-if="statLabel">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 6v16.5M8 22.5h16.5M24.5 22.5 18 16M24.5 22.5 18 29" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="square"/></svg>
+          <span data-field="statLabel" data-fit data-fit-min="26"></span>
+        </div>
+        <div class="stat-wrap" data-if="stat"><div class="stat" data-field="stat"></div></div>
+        <div class="axis" data-if="stat"></div>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="92" data-fit-min="64"></h1>
+      </main>
+
+      <footer class="foot">
+        <span class="source" data-field="source"></span>
+        <span class="handle" data-field="handle"></span>
+      </footer>
+    </div>
+
+    <div class="tex tex-dust"></div>
+    <div class="tex tex-grain"></div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Funding round",
+    "statLabel": "Raised by Nova Labs in one seed round",
+    "stat": "$4.2B",
+    "headline": "11 people, no product, and the biggest seed check AI has ever seen",
+    "highlight": "no product",
+    "source": "Source: Nova Labs announcement",
+    "date": "Nov 9, 2026",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+  /*
+   * Stat Bomb layout engine.
+   * 1. Splits the stat into prefix unit / number / suffix unit ("$" "4.2" "B") so symbols
+   *    can be set smaller and the digits get the scale.
+   * 2. Decides how tall the number may be, leaving the headline room for at least its preferred size.
+   * 3. Solves Archivo's width axis (62-125) and font size together: the widest cut that still reaches
+   *    the target height, or the most condensed cut at full width. "10x" goes fat, "1,000,000" goes narrow.
+   * 4. Optically aligns the number's ink (not its advance box) to the left margin.
+   */
+  Card.onRender(async function (data, card) {
+    var stage = card.querySelector('.stage');
+    var wrap = card.querySelector('.stat-wrap');
+    var stat = card.querySelector('.stat');
+    var head = card.querySelector('.headline');
+    var axis = card.querySelector('.axis');
+    var raw = data.stat === undefined || data.stat === null ? '' : String(data.stat).trim();
+
+    var sample = raw + (data.headline || '') + (data.kicker || '').toUpperCase() + '0123456789$%×,.';
+    try {
+      await Promise.all([
+        document.fonts.load('900 100px Archivo', sample),
+        document.fonts.load('800 100px Archivo', sample),
+        document.fonts.load('500 32px "JetBrains Mono"', sample),
+        document.fonts.load('700 26px "JetBrains Mono"', sample)
+      ]);
+    } catch (e) { /* fall back silently */ }
+    try { await document.fonts.ready; } catch (e) { /* ignore */ }
+
+    function px(v) { return parseFloat(v) || 0; }
+    function outerH(el) {
+      if (!el || el.hidden) return 0;
+      var cs = getComputedStyle(el);
+      return el.getBoundingClientRect().height + px(cs.marginTop) + px(cs.marginBottom);
+    }
+
+    /* ---- 1. split the stat ---- */
+    function parse(s) {
+      var m = s.match(/^(\D*?)([+\-−–~≈<>±]?\d[\d.,:\/]*\d|[+\-−–~≈<>±]?\d)(\D*)$/);
+      if (!m) return { core: s, pre: '', suf: '' };
+      var pre = m[1], suf = m[3];
+      if (pre.trim().length > 3 || suf.trim().length > 4) return { core: s, pre: '', suf: '' };
+      return { pre: pre.trim(), core: m[2], suf: suf.trim(), gap: /^\s/.test(suf) };
+    }
+
+    var hasStat = raw !== '' && !wrap.hidden;
+    if (hasStat) {
+      var p = parse(raw);
+      stat.innerHTML = '';
+      var add = function (cls, text) {
+        var s = document.createElement('span');
+        s.className = cls; s.textContent = text; stat.appendChild(s); return s;
+      };
+      if (p.pre) add('u u-top u-pre', p.pre);
+      add('core', p.core);
+      if (p.suf) {
+        var top = /^[%°‰]+$/.test(p.suf);
+        add('u u-suf ' + (top ? 'u-top' : 'u-base') + (/^[×x]$/i.test(p.suf) ? ' u-x' : '') + (p.gap ? ' u-gap' : ''), p.suf);
+      }
+    }
+
+    /* ---- 2. vertical budget ---- */
+    var avail = stage.clientHeight - px(getComputedStyle(stage).paddingTop) - px(getComputedStyle(stage).paddingBottom);
+    var fixed = outerH(card.querySelector('.label')) + (hasStat ? px(getComputedStyle(wrap).marginTop) + outerH(axis) : 0) +
+                (head.hidden ? 0 : px(getComputedStyle(head).marginTop));
+    var room = avail - fixed;                         // shared by number height + headline height
+
+    function headNeed(size) {
+      if (head.hidden) return 0;
+      head.style.height = 'auto';
+      head.style.fontSize = size + 'px';
+      var h = head.scrollHeight;
+      head.style.fontSize = '';
+      return h;
+    }
+    var hMax = headNeed(92), hPref = headNeed(80), hMin = headNeed(64);
+
+    var N_MAX = 560, N_SOFT = 380, N_HARD = 190;
+    var target;
+    if (room - hPref >= N_SOFT) target = Math.min(N_MAX, room - hPref);
+    else if (room - hMin >= N_SOFT) target = N_SOFT;
+    else target = Math.max(N_HARD, room - hMin);
+
+    /* ---- 3. solve width axis + size ---- */
+    var used = 0;
+    if (hasStat) {
+      var W = stage.clientWidth;
+      var ctx = document.createElement('canvas').getContext('2d');
+      var KW = [[50, 'ultra-condensed'], [62.5, 'extra-condensed'], [75, 'condensed'], [87.5, 'semi-condensed'],
+                [100, 'normal'], [112.5, 'semi-expanded'], [125, 'expanded']];
+      var cache = {};
+      // Ink metrics (in em) of a string at a width-axis value, interpolated between canvas stretch keywords:
+      // l/r = side bearings, a/d = ink ascent/descent from the baseline.
+      var metrics = function (text, wdth) {
+        var at = function (kw) {
+          var k = text + '|' + kw;
+          if (cache[k]) return cache[k];
+          ctx.font = '900 200px Archivo';
+          try { ctx.fontStretch = kw; } catch (e) { /* older engines */ }
+          var m = ctx.measureText(text);
+          return (cache[k] = {
+            l: -m.actualBoundingBoxLeft / 200, r: (m.width - m.actualBoundingBoxRight) / 200,
+            a: m.actualBoundingBoxAscent / 200, d: m.actualBoundingBoxDescent / 200
+          });
+        };
+        var lo = KW[0], hi = KW[KW.length - 1];
+        for (var i = 0; i < KW.length - 1; i++) {
+          if (wdth >= KW[i][0] && wdth <= KW[i + 1][0]) { lo = KW[i]; hi = KW[i + 1]; break; }
+        }
+        var A = at(lo[1]), B = at(hi[1]), t = (wdth - lo[0]) / (hi[0] - lo[0]), o = {};
+        for (var key in A) o[key] = A[key] + (B[key] - A[key]) * t;
+        return o;
+      };
+      var spans = Array.prototype.slice.call(stat.children);
+      var first = spans[0], last = spans[spans.length - 1], core = stat.querySelector('.core');
+      // Horizontal ink box of the number at (size, wdth), relative to the stat element's left edge.
+      var ink = function (size, wdth) {
+        stat.style.fontSize = size + 'px';
+        stat.style.fontStretch = wdth + '%';
+        var r = stat.getBoundingClientRect();
+        var fr = first.getBoundingClientRect(), lr = last.getBoundingClientRect();
+        var f1 = px(getComputedStyle(first).fontSize), f2 = px(getComputedStyle(last).fontSize);
+        var ls = px(getComputedStyle(last).letterSpacing);
+        var left = fr.left - r.left + metrics(first.textContent.charAt(0), wdth).l * f1;
+        var right = lr.right - r.left - ls - metrics(last.textContent.slice(-1), wdth).r * f2;
+        return { left: left, width: right - left };
+      };
+      // Vertical ink overshoot (em of the stat size) above the cap line and below the baseline ($ stems, commas).
+      var overshoot = function (wdth) {
+        var cap = core.getBoundingClientRect().height / px(getComputedStyle(stat).fontSize);
+        var up = 0, down = 0;
+        spans.forEach(function (sp) {
+          var k = px(getComputedStyle(sp).fontSize) / px(getComputedStyle(stat).fontSize);
+          var m = metrics(sp.textContent, wdth);
+          if (sp.classList.contains('u-top')) {          // box top = cap line of the number
+            up = Math.max(up, (m.a - cap) * k);
+            down = Math.max(down, (cap * k + m.d * k) - cap);
+          } else {                                        // box bottom = baseline
+            up = Math.max(up, m.a * k - cap);
+            down = Math.max(down, m.d * k);
+          }
+        });
+        return { cap: cap, up: Math.max(0, up), down: Math.max(0, down) };
+      };
+
+      stat.style.fontSize = '100px';
+      stat.style.fontStretch = '100%';
+      var v = overshoot(100);
+      var sizeH = target / (v.cap + v.up + v.down);
+
+      var best = null;
+      for (var w = 125; w >= 62; w -= 0.5) {
+        var sizeW = W / ink(100, w).width * 100;
+        if (sizeW >= sizeH) { best = { w: w, size: sizeH }; break; }
+        if (w <= 62) best = { w: 62, size: sizeW };
+      }
+      var size = best.size;
+      var box = ink(size, best.w);
+      var guard = 40;
+      while (box.width > W && guard-- > 0) { size *= 0.995; box = ink(size, best.w); }
+      stat.style.marginLeft = (-box.left) + 'px';
+
+      v = overshoot(best.w);
+      var upPx = Math.ceil(v.up * size), downPx = Math.ceil(v.down * size);
+      wrap.style.marginTop = (px(getComputedStyle(wrap).marginTop) + upPx) + 'px';
+      wrap.style.marginBottom = downPx + 'px';
+      used = core.getBoundingClientRect().height + upPx + downPx;
+
+      // Lime measuring bar = exact ink width of the number.
+      axis.style.setProperty('--ink-w', Math.round(box.width) + 'px');
+    }
+
+    /* ---- headline box gets whatever is left (never more than it can use) ---- */
+    if (!head.hidden) {
+      var left = room - used;
+      head.style.height = Math.max(Math.min(hMax, left), Math.min(hMin, left)) + 'px';
+    }
+
+    /* ---- park the glow behind the number ---- */
+    var cr = card.getBoundingClientRect();
+    var target2 = hasStat ? stat.getBoundingClientRect() : head.getBoundingClientRect();
+    card.style.setProperty('--gx', Math.round(target2.left - cr.left + target2.width / 2) + 'px');
+    card.style.setProperty('--gy', Math.round(target2.top - cr.top + target2.height / 2) + 'px');
+  });
+  </script>
+</body>
+</html>

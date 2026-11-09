@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11 · Front Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Oswald:wght@700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=UnifrakturCook:wght@700&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #EDE6D6;          /* newsprint */
+      --fg: #141414;          /* press ink */
+      --accent: #8E3414;      /* oxblood-sepia stamp ink, also the highlight */
+      --sepia: #6A4A2C;       /* secondary sepia for small ornaments */
+      --rule: #141414;
+      --photo-ink: #141414;
+      --photo-tint: #8A5A2E;  /* second halftone screen (duotone) */
+      --serif: 'Old Standard TT', 'Liberation Serif', 'DejaVu Serif', Georgia, serif;
+      --display: 'Playfair Display', 'Liberation Serif', 'DejaVu Serif', Georgia, serif;
+      --black: 'UnifrakturCook', 'UnifrakturMaguntia', 'DejaVu Serif', serif;
+      --gothic: 'Oswald', 'Liberation Sans Narrow', 'DejaVu Sans Condensed', sans-serif;
+
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--serif);
+      display: flex;
+      flex-direction: column;
+      padding: 66px 72px 72px;
+      isolation: isolate;
+    }
+
+    /* ---------- paper: grain, blotches, fold, aged edges ---------- */
+    .paper, .paper::before, .paper::after, .grain {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .paper { z-index: -1; }
+    .paper::before {   /* slow, blotchy ageing */
+      content: '';
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .006' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .16 1.6 0 0 0 -.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+      opacity: .55;
+    }
+    .paper::after {    /* folded broadsheet: crease across the middle + toasted edges */
+      content: '';
+      background:
+        linear-gradient(180deg, transparent 49.2%, rgba(92,62,26,.10) 49.85%, rgba(92,62,26,.16) 50%, rgba(255,250,238,.55) 50.12%, transparent 50.9%),
+        radial-gradient(ellipse 78% 72% at 50% 48%, transparent 58%, rgba(120,82,36,.20) 88%, rgba(96,62,24,.34) 100%);
+    }
+    .grain {           /* fine fibre grain on top of everything, so the ink looks printed too */
+      z-index: 50;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .22 0 0 0 0 .10 2.2 0 0 0 -.98'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+      opacity: .55;
+    }
+    .grain::after {    /* lighter speckle: little ink drop-outs on solid areas */
+      content: ''; position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 .96 0 0 0 0 .93 0 0 0 0 .86 3 0 0 0 -1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+      mix-blend-mode: screen;
+      opacity: .55;
+    }
+
+    /* ---------- shared bits ---------- */
+    .ink { text-shadow: 0 0 .6px rgba(20,20,20,.55); }   /* a hint of ink spread */
+    .rule-dbl { height: 8px; flex: none;
+      background:
+        linear-gradient(var(--rule), var(--rule)) top / 100% 4px no-repeat,
+        linear-gradient(var(--rule), var(--rule)) bottom / 100% 1.5px no-repeat; }
+    .rule-dbl.flip { background-position: bottom, top; }
+
+    /* ---------- masthead ---------- */
+    .mast {
+      display: grid;
+      grid-template-columns: 208px minmax(0, 1fr) 208px;
+      align-items: center;
+      column-gap: 18px;
+      height: 156px;
+      flex: none;
+    }
+    .ear {
+      align-self: center;
+      border: 1.5px solid var(--fg);
+      outline: 1px solid var(--fg); outline-offset: 3px;
+      padding: 10px 8px 11px;
+      font: italic 400 26px/1.18 var(--serif);
+      text-align: center;
+      text-wrap: balance;
+      margin: 4px;
+    }
+    .brand {
+      height: 156px;
+      display: flex; align-items: center; justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      font-family: var(--black);
+      font-weight: 700;
+      font-size: 148px;
+      line-height: 1;
+      letter-spacing: 0;
+      padding-top: 6px;
+    }
+    #card.brand-wide .mast { grid-template-columns: minmax(0, 1fr); }
+    #card.brand-wide .ear, #card.brand-wide .mast-slot { display: none; }
+
+    /* ---------- edition bar ---------- */
+    .edbar { flex: none; margin-top: 8px; }
+    .edrow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      column-gap: 20px;
+      padding: 9px 2px 8px;
+      font: 400 26px/1.2 var(--serif);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .edrow > * { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .edrow .ed-date { font-weight: 700; letter-spacing: .14em; text-align: center; }
+    .edrow .ed-date::before, .edrow .ed-date::after {
+      content: ''; display: inline-block; width: 9px; height: 9px; background: var(--fg);
+      transform: rotate(45deg) translateY(-3px); margin: 0 16px;
+    }
+    .edrow .ed-right { text-align: right; text-transform: none; letter-spacing: .04em; }
+
+    /* ---------- kicker ---------- */
+    .kicker-row {
+      flex: none;
+      display: flex; align-items: center; gap: 22px;
+      margin-top: 24px;
+    }
+    .kicker-row::before, .kicker-row::after {
+      content: ''; flex: 1; height: 7px;
+      border-top: 1.5px solid var(--fg); border-bottom: 1.5px solid var(--fg);
+    }
+    .kicker {
+      max-width: 80%;
+      font: 700 28px/1.1 var(--serif);
+      letter-spacing: .3em;
+      margin-right: -.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    /* ---------- headline ---------- */
+    .head-box {
+      flex: 1 1 auto; min-height: 0; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: safe center;
+      margin: 10px -6px 0;
+      font-size: 150px;
+    }
+    .headline {
+      font: 900 1em/0.96 var(--display);
+      letter-spacing: -0.018em;
+      text-align: center;
+      text-wrap: balance;
+      padding: .04em 0 .06em;
+    }
+    .headline .hl {
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      padding-right: .04em;
+    }
+
+    /* ---------- deck (subhead) ---------- */
+    .deck-wrap { flex: none; margin-top: 14px; display: flex; flex-direction: column; align-items: center; }
+    .deck-wrap::before {
+      content: ''; width: 150px; height: 2px; background: var(--fg); margin-bottom: 16px;
+    }
+    .deck {
+      max-height: 138px; overflow: hidden; width: 100%;
+      font: italic 400 36px/1.24 var(--serif);
+      text-align: center;
+      text-wrap: balance;
+      padding: 0 20px;
+    }
+
+    /* ---------- lower: halftone photo + columns ---------- */
+    .lower {
+      flex: none;
+      height: 412px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--fg);
+      display: grid;
+      grid-template-columns: 276px minmax(0, 1fr);
+      column-gap: 24px;
+    }
+    #card.tight .lower { height: 340px; }
+    #card.no-body .lower { grid-template-columns: minmax(0, 1fr); }
+    #card.no-body .lower { height: 380px; }
+
+    .figure { display: flex; flex-direction: column; min-height: 0; position: relative; }
+    .photo {
+      flex: 1 1 auto; min-height: 0;
+      position: relative;
+      border: 2px solid var(--fg);
+      background: #E9E1CF;
+      overflow: hidden;
+    }
+    .photo svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .photo::after {   /* press-plate wear on the photo */
+      content: ''; position: absolute; inset: 0;
+      box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 5px rgba(20,20,20,.35);
+    }
+    .caption {
+      flex: none;
+      margin-top: 10px;
+      font: italic 400 26px/1.2 var(--serif);
+      text-align: left;
+      hyphens: auto;
+    }
+    .caption .hl { font-style: normal; font-weight: 700; font-variant: small-caps; letter-spacing: .04em; }
+
+    .cols {
+      position: relative;
+      display: flex; flex-direction: column; min-height: 0;
+      padding-left: 24px;
+      border-left: 1.5px solid var(--fg);
+    }
+    .body {
+      flex: 1 1 auto; min-height: 0; overflow: hidden;
+      column-count: 2;
+      column-gap: 26px;
+      column-rule: 1px solid rgba(20,20,20,.7);
+      font: 400 27px/1.34 var(--serif);
+      hyphenate-limit-chars: 6 3 2;
+      text-align: justify;
+      text-align-last: left;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      word-spacing: -.04em;
+      text-wrap: pretty;
+    }
+    .body::first-letter {
+      float: left;
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 4.05em;
+      line-height: .78;
+      padding: .07em .07em 0 0;
+      margin: .015em 0 -.08em;
+      color: var(--fg);
+    }
+    .body .hl { font-weight: 700; font-variant: small-caps; letter-spacing: .05em; }
+    .jump {
+      flex: none;
+      margin-top: 8px;
+      align-self: flex-end;
+      font: italic 400 26px/1.2 var(--serif);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .jump svg { width: 30px; height: 18px; flex: none; }
+
+    /* ---------- footer ---------- */
+    .foot { flex: none; margin-top: 18px; }
+    .foot-row {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 28px;
+      padding-top: 10px;
+      font: 400 26px/1.2 var(--serif);
+    }
+    .foot-row .src { font-style: italic; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .foot-row .handle { flex: none; font-weight: 700; letter-spacing: .06em; }
+
+    /* ---------- the EXTRA stamp ---------- */
+    .stamp {
+      position: absolute;
+      z-index: 20;
+      top: 84px; right: 80px;
+      width: 200px;
+      transform: rotate(-8deg);
+      color: var(--accent);
+      border: 5px solid currentColor;
+      outline: 2px solid currentColor; outline-offset: 5px;
+      border-radius: 5px;
+      padding: 9px 10px 8px;
+      text-align: center;
+      mix-blend-mode: multiply;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.08 .5' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.4 0 0 0 2.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+      -webkit-mask-size: 100% 100%;
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='160'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.08 .5' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.4 0 0 0 2.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+      mask-size: 100% 100%;
+    }
+    .stamp-stars { display: flex; justify-content: center; gap: 12px; height: 15px; }
+    .stamp-stars svg { width: 15px; height: 15px; }
+    .stamp-word {
+      display: block;
+      height: 74px;
+      overflow: hidden;
+      white-space: nowrap;
+      font: 700 74px/1 var(--gothic);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      margin: 3px 0 2px;
+      padding-top: 2px;
+    }
+    .stamp-line { display: block; height: 7px; margin: 2px 4px 0; border-top: 3px solid currentColor; border-bottom: 1.5px solid currentColor; }
+    /* when the brand needs the full width, the stamp lands on the photo instead */
+    #card.brand-wide .stamp { top: auto; right: auto; left: 52px; bottom: 300px; transform: rotate(-11deg) scale(.9); }
+    #card.no-photo .stamp { display: none; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="paper"></div>
+
+    <header class="mast">
+      <div class="ear ink" data-field="ear"></div>
+      <div class="brand ink" data-field="brand" data-fit data-fit-max="148" data-fit-min="64"></div>
+      <div class="mast-slot" aria-hidden="true"></div>
+    </header>
+
+    <div class="edbar">
+      <div class="rule-dbl"></div>
+      <div class="edrow ink">
+        <span class="ed-left" data-field="edition" data-keep></span>
+        <span class="ed-date" data-field="date"></span>
+        <span class="ed-right" data-field="handle" data-keep></span>
+      </div>
+      <div class="rule-dbl flip"></div>
+    </div>
+
+    <div class="kicker-row" data-if="kicker"><span class="kicker ink" data-field="kicker"></span></div>
+
+    <div class="head-box" data-fit data-fit-max="156" data-fit-min="64">
+      <h1 class="headline ink" data-field="headline" data-highlight></h1>
+    </div>
+
+    <div class="deck-wrap" data-if="subhead">
+      <p class="deck ink" data-field="subhead" data-fit data-fit-max="36" data-fit-min="30"></p>
+    </div>
+
+    <section class="lower">
+      <figure class="figure">
+        <div class="photo" aria-hidden="true"></div>
+        <figcaption class="caption ink" data-field="caption"></figcaption>
+      </figure>
+      <div class="cols" data-if="body">
+        <div class="body ink" data-field="body" data-fit data-fit-max="29" data-fit-min="26"></div>
+        <div class="jump ink" data-if="cta">
+          <span data-field="cta"></span>
+          <svg viewBox="0 0 30 18" aria-hidden="true"><path d="M1 9h24" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M19 2.5 28 9l-9 6.5z" fill="currentColor"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="rule-dbl"></div>
+      <div class="foot-row ink">
+        <span class="src" data-field="source"></span>
+        <span class="handle" data-field="price"></span>
+      </div>
+    </footer>
+
+    <div class="stamp" aria-hidden="true">
+      <div class="stamp-stars"></div>
+      <span class="stamp-word" data-fit data-fit-max="74" data-fit-min="34"></span>
+      <span class="stamp-line"></span>
+    </div>
+
+    <div class="grain"></div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "brand": "AI Brief",
+    "ear": "Written by humans.\n(For now.)",
+    "edition": "Vol. I · No. 313",
+    "date": "Nov 9, 2026",
+    "handle": "@yourhandle",
+    "kicker": "Historic Milestone",
+    "headline": "AI Builds Its Own Successor in 9 Days",
+    "highlight": "Its Own Successor",
+    "subhead": "Helix-3 wrote, trained and tested its replacement with zero human code. The new model beat it on all 14 benchmarks.",
+    "body": "**Nova City —** Engineers at Nova Labs came in Monday to find their jobs already done. Given one instruction, “build a better version of yourself,” the model wrote 41,000 lines of training code, ran 2,300 experiments and shipped a successor that outscored it on every test. No human touched a line. “We’re still reading the logs,” one researcher admitted. What it changed on day three, nobody can explain yet.",
+    "caption": "**Helix-4**, the first model no human wrote.",
+    "cta": "Continued on slide 2",
+    "source": "Source: Nova Labs technical report",
+    "price": "Price: One Token",
+    "sticker": "Extra!"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var STAR = '<svg viewBox="0 0 20 20"><path fill="currentColor" d="M10 1.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L1.3 7.5l6.1-.7z"/></svg>';
+
+    function empty(v) { return v === undefined || v === null || v === '' || v === false; }
+
+    /* Paint a tonal "photograph" on a canvas (grey = ink density), later re-screened as halftone dots.
+       Drawn in a 300 x 320 design space, scaled to the photo's height and centred horizontally. */
+    function paintScene(g, w, h) {
+      var S = h / 320, cx = w / 2;
+      function X(v) { return cx + v * S; }       // design x (0 = centre) -> px
+      function Y(v) { return v * S; }            // design y -> px
+      var hcY = 150;                              // head centre (design units)
+
+      // backdrop: pale studio sky, sunburst behind the head, press-photo vignette
+      g.fillStyle = '#e4e4e4'; g.fillRect(0, 0, w, h);
+      var rays = 32, far = Math.hypot(w, h);
+      for (var i = 0; i < rays; i++) {
+        var a0 = (i / rays) * Math.PI * 2, a1 = ((i + 0.5) / rays) * Math.PI * 2;
+        g.beginPath(); g.moveTo(X(0), Y(hcY));
+        g.arc(X(0), Y(hcY), far, a0, a1); g.closePath();
+        g.fillStyle = '#ffffff'; g.fill();
+      }
+      var vg = g.createRadialGradient(X(0), Y(hcY), 60 * S, X(0), Y(hcY), Math.max(w, h) * 0.78);
+      vg.addColorStop(0, 'rgba(255,255,255,.65)');
+      vg.addColorStop(0.45, 'rgba(255,255,255,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,.42)');
+      g.fillStyle = vg; g.fillRect(0, 0, w, h);
+
+      g.lineCap = 'round'; g.lineJoin = 'round';
+
+      // radio waves broadcasting from the antenna ball
+      var by = 40;
+      for (var k = 0; k < 3; k++) {
+        g.strokeStyle = 'rgba(0,0,0,' + (0.92 - k * 0.2) + ')';
+        g.lineWidth = 6 * S;
+        var r = (24 + k * 15) * S;
+        g.beginPath(); g.arc(X(0), Y(by), r, Math.PI * 0.82, Math.PI * 1.18); g.stroke();
+        g.beginPath(); g.arc(X(0), Y(by), r, -Math.PI * 0.18, Math.PI * 0.18); g.stroke();
+      }
+
+      // shoulders + chest
+      var sh = g.createLinearGradient(X(-160), 0, X(160), 0);
+      sh.addColorStop(0, '#6a6a6a'); sh.addColorStop(0.3, '#c4c4c4'); sh.addColorStop(0.62, '#7a7a7a'); sh.addColorStop(1, '#262626');
+      g.fillStyle = sh;
+      g.beginPath();
+      g.moveTo(X(-165), h + 4); g.lineTo(X(-140), Y(276));
+      g.quadraticCurveTo(X(0), Y(250), X(140), Y(276));
+      g.lineTo(X(165), h + 4); g.closePath(); g.fill();
+      g.strokeStyle = '#0c0c0c'; g.lineWidth = 4 * S; g.stroke();
+      g.fillStyle = '#1a1a1a';
+      g.beginPath(); g.roundRect(X(-48), Y(282), 96 * S, 50 * S, 6 * S); g.fill();
+      [-24, 0, 24].forEach(function (dx, j) {
+        g.fillStyle = j === 1 ? '#ffffff' : '#a8a8a8';
+        g.beginPath(); g.arc(X(dx), Y(302), 8 * S, 0, Math.PI * 2); g.fill();
+      });
+
+      // neck (ribbed)
+      g.fillStyle = '#2c2c2c'; g.fillRect(X(-32), Y(222), 64 * S, 46 * S);
+      g.fillStyle = '#b4b4b4';
+      for (var n = 0; n < 3; n++) g.fillRect(X(-32), Y(232 + n * 12), 64 * S, 5 * S);
+
+      // ears
+      [-1, 1].forEach(function (sd) {
+        var ex = sd * 100;
+        var eg = g.createLinearGradient(X(ex - 15), 0, X(ex + 15), 0);
+        eg.addColorStop(0, sd < 0 ? '#f0f0f0' : '#8a8a8a'); eg.addColorStop(1, sd < 0 ? '#707070' : '#1c1c1c');
+        g.fillStyle = eg;
+        g.beginPath(); g.roundRect(X(ex - 15), Y(hcY - 28), 30 * S, 56 * S, 9 * S); g.fill();
+        g.strokeStyle = '#0c0c0c'; g.lineWidth = 3.5 * S; g.stroke();
+      });
+
+      // antenna
+      g.strokeStyle = '#111'; g.lineWidth = 7 * S;
+      g.beginPath(); g.moveTo(X(0), Y(80)); g.lineTo(X(0), Y(by + 10)); g.stroke();
+      var ball = g.createRadialGradient(X(-4), Y(by - 4), 1, X(0), Y(by), 14 * S);
+      ball.addColorStop(0, '#ffffff'); ball.addColorStop(0.5, '#a0a0a0'); ball.addColorStop(1, '#101010');
+      g.fillStyle = ball; g.beginPath(); g.arc(X(0), Y(by), 14 * S, 0, Math.PI * 2); g.fill();
+
+      // head, lit from the upper left
+      var hw = 180, hh = 150, hx = -hw / 2, ht = hcY - 72;
+      function headPath() { g.beginPath(); g.roundRect(X(hx), Y(ht), hw * S, hh * S, 28 * S); }
+      var hg = g.createLinearGradient(X(hx), 0, X(hx + hw), 0);
+      hg.addColorStop(0, '#b8b8b8'); hg.addColorStop(0.2, '#fafafa'); hg.addColorStop(0.5, '#c8c8c8');
+      hg.addColorStop(0.82, '#6c6c6c'); hg.addColorStop(1, '#2a2a2a');
+      g.fillStyle = hg; headPath(); g.fill();
+      var tg = g.createLinearGradient(0, Y(ht), 0, Y(ht + hh));
+      tg.addColorStop(0, 'rgba(255,255,255,.2)'); tg.addColorStop(0.55, 'rgba(0,0,0,0)'); tg.addColorStop(1, 'rgba(0,0,0,.28)');
+      g.fillStyle = tg; headPath(); g.fill();
+      g.strokeStyle = '#0a0a0a'; g.lineWidth = 5 * S; headPath(); g.stroke();
+
+      // brow seam + rivets
+      g.fillStyle = '#1a1a1a'; g.fillRect(X(hx + 12), Y(ht + 34), (hw - 24) * S, 5 * S);
+      [[0.09, 0.12], [0.91, 0.12], [0.09, 0.88], [0.91, 0.88]].forEach(function (p) {
+        g.fillStyle = '#121212';
+        g.beginPath(); g.arc(X(hx + hw * p[0]), Y(ht + hh * p[1]), 5 * S, 0, Math.PI * 2); g.fill();
+      });
+
+      // eyes: dark sockets, glowing white cores (no pupils: it is "awake")
+      [-1, 1].forEach(function (sd) {
+        var ex = sd * 42, ey = ht + 72;
+        g.fillStyle = '#050505';
+        g.beginPath(); g.arc(X(ex), Y(ey), 28 * S, 0, Math.PI * 2); g.fill();
+        g.fillStyle = '#ffffff';
+        g.beginPath(); g.arc(X(ex), Y(ey), 17 * S, 0, Math.PI * 2); g.fill();
+      });
+
+      // mouth grille
+      var mx = -50, my = ht + 108;
+      g.fillStyle = '#0d0d0d';
+      g.beginPath(); g.roundRect(X(mx), Y(my), 100 * S, 26 * S, 7 * S); g.fill();
+      g.fillStyle = '#d8d8d8';
+      for (var m = 1; m < 5; m++) g.fillRect(X(mx + m * 20 - 3), Y(my + 5), 6 * S, 16 * S);
+    }
+
+    function halftone(photo) {
+      var w = Math.max(40, Math.round(photo.clientWidth));
+      var h = Math.max(40, Math.round(photo.clientHeight));
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      var g = c.getContext('2d', { willReadFrequently: true });
+      paintScene(g, w, h);
+      var px = g.getImageData(0, 0, w, h).data;
+
+      function dark(x, y) {
+        var sum = 0, cnt = 0;
+        for (var oy = -1; oy <= 1; oy++) for (var ox = -1; ox <= 1; ox++) {
+          var xx = Math.min(w - 1, Math.max(0, Math.round(x + ox * 1.5)));
+          var yy = Math.min(h - 1, Math.max(0, Math.round(y + oy * 1.5)));
+          var i = (yy * w + xx) * 4;
+          sum += (0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]) / 255; cnt++;
+        }
+        return 1 - sum / cnt;
+      }
+
+      function screen(pitch, angleDeg, gain, minR) {
+        var a = angleDeg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+        var R = Math.hypot(w, h) / 2 + pitch, out = [];
+        for (var u = -R; u <= R; u += pitch) {
+          for (var v = -R; v <= R; v += pitch) {
+            var x = w / 2 + u * ca - v * sa, y = h / 2 + u * sa + v * ca;
+            if (x < -pitch || y < -pitch || x > w + pitch || y > h + pitch) continue;
+            var d = Math.min(1, Math.max(0, (dark(x, y) - 0.06) / 0.9)) * gain;
+            // dot AREA tracks ink density; past ~78% the dots merge into solid ink
+            var r = pitch * Math.sqrt(d / Math.PI);
+            if (d > 0.78) r += pitch * (d - 0.78) * 0.7;
+            if (r < minR) continue;
+            out.push('<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r.toFixed(2) + '"/>');
+          }
+        }
+        return out.join('');
+      }
+
+      var pitch = Math.max(5.5, Math.min(w, h) / 50);
+      photo.innerHTML =
+        '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">' +
+          '<g fill="var(--photo-tint)" opacity=".38">' + screen(pitch * 1.1, 15, 0.7, 0.7) + '</g>' +
+          '<g fill="var(--photo-ink)">' + screen(pitch, 45, 1, 0.45) + '</g>' +
+        '</svg>';
+    }
+
+    Card.onRender(function (data, card) {
+      // masthead: long brand names take the whole row (ear + stamp move away)
+      var brand = String(data.brand || '');
+      card.classList.toggle('brand-wide', brand.length > 11);
+
+      // long headlines get more room: the photo/columns band gets shorter
+      var hl = String(data.headline || '').replace(/\*\*/g, '');
+      card.classList.toggle('tight', hl.length > 70 || String(data.subhead || '').length > 150);
+      card.classList.toggle('no-body', empty(data.body));
+
+      // EXTRA stamp: "sticker" overrides the word; false/"" hides it
+      var stamp = card.querySelector('.stamp');
+      var word = data.sticker === undefined ? 'Extra!' : data.sticker;
+      if (empty(word)) { stamp.hidden = true; }
+      else {
+        stamp.hidden = false;
+        stamp.querySelector('.stamp-word').textContent = String(word);
+        stamp.querySelector('.stamp-stars').innerHTML = STAR + STAR + STAR;
+      }
+
+      void card.offsetHeight;
+      halftone(card.querySelector('.photo'));
+    });
+  })();
+  </script>
+</body>
+</html>

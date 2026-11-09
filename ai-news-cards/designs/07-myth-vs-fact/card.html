@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>07 Myth vs Fact</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@500;600;700;800&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #1E2330;          /* dark slate */
+      --fg: #F3F4F7;
+      --muted: #A3ABBC;
+      --myth: #FF5A5F;        /* coral */
+      --fact: #2EC4B6;        /* mint */
+      --ink: #1E2330;         /* text on mint */
+      --myth-text: #E3E6ED;
+      --cut: 64px;            /* rise of the diagonal divider */
+      --pad-x: 76px;
+
+      display: flex;
+      flex-direction: column;
+      padding: 72px var(--pad-x) 0;
+      color: var(--fg);
+      background:
+        radial-gradient(120% 70% at 18% 8%, rgba(255, 255, 255, .045), transparent 60%),
+        var(--bg);
+      font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+    }
+
+    /* Film grain over everything */
+    #card::after {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      opacity: .32;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* ---------- Header ---------- */
+    .head { position: relative; z-index: 2; flex: none; }
+    .kicker-row {
+      display: flex; align-items: center; gap: 18px;
+      min-height: 40px;
+    }
+    .kicker-row .mark { flex: none; width: 34px; height: 34px; }
+    .kicker {
+      flex: 0 1 auto;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 700; font-size: 27px; line-height: 1.15;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .kicker-rule { flex: 1 1 40px; min-width: 40px; height: 2px; background: rgba(255, 255, 255, .14); }
+
+    .headline {
+      margin-top: 22px;
+      max-height: 430px; overflow: hidden;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 700; font-size: 68px; line-height: 1.06; letter-spacing: -0.02em;
+      color: var(--fg);
+    }
+    .headline .hl { color: var(--fact); }
+
+    /* ---------- Pills (label + icon) ---------- */
+    .pill {
+      display: flex; align-items: center; gap: 14px;
+      width: fit-content;
+      height: 58px; padding: 0 26px 0 10px;
+      border-radius: 999px;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      font-weight: 800; font-size: 28px; line-height: 1;
+      letter-spacing: .2em; text-transform: uppercase;
+    }
+    .pill svg { width: 40px; height: 40px; flex: none; }
+    .pill-myth { background: var(--myth); color: var(--ink); }
+    .pill-fact { background: var(--ink); color: var(--fact); }
+
+    /* Fit containers: data-fit scales the copy (em) inside; the group centres itself
+       with auto margins, which fall back to top-aligned when space runs out. */
+    .fit {
+      flex: 1 1 0; height: 0; min-height: 0;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .group { margin: auto 0; }
+
+    /* ---------- Myth (top panel) ---------- */
+    .zone-myth {
+      position: relative; z-index: 2;
+      flex: 1 1 0; min-height: 0;
+      display: flex; flex-direction: column;
+      padding: 36px 0 40px;
+    }
+    .myth-hatch {
+      position: absolute; z-index: -1;
+      left: calc(-1 * var(--pad-x)); right: calc(-1 * var(--pad-x));
+      top: 0; bottom: -90px;
+      background: repeating-linear-gradient(135deg, rgba(255, 90, 95, .075) 0 2px, transparent 2px 18px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 55%);
+              mask-image: linear-gradient(to bottom, transparent, #000 55%);
+    }
+    .myth-fit { font-size: 92px; }
+    .myth-copy {
+      display: block; position: relative;
+      margin-top: 28px;
+      padding-left: .46em;
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-weight: 400; line-height: 1.1; letter-spacing: -0.005em;
+      color: var(--myth-text);
+    }
+    .myth-copy::before {
+      content: '\201C';
+      position: absolute; left: 0; top: 0;
+      color: var(--myth);
+    }
+    .myth-copy .hl { font-style: italic; }
+    svg.strikes {
+      position: absolute; left: 0; top: 0;
+      overflow: visible; pointer-events: none;
+      z-index: 3;
+    }
+
+    /* ---------- Fact (bottom panel) ---------- */
+    .zone-fact {
+      position: relative; z-index: 1;
+      flex: 1 1 auto; min-height: 0;
+      display: flex; flex-direction: column;
+      margin: 0 calc(-1 * var(--pad-x));
+      padding: calc(var(--cut) + 44px) var(--pad-x) 72px;
+      color: var(--ink);
+    }
+    .fact-bg {
+      position: absolute; inset: 0; z-index: -1;
+      clip-path: polygon(0 var(--cut), 100% 0, 100% 100%, 0 100%);
+      background:
+        radial-gradient(circle, rgba(30, 35, 48, .07) 1.6px, transparent 2px) 0 0 / 24px 24px,
+        linear-gradient(172deg, rgba(255, 255, 255, .12), transparent 45%),
+        var(--fact);
+      overflow: hidden;
+    }
+    .fact-bg svg { position: absolute; right: -150px; top: 60px; width: 560px; height: 560px; }
+    .fact-echo {
+      position: absolute; left: 0; right: 0; top: -22px; height: calc(var(--cut) + 6px);
+      background: var(--fact);
+      clip-path: polygon(0 var(--cut), 100% 0, 100% 5px, 0 calc(var(--cut) + 5px));
+      opacity: .55;
+    }
+    .fact-fit { font-size: 48px; }
+    .fact-copy {
+      display: block;
+      margin-top: 26px;
+      font-family: 'DM Sans', 'Inter', sans-serif;
+      font-weight: 500; line-height: 1.28; letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .fact-copy .hl {
+      font-weight: 700;
+      background: linear-gradient(transparent 56%, rgba(255, 255, 255, .42) 56%, rgba(255, 255, 255, .42) 94%, transparent 94%);
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }
+
+    .foot {
+      flex: none;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 2px solid rgba(30, 35, 48, .22);
+      font-size: 27px; line-height: 1.25;
+      color: var(--ink);
+    }
+    .foot .source { font-weight: 500; }
+    .foot .handle {
+      flex: none; margin-left: auto;
+      font-family: 'Outfit', 'Inter', sans-serif; font-weight: 700; letter-spacing: .01em;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <header class="head">
+      <div class="kicker-row">
+        <svg class="mark" viewBox="0 0 34 34" aria-hidden="true">
+          <defs><clipPath id="mk"><circle cx="17" cy="17" r="15"/></clipPath></defs>
+          <g clip-path="url(#mk)">
+            <rect width="34" height="34" fill="#2EC4B6"/>
+            <path d="M0 0H34L0 34Z" fill="#FF5A5F"/>
+          </g>
+        </svg>
+        <span class="kicker" data-field="kicker"></span>
+        <span class="kicker-rule"></span>
+      </div>
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="68" data-fit-min="64"></h1>
+    </header>
+
+    <section class="zone-myth">
+      <div class="myth-hatch"></div>
+      <div class="fit myth-fit" data-fit data-fit-max="92" data-fit-min="46">
+        <div class="group">
+          <div class="pill pill-myth">
+            <svg viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#1E2330"/>
+              <path d="M13.5 13.5l13 13M26.5 13.5l-13 13" stroke="#FF5A5F" stroke-width="4.4" stroke-linecap="round"/>
+            </svg>
+            <span data-field="mythLabel" data-default="Myth"></span>
+          </div>
+          <span class="myth-copy" data-field="myth"></span>
+        </div>
+      </div>
+      <svg class="strikes" aria-hidden="true"></svg>
+    </section>
+
+    <section class="zone-fact">
+      <div class="fact-echo"></div>
+      <div class="fact-bg">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M18 54l20 20 44-48" fill="none" stroke="rgba(30,35,48,.06)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="fit fact-fit" data-fit data-fit-max="48" data-fit-min="34">
+        <div class="group">
+          <div class="pill pill-fact">
+            <svg viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#2EC4B6"/>
+              <path d="M12.5 20.5l5.2 5.2 10-11" fill="none" stroke="#1E2330" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span data-field="factLabel" data-default="Fact"></span>
+          </div>
+          <span class="fact-copy" data-field="fact"></span>
+        </div>
+      </div>
+      <footer class="foot">
+        <span class="source" data-field="source"></span>
+        <span class="handle" data-field="handle"></span>
+      </footer>
+    </section>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "AI reality check",
+    "headline": "The AI myth that's failing students",
+    "highlight": "",
+    "mythLabel": "Myth",
+    "factLabel": "Fact",
+    "myth": "AI detectors can prove a student cheated.",
+    "fact": "No detector is reliable enough to count as proof. They also flag human writing, especially from non-native English speakers. Treat a score as **a hint, never as evidence.**",
+    "source": "Source: independent studies of AI-text detectors",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    (function () {
+      var NS = 'http://www.w3.org/2000/svg';
+
+      function hash(s) {
+        var h = 2166136261;
+        for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return h >>> 0;
+      }
+      function rng(seed) {
+        return function () {
+          seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+          var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function frame() {
+        return new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(r); }); });
+      }
+      /* Catmull-Rom points -> smooth cubic path */
+      function smoothPath(pts) {
+        var f = function (n) { return n.toFixed(1); };
+        var d = 'M' + f(pts[0][0]) + ' ' + f(pts[0][1]);
+        for (var i = 0; i < pts.length - 1; i++) {
+          var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+          d += ' C' + f(p1[0] + (p2[0] - p0[0]) / 6) + ' ' + f(p1[1] + (p2[1] - p0[1]) / 6) +
+               ' ' + f(p2[0] - (p3[0] - p1[0]) / 6) + ' ' + f(p2[1] - (p3[1] - p1[1]) / 6) +
+               ' ' + f(p2[0]) + ' ' + f(p2[1]);
+        }
+        return d;
+      }
+
+      /* Measure each rendered line of the myth word by word (so spaces don't count),
+         skipping anything clipped by the fit box. */
+      function lineBoxes(el, clipEl) {
+        var clip = clipEl.getBoundingClientRect();
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        var range = document.createRange();
+        var lines = [];
+        while (walker.nextNode()) {
+          var node = walker.currentNode, text = node.nodeValue, re = /\S+/g, m;
+          while ((m = re.exec(text))) {
+            range.setStart(node, m.index);
+            range.setEnd(node, m.index + m[0].length);
+            var rects = range.getClientRects();
+            for (var k = 0; k < rects.length; k++) {
+              var r = rects[k];
+              if (r.width < 1 || r.top > clip.bottom - 4) continue;
+              var cy = (r.top + r.bottom) / 2, line = null;
+              for (var j = 0; j < lines.length; j++) {
+                if (Math.abs(lines[j].cy - cy) < r.height * 0.5) { line = lines[j]; break; }
+              }
+              if (line) {
+                line.l = Math.min(line.l, r.left); line.r = Math.max(line.r, r.right);
+                line.t = Math.min(line.t, r.top); line.b = Math.max(line.b, r.bottom);
+              } else {
+                lines.push({ cy: cy, l: r.left, r: r.right, t: r.top, b: r.bottom });
+              }
+            }
+          }
+        }
+        return lines.sort(function (a, b) { return a.cy - b.cy; });
+      }
+
+      function drawStrikes(card) {
+        var zone = card.querySelector('.zone-myth');
+        var fit = card.querySelector('.myth-fit');
+        var copy = card.querySelector('.myth-copy');
+        var svg = card.querySelector('svg.strikes');
+        if (!zone || !copy || !svg) return;
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        if (copy.hidden || !copy.textContent.trim()) return;
+
+        var scale = card.getBoundingClientRect().width / card.offsetWidth || 1;
+        var z = zone.getBoundingClientRect();
+        var fs = parseFloat(getComputedStyle(copy).fontSize);
+        var W = zone.offsetWidth, H = zone.offsetHeight;
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+        var defs = document.createElementNS(NS, 'defs');
+        defs.innerHTML =
+          '<filter id="strike-rough" filterUnits="userSpaceOnUse" x="-200" y="-200" width="' + (W + 400) + '" height="' + (H + 400) + '">' +
+            '<feTurbulence type="fractalNoise" baseFrequency="0.022 0.11" numOctaves="2" seed="7" result="t"/>' +
+            '<feDisplacementMap in="SourceGraphic" in2="t" scale="' + (fs * 0.06).toFixed(1) + '" xChannelSelector="R" yChannelSelector="G"/>' +
+          '</filter>';
+        svg.appendChild(defs);
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('filter', 'url(#strike-rough)');
+        svg.appendChild(g);
+
+        var rand = rng(hash(copy.textContent));
+        lineBoxes(copy, fit).forEach(function (ln, i) {
+          var x0 = (ln.l - z.left) / scale - fs * (0.10 + rand() * 0.06);
+          var x1 = (ln.r - z.left) / scale + fs * (0.07 + rand() * 0.08);
+          var h = (ln.b - ln.t) / scale;
+          var yc = (ln.t - z.top) / scale + h * 0.555;
+          var rise = fs * (0.05 + rand() * 0.06) * (i % 2 ? 0.55 : 1);
+          var bow = fs * (rand() - 0.45) * 0.07;
+          var n = Math.max(3, Math.round((x1 - x0) / (fs * 1.5)));
+          var pts = [];
+          for (var k = 0; k <= n; k++) {
+            var t = k / n;
+            var jitter = (k > 0 && k < n) ? (rand() - 0.5) * fs * 0.03 : 0;
+            pts.push([x0 + (x1 - x0) * t, yc + rise * (0.5 - t) + bow * Math.sin(Math.PI * t) + jitter]);
+          }
+          var path = document.createElementNS(NS, 'path');
+          path.setAttribute('d', smoothPath(pts));
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', 'var(--myth)');
+          path.setAttribute('stroke-width', (fs * 0.095).toFixed(1));
+          path.setAttribute('stroke-linecap', 'round');
+          path.setAttribute('stroke-linejoin', 'round');
+          g.appendChild(path);
+        });
+      }
+
+      Card.onRender(async function (data, card) {
+        /* Default panel labels when the data leaves them out. */
+        card.querySelectorAll('[data-default]').forEach(function (el) {
+          if (!el.textContent.trim()) { el.textContent = el.getAttribute('data-default'); el.hidden = false; }
+        });
+        /* The design adds its own opening quote mark: strip quotes the copy may already carry. */
+        var copy = card.querySelector('.myth-copy');
+        if (copy && !copy.hidden) {
+          var first = copy.firstChild, last = copy.lastChild;
+          if (first && first.nodeType === 3) first.nodeValue = first.nodeValue.replace(/^\s*["“”‘']+/, '');
+          if (last && last.nodeType === 3) last.nodeValue = last.nodeValue.replace(/["“”’']+\s*$/, '');
+        }
+        /* Fit now (fonts loaded) so the hand-drawn strikes follow the final line breaks.
+           card.js fits again afterwards and lands on the same sizes. */
+        void card.offsetHeight;
+        try { await document.fonts.ready; } catch (e) { /* ignore */ }
+        await frame();
+        try { await document.fonts.ready; } catch (e) { /* ignore */ }
+        Card.fit();
+        drawStrikes(card);
+      });
+    })();
+  </script>
+</body>
+</html>

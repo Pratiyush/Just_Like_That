@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bento Digest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      /* Theme: override any of these via "theme": { "--blue": "#..." } */
+      --bg: #F2F2F7;
+      --ink: #0B0B0F;
+      --hero: #0D0D12;
+      --hero-fg: #FFFFFF;
+      --accent: #D9F65C;          /* lime: kicker dot, CTA icon */
+      --blue: #2D5BFF;
+      --lime: #D9F65C;
+      --orange: #FF7A30;
+      --lilac: #CDBFFF;
+      --white: #FFFFFF;
+      --hl-from: #8FA8FF;         /* headline highlight gradient */
+      --hl-mid: #CDBFFF;
+      --hl-to: #FFB385;
+      --radius: 32px;
+      --gap: 20px;
+
+      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Geist', 'Inter Display', 'Inter', system-ui, sans-serif;
+      font-feature-settings: 'ss01' on;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 56px 56px 72px;
+    }
+    #card::before {               /* whisper of paper grain on the canvas */
+      content: '';
+      position: absolute; inset: 0;
+      background-image: var(--noise);
+      opacity: .05;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    /* ---------- Bento grid ---------- */
+    .bento {
+      position: relative;
+      flex: 1; min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-rows: 1fr 1fr 1.15fr 1.15fr;
+      gap: var(--gap);
+    }
+    .items { display: contents; }
+
+    /* ---------- Hero tile (the focal point) ---------- */
+    .hero {
+      grid-column: 1 / span 4;
+      grid-row: 1 / span 2;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      min-width: 0; min-height: 0;
+      border-radius: var(--radius);
+      background-color: var(--hero);
+      background-image:
+        radial-gradient(75% 85% at 102% -6%, rgba(45, 91, 255, .62), rgba(45, 91, 255, .14) 52%, transparent 74%),
+        radial-gradient(55% 60% at -6% 108%, rgba(205, 191, 255, .20), transparent 72%);
+      color: var(--hero-fg);
+      padding: 40px 44px 38px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 30px 60px -34px rgba(11, 11, 15, .55);
+    }
+    .hero::before {               /* dot matrix fading out from the glow */
+      content: '';
+      position: absolute; inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(rgba(255, 255, 255, .22) 1.3px, transparent 1.9px);
+      background-size: 24px 24px;
+      background-position: 12px 12px;
+      -webkit-mask-image: radial-gradient(70% 75% at 100% 0%, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+              mask-image: radial-gradient(70% 75% at 100% 0%, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      z-index: -1;
+      background-image: var(--noise);
+      opacity: .16;
+      mix-blend-mode: soft-light;
+    }
+    .hero-top { display: flex; align-items: center; min-width: 0; }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 14px;
+      max-width: 100%;
+      height: 54px;
+      padding: 0 24px 0 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .16);
+      font-weight: 500; font-size: 27px; letter-spacing: -0.005em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      color: rgba(255, 255, 255, .94);
+    }
+    .kicker::before {
+      content: '';
+      flex: none;
+      width: 13px; height: 13px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 18px var(--accent);
+    }
+    .headline {
+      flex: 1; min-height: 0; overflow: hidden;
+      margin-top: 22px;
+      display: flex; flex-direction: column;
+      justify-content: safe flex-end;
+      font-weight: 700;
+      font-size: 96px;
+      line-height: .98;
+      letter-spacing: -0.045em;
+      text-wrap: balance;
+      padding-bottom: .2em;      /* room for Geist's descent inside the clip box... */
+      margin-bottom: -.14em;     /* ...without pushing the text up */
+    }
+    .headline .hl {
+      background-image: linear-gradient(100deg, var(--hl-from) 0%, var(--hl-mid) 48%, var(--hl-to) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+      padding-right: .04em;
+    }
+    .hero-foot {
+      margin-top: 26px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      min-width: 0;
+    }
+    .date {
+      display: inline-flex; align-items: center; gap: 12px;
+      min-width: 0;
+      font-family: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 500; font-size: 26px; letter-spacing: -0.01em;
+      color: rgba(255, 255, 255, .78);
+      white-space: nowrap;
+    }
+    .date svg { flex: none; width: 28px; height: 28px; color: rgba(255, 255, 255, .78); }
+    .date span { overflow: hidden; text-overflow: ellipsis; }
+    .legend { display: flex; gap: 8px; flex: none; }
+    .legend i {
+      width: 20px; height: 20px; border-radius: 6px;
+      background: var(--sw);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+    }
+
+    /* ---------- Item tiles ---------- */
+    .tile {
+      --t-bg: var(--white);
+      --t-fg: var(--ink);
+      --t-sub: rgba(11, 11, 15, .74);
+      --chip-bg: rgba(11, 11, 15, .07);
+      --chip-fg: var(--ink);
+      --glow: rgba(255, 255, 255, .55);
+      --title-max: 44;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      min-width: 0; min-height: 0;
+      border-radius: var(--radius);
+      background-color: var(--t-bg);
+      background-image: radial-gradient(90% 80% at 100% 0%, var(--glow), transparent 62%);
+      color: var(--t-fg);
+      padding: 28px 30px 30px 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .6) inset, 0 18px 40px -30px rgba(11, 11, 15, .35);
+    }
+    .tile::after {
+      content: '';
+      position: absolute; inset: 0;
+      z-index: -1;
+      background-image: var(--noise);
+      opacity: .09;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+    .tile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .chip {
+      flex: none;
+      width: 60px; height: 60px; border-radius: 18px;
+      display: grid; place-items: center;
+      background: var(--chip-bg);
+      color: var(--chip-fg);
+    }
+    .chip svg { width: 32px; height: 32px; }
+    .idx {
+      font-family: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+      font-weight: 500; font-size: 26px; letter-spacing: -0.02em;
+      line-height: 1;
+      padding-top: 4px;
+      color: var(--t-sub);
+    }
+    .tile-body {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column;
+      justify-content: safe flex-end;
+      margin-top: 14px;
+    }
+    .tag {
+      flex: none;
+      font-weight: 500; font-size: 26px; line-height: 1.15; letter-spacing: -0.005em;
+      color: var(--t-sub);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+    .title {
+      flex: 0 1 auto; min-height: 0; overflow: hidden;
+      font-weight: 600;
+      font-size: 44px;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
+      text-wrap: pretty;
+      padding-bottom: .2em;
+      margin-bottom: -.16em;
+    }
+    .title .hl { background: none; color: inherit; text-decoration: underline; text-decoration-thickness: .08em; text-underline-offset: .12em; }
+
+    /* Compact tiles (short rows): icon + tag share a line */
+    .tile.is-compact { padding: 24px 28px 26px 28px; }
+    .tile.is-compact .chip { width: 50px; height: 50px; border-radius: 15px; }
+    .tile.is-compact .chip svg { width: 28px; height: 28px; }
+    .tile.is-compact .tile-body { margin-top: 10px; }
+
+    /* Palette by position (1st story = vivid blue, next to the hero) */
+    .tile:nth-child(1) {
+      --t-bg: var(--blue); --t-fg: #FFFFFF; --t-sub: rgba(255, 255, 255, .86);
+      --chip-bg: rgba(255, 255, 255, .16); --chip-fg: #FFFFFF;
+      --glow: rgba(140, 170, 255, .55);
+    }
+    .tile:nth-child(2) { --t-bg: var(--lime); --glow: rgba(255, 255, 255, .55); }
+    .tile:nth-child(3) { --t-bg: var(--white); --chip-bg: var(--bg); --glow: rgba(242, 242, 247, 0); }
+    .tile:nth-child(4) { --t-bg: var(--orange); --t-sub: rgba(11, 11, 15, .8); --chip-bg: rgba(255, 255, 255, .28); --glow: rgba(255, 196, 150, .7); }
+    .tile:nth-child(5) { --t-bg: var(--lilac); --chip-bg: rgba(255, 255, 255, .45); --glow: rgba(255, 255, 255, .5); }
+    .tile:nth-child(6) { --t-bg: var(--white); --chip-bg: var(--bg); --glow: rgba(242, 242, 247, 0); }
+
+    /* ---------- Layouts (hero 4x2 top-left, story #1 tall on its right) ---------- */
+    .tile:nth-child(n+7) { display: none; }
+    .bento .tile:nth-child(1) { grid-column: 5 / span 2; grid-row: 1 / span 2; }
+
+    .bento[data-n="6"] .tile:nth-child(2) { grid-column: 1 / span 2; grid-row: 3; }
+    .bento[data-n="6"] .tile:nth-child(3) { grid-column: 3 / span 2; grid-row: 3; }
+    .bento[data-n="6"] .tile:nth-child(4) { grid-column: 5 / span 2; grid-row: 3; }
+    .bento[data-n="6"] .tile:nth-child(5) { grid-column: 1 / span 3; grid-row: 4; }
+    .bento[data-n="6"] .tile:nth-child(6) { grid-column: 4 / span 3; grid-row: 4; }
+
+    .bento[data-n="5"] .tile:nth-child(2) { grid-column: 1 / span 2; grid-row: 3; }
+    .bento[data-n="5"] .tile:nth-child(3) { grid-column: 3 / span 4; grid-row: 3; }
+    .bento[data-n="5"] .tile:nth-child(4) { grid-column: 1 / span 4; grid-row: 4; }
+    .bento[data-n="5"] .tile:nth-child(5) { grid-column: 5 / span 2; grid-row: 4; }
+
+    .bento[data-n="4"] .tile:nth-child(2) { grid-column: 1 / span 2; grid-row: 3 / span 2; }
+    .bento[data-n="4"] .tile:nth-child(3) { grid-column: 3 / span 4; grid-row: 3; }
+    .bento[data-n="4"] .tile:nth-child(4) { grid-column: 3 / span 4; grid-row: 4; }
+
+    .bento[data-n="3"] .tile:nth-child(2) { grid-column: 1 / span 3; grid-row: 3 / span 2; }
+    .bento[data-n="3"] .tile:nth-child(3) { grid-column: 4 / span 3; grid-row: 3 / span 2; }
+
+    .bento[data-n="2"] .tile:nth-child(2) { grid-column: 1 / span 6; grid-row: 3 / span 2; }
+
+    .bento[data-n="1"] .hero { grid-column: 1 / span 6; }
+    .bento[data-n="1"] .tile:nth-child(1) { grid-column: 1 / span 6; grid-row: 3 / span 2; }
+    .bento[data-n="0"] .hero { grid-column: 1 / span 6; grid-row: 1 / span 4; }
+
+    /* Wide mode: a long headline gets the full top row; stories tile underneath. */
+    .bento.wide { grid-template-rows: auto 1fr 1fr; }
+    .bento.wide .hero { grid-column: 1 / span 6; grid-row: 1; }
+    .bento.wide .headline { flex: none; }
+    .bento.wide[data-n="6"] .tile:nth-child(1) { grid-column: 1 / span 2; grid-row: 2; }
+    .bento.wide[data-n="6"] .tile:nth-child(2) { grid-column: 3 / span 2; grid-row: 2; }
+    .bento.wide[data-n="6"] .tile:nth-child(3) { grid-column: 5 / span 2; grid-row: 2; }
+    .bento.wide[data-n="6"] .tile:nth-child(4) { grid-column: 1 / span 2; grid-row: 3; }
+    .bento.wide[data-n="6"] .tile:nth-child(5) { grid-column: 3 / span 2; grid-row: 3; }
+    .bento.wide[data-n="6"] .tile:nth-child(6) { grid-column: 5 / span 2; grid-row: 3; }
+
+    .bento.wide[data-n="5"] .tile:nth-child(1) { grid-column: 1 / span 3; grid-row: 2; }
+    .bento.wide[data-n="5"] .tile:nth-child(2) { grid-column: 4 / span 3; grid-row: 2; }
+    .bento.wide[data-n="5"] .tile:nth-child(3) { grid-column: 1 / span 2; grid-row: 3; }
+    .bento.wide[data-n="5"] .tile:nth-child(4) { grid-column: 3 / span 2; grid-row: 3; }
+    .bento.wide[data-n="5"] .tile:nth-child(5) { grid-column: 5 / span 2; grid-row: 3; }
+
+    .bento.wide[data-n="4"] .tile:nth-child(1) { grid-column: 1 / span 4; grid-row: 2; }
+    .bento.wide[data-n="4"] .tile:nth-child(2) { grid-column: 5 / span 2; grid-row: 2; }
+    .bento.wide[data-n="4"] .tile:nth-child(3) { grid-column: 1 / span 2; grid-row: 3; }
+    .bento.wide[data-n="4"] .tile:nth-child(4) { grid-column: 3 / span 4; grid-row: 3; }
+
+    .bento.wide[data-n="3"] .tile:nth-child(1) { grid-column: 1 / span 2; grid-row: 2 / span 2; }
+    .bento.wide[data-n="3"] .tile:nth-child(2) { grid-column: 3 / span 4; grid-row: 2; }
+    .bento.wide[data-n="3"] .tile:nth-child(3) { grid-column: 3 / span 4; grid-row: 3; }
+
+    .bento.wide[data-n="2"] .tile:nth-child(1) { grid-column: 1 / span 3; grid-row: 2 / span 2; }
+    .bento.wide[data-n="2"] .tile:nth-child(2) { grid-column: 4 / span 3; grid-row: 2 / span 2; }
+
+    .bento.wide[data-n="1"] .tile:nth-child(1) { grid-column: 1 / span 6; grid-row: 2 / span 2; }
+
+    /* ---------- Footer ---------- */
+    .foot {
+      position: relative;
+      flex: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      min-height: 62px;
+    }
+    .sig { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1 1 auto; }
+    .mark {
+      flex: none;
+      display: grid; grid-template-columns: 17px 17px; grid-template-rows: 17px 17px; gap: 4px;
+    }
+    .mark i { border-radius: 5px; background: var(--sw); }
+    .mark i:nth-child(1) { --sw: var(--ink); }
+    .mark i:nth-child(2) { --sw: var(--blue); }
+    .mark i:nth-child(3) { --sw: var(--lime); }
+    .mark i:nth-child(4) { --sw: var(--orange); }
+    .handle {
+      min-width: 0;
+      font-weight: 600; font-size: 28px; letter-spacing: -0.015em;
+      line-height: 62px; height: 62px;
+      white-space: nowrap; overflow: hidden;
+      color: var(--ink);
+    }
+    .cta {
+      flex: 0 1 auto;
+      max-width: 62%;
+      display: inline-flex; align-items: center; gap: 14px;
+      min-height: 62px;
+      padding: 10px 28px 10px 22px;
+      border-radius: 31px;
+      background: var(--ink);
+      color: #FFFFFF;
+      font-weight: 500; font-size: 27px; line-height: 1.15; letter-spacing: -0.01em;
+    }
+    .cta svg { flex: none; width: 28px; height: 28px; color: var(--accent); }
+    .cta span { min-width: 0; }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="bento" data-n="5">
+      <section class="hero">
+        <div class="hero-top"><span class="kicker" data-field="kicker"></span></div>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="112" data-fit-min="64"></h1>
+        <div class="hero-foot">
+          <span class="date" data-if="date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+            <span data-field="date"></span>
+          </span>
+          <span class="legend" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <div class="items" data-list="items">
+        <article class="tile">
+          <div class="tile-top">
+            <span class="chip" aria-hidden="true"></span>
+            <span class="idx" data-item-index="2"></span>
+          </div>
+          <div class="tile-body">
+            <div class="tag" data-item="tag"></div>
+            <h2 class="title" data-item="title" data-highlight data-fit data-fit-min="34"></h2>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <div class="sig" data-if="handle">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="handle" data-field="handle" data-fit data-fit-min="26"></span>
+      </div>
+      <div class="cta" data-if="cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.5h10a1.5 1.5 0 0 1 1.5 1.5v15.5L12 16.4l-6.5 4.1V5A1.5 1.5 0 0 1 7 3.5z"/></svg>
+        <span data-field="cta"></span>
+      </div>
+    </footer>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Weekly AI digest",
+    "headline": "5 AI stories you missed this week",
+    "highlight": "missed",
+    "date": "Nov 3 – 9, 2026",
+    "items": [
+      { "tag": "Open models", "title": "Helix-3 is free and beats paid models on 9 of 10 tests", "icon": "sparkle" },
+      { "tag": "Pricing", "title": "Nova Labs cut API prices 80% overnight", "icon": "price" },
+      { "tag": "Hardware", "title": "A $199 chip runs a 70B model on your laptop, offline", "icon": "chip" },
+      { "tag": "Agents", "title": "One prompt now books your flight, hotel and dinner", "icon": "agent" },
+      { "tag": "Robotics", "title": "A robot learned to fold laundry from 3 videos", "icon": "robot" }
+    ],
+    "cta": "Save this for Monday’s standup",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+  <script>
+    (function () {
+      var MAX_ITEMS = 6;
+
+      /* 24px line icons (stroke = currentColor). */
+      var ICONS = {
+        sparkle: '<path d="M12 4.5c.65 4.1 3.4 6.85 7.5 7.5-4.1.65-6.85 3.4-7.5 7.5-.65-4.1-3.4-6.85-7.5-7.5 4.1-.65 6.85-3.4 7.5-7.5z"/><path d="M19.5 2.5v3.5M17.75 4.25h3.5"/>',
+        chip: '<rect x="6.5" y="6.5" width="11" height="11" rx="2.2"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1"/><path d="M9.5 3.5v3M14.5 3.5v3M9.5 17.5v3M14.5 17.5v3M3.5 9.5h3M3.5 14.5h3M17.5 9.5h3M17.5 14.5h3"/>',
+        price: '<path d="M3.5 11.6V5a1.5 1.5 0 0 1 1.5-1.5h6.6l8.6 8.6a1.6 1.6 0 0 1 0 2.3l-6.4 6.4a1.6 1.6 0 0 1-2.3 0z"/><circle cx="8.2" cy="8.2" r="1.5"/>',
+        robot: '<rect x="4.5" y="8" width="15" height="11.5" rx="3.5"/><path d="M12 8V5"/><circle cx="12" cy="3.8" r="1.2"/><path d="M2 12.5v3M22 12.5v3"/><circle cx="9.3" cy="13.3" r=".9" fill="currentColor"/><circle cx="14.7" cy="13.3" r=".9" fill="currentColor"/><path d="M10 16.6h4"/>',
+        shield: '<path d="M12 3l7.5 3v5.6c0 4.5-3.1 8-7.5 9.4-4.4-1.4-7.5-4.9-7.5-9.4V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.4"/>',
+        code: '<path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/>',
+        flask: '<path d="M9 3.5h6M10.2 3.5v5.4L5 18a1.7 1.7 0 0 0 1.5 2.5h11A1.7 1.7 0 0 0 19 18l-5.2-9.1V3.5"/><path d="M7.4 14.3h9.2"/>',
+        rocket: '<path d="M12.2 15.8L8.2 11.8C9.9 7 13.3 3.9 20.2 3.8c-.1 6.9-3.2 10.3-8 12z"/><path d="M8.6 11.4H5.2L7.6 8h3.6M12.6 15.4v3.4L16 16.4v-3.6"/><path d="M6.8 16.2c-1.4.5-2.3 1.9-2.6 4 2.1-.3 3.5-1.2 4-2.6"/><circle cx="15" cy="9" r="1.4"/>',
+        bolt: '<path d="M13.2 2.8L5 13.6h6.3l-1 7.6 8.2-10.8h-6.3z"/>',
+        money: '<circle cx="12" cy="12" r="8.5"/><path d="M14.7 9.4c-.4-1-1.4-1.6-2.7-1.6-1.6 0-2.7.8-2.7 2 0 2.9 5.6 1.5 5.6 4.4 0 1.2-1.2 2.1-2.9 2.1-1.3 0-2.4-.7-2.8-1.7M12 6.2v1.6M12 16.3v1.5"/>',
+        chart: '<path d="M3.5 17.5l5.5-5.5 4 4 7.5-7.5"/><path d="M15 8.5h5.5V14"/>',
+        agent: '<path d="M5.5 4.5l13 5.2-5.6 2.1-2.1 5.6z"/><path d="M13.3 13.3l5.4 5.4"/>',
+        image: '<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 15.5L16 11l-8.5 8.5"/>',
+        mic: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/>',
+        heart: '<path d="M20.2 6.2a4.6 4.6 0 0 0-6.5 0L12 7.9l-1.7-1.7a4.6 4.6 0 1 0-6.5 6.5L12 20.9l8.2-8.2a4.6 4.6 0 0 0 0-6.5z"/>',
+        users: '<circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5c.6-3.3 3.2-5.5 6.5-5.5s5.9 2.2 6.5 5.5"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14.3c1.9.7 3.2 2.6 3.5 5.2"/>',
+        search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/>',
+        globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.1 3.6 8.5s-1.2 6.2-3.6 8.5c-2.4-2.3-3.6-5.1-3.6-8.5S9.6 5.8 12 3.5z"/>'
+      };
+      ICONS.model = ICONS.sparkle; ICONS.hardware = ICONS.chip; ICONS.tag = ICONS.price;
+      ICONS.policy = ICONS.shield; ICONS.research = ICONS.flask; ICONS.launch = ICONS.rocket;
+      ICONS.speed = ICONS.bolt; ICONS.funding = ICONS.money; ICONS.market = ICONS.chart;
+      ICONS.video = ICONS.image; ICONS.voice = ICONS.mic; ICONS.health = ICONS.heart; ICONS.jobs = ICONS.users;
+
+      /* Auto-pick an icon from the tag/title when an item has no "icon". */
+      var RULES = [
+        [/robot|humanoid|drone/i, 'robot'],
+        [/chip|gpu|hardware|silicon|compute|device|laptop|phone/i, 'chip'],
+        [/pric|cost|cheap|discount|free tier/i, 'price'],
+        [/fund|rais|invest|valuation|\$\d+\s?[mb]\b|acquisi|deal/i, 'money'],
+        [/market|stock|revenue|growth|adoption|users? grow/i, 'chart'],
+        [/agent|automat|workflow|assistant/i, 'agent'],
+        [/policy|law|regulat|govern|safety|legal|court|ban/i, 'shield'],
+        [/research|paper|study|science|lab result|breakthrough/i, 'flask'],
+        [/code|coding|dev|program|github|open.?source/i, 'code'],
+        [/video|image|art|design|creative|film/i, 'image'],
+        [/voice|audio|music|speech|podcast/i, 'mic'],
+        [/health|medic|bio|drug|doctor/i, 'heart'],
+        [/job|work|hiring|people|team|layoff/i, 'users'],
+        [/search|web|browser/i, 'search'],
+        [/speed|fast|latency|benchmark|record/i, 'bolt'],
+        [/launch|app|product|ship|release|update/i, 'rocket'],
+        [/model|llm|weights|open/i, 'sparkle']
+      ];
+      var FALLBACK = ['sparkle', 'bolt', 'rocket', 'flask', 'chip', 'chart'];
+
+      function pickIcon(item, i) {
+        if (item && item.icon && ICONS[item.icon]) return item.icon;
+        var text = item && typeof item === 'object' ? (item.tag || '') + ' ' + (item.title || '') : String(item || '');
+        for (var r = 0; r < RULES.length; r++) if (RULES[r][0].test(text)) return RULES[r][1];
+        return FALLBACK[i % FALLBACK.length];
+      }
+
+      function svg(paths) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + paths + '</svg>';
+      }
+
+      function fits(el) {
+        return el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1;
+      }
+
+      Card.onRender(async function (data, card) {
+        var grid = card.querySelector('.bento');
+        var list = card.querySelector('.items');
+        var items = Array.isArray(data.items) ? data.items : [];
+        var tiles = Array.prototype.slice.call(list.children);
+        tiles.slice(MAX_ITEMS).forEach(function (t) { t.remove(); });
+        tiles = tiles.slice(0, MAX_ITEMS);
+        var n = tiles.length;
+        grid.setAttribute('data-n', n);
+
+        /* Icons, plain-string items, legend swatches */
+        var legend = card.querySelector('.legend');
+        legend.innerHTML = '';
+        tiles.forEach(function (tile, i) {
+          var item = items[i];
+          if (typeof item === 'string') {
+            var t = tile.querySelector('.title');
+            t.hidden = false;
+            t.innerHTML = Card.format(item, data.highlight);
+          }
+          tile.querySelector('.chip').innerHTML = svg(ICONS[pickIcon(item, i)]);
+          var sw = document.createElement('i');
+          sw.style.setProperty('--sw', getComputedStyle(tile).getPropertyValue('--t-bg'));
+          legend.appendChild(sw);
+        });
+        if (!n) legend.hidden = true;
+
+        /* Layout mode: if the headline can't fit the 4x2 hero at 64px, give it the full top row. */
+        try { await document.fonts.ready; } catch (e) { /* ignore */ }
+        var head = card.querySelector('.headline');
+        var hero = card.querySelector('.hero');
+        if (!head.hidden) {
+          head.style.fontSize = '64px';
+          var ok = fits(head);
+          head.style.fontSize = '';
+          if (!ok) {
+            grid.classList.add('wide');
+            var limit = grid.clientHeight * 0.5;
+            var size = 104;
+            for (; size > 64; size -= 2) {
+              head.style.fontSize = size + 'px';
+              if (hero.offsetHeight <= limit) break;
+            }
+            head.style.fontSize = '';
+            head.setAttribute('data-fit-max', String(size));
+          }
+        }
+
+        /* Size each title to its tile: bigger tiles start bigger; short rows go compact. */
+        tiles.forEach(function (tile) {
+          var w = tile.clientWidth, h = tile.clientHeight;
+          tile.classList.toggle('is-compact', h < 262);
+          var max = 40;
+          if (w > 560) max = 46;
+          else if (w > 420) max = 44;
+          if (h > 420) max += 4;
+          if (tile.classList.contains('is-compact')) max = Math.min(max, 40);
+          tile.querySelector('.title').setAttribute('data-fit-max', String(max));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

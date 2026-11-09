@@ -6,7 +6,7 @@
   <title>Minimal Luxe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@400;500&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=block" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/base.css">
   <style>
     #card {
@@ -24,18 +24,18 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 88px 96px 84px;
+      padding: 92px 96px 88px;
     }
 
     /* ---------- atmosphere: warm pool of light, vignette, film grain ---------- */
-    .atmos, .grain {
+    .atmos, .grain, .mount {
       position: absolute;
       inset: 0;
       pointer-events: none;
     }
     .atmos {
       background:
-        radial-gradient(62% 44% at 50% 46%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 74%),
+        radial-gradient(60% 42% at 50% 47%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 74%),
         radial-gradient(120% 90% at 50% 50%, transparent 52%, rgba(0, 0, 0, .55) 100%);
     }
     .grain {
@@ -44,6 +44,20 @@
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
       background-size: 260px 260px;
     }
+    /* gallery-mount corner marks: four hairline L's, nothing more */
+    .mount { inset: 46px; }
+    .mount i {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border: 0 solid var(--accent);
+      opacity: .6;
+    }
+    .mount i:nth-child(1) { top: 0; left: 0; border-width: 1px 0 0 1px; }
+    .mount i:nth-child(2) { top: 0; right: 0; border-width: 1px 1px 0 0; }
+    .mount i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+    .mount i:nth-child(4) { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
     #card > header, #card > main, #card > footer { position: relative; z-index: 1; }
 
     /* ---------- crest: monogram seal + wordmark ---------- */
@@ -74,14 +88,16 @@
     }
     .brand {
       margin-top: 22px;
+      max-width: 820px;
       font-family: var(--sans);
       font-weight: 400;
       font-size: 26px;
-      line-height: 1.2;
+      line-height: 1.3;
       letter-spacing: .42em;
-      margin-right: -.42em;            /* cancel trailing tracking so it centres optically */
+      padding-left: .42em;             /* balance the trailing tracking so it centres optically */
       text-transform: uppercase;
       color: var(--muted);
+      text-wrap: balance;
     }
 
     /* ---------- stage: the one thing to look at ---------- */
@@ -93,35 +109,45 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 0 36px;
+      padding: 56px 0 52px;
     }
     .kicker-row {
       flex: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 26px;
+      gap: 24px;
       max-width: 100%;
-      margin-bottom: 46px;
+      margin-bottom: 44px;
     }
     .kicker-row .rule {
-      flex: 0 1 64px;
-      min-width: 24px;
+      flex: 0 1 auto;
+      width: 60px;                     /* a real width (not flex-basis) so the row sizes to include it */
+      min-width: 20px;
       height: 1px;
       background: var(--accent);
       opacity: .85;
     }
     .kicker {
-      max-width: 720px;
+      flex: 0 1 auto;
       font-family: var(--sans);
       font-weight: 500;
-      font-size: 27px;
-      line-height: 1.35;
+      font-size: 26px;
+      line-height: 1.4;
       letter-spacing: .34em;
-      margin-right: -.34em;
+      padding-left: .34em;
       text-transform: uppercase;
       color: var(--accent);
       text-wrap: balance;
+    }
+    .kicker .sep {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin: 0 .72em 0 .38em;         /* .38em + the tag's trailing .34em tracking = .72em: symmetric */
+      vertical-align: .32em;
+      background: currentColor;
+      transform: rotate(45deg);
     }
 
     .headline {
@@ -129,10 +155,11 @@
       min-height: 0;
       overflow: hidden;
       width: 100%;
+      padding: .04em 0 .12em;          /* Cormorant's glyph box is taller than its line box */
       font-family: var(--serif);
       font-weight: 300;
-      font-size: 132px;
-      line-height: 1.02;
+      font-size: 124px;
+      line-height: 1.04;
       letter-spacing: -.012em;
       color: var(--fg);
       text-wrap: balance;
@@ -145,10 +172,11 @@
       letter-spacing: -.005em;
       padding-right: .04em;            /* room for the italic overhang */
     }
+    .headline.hl-keep .hl { white-space: nowrap; }   /* short highlights never split across lines */
 
     .ornament {
       flex: none;
-      margin: 52px 0 46px;
+      margin: 44px 0 40px;
       width: 260px;
       height: 20px;
     }
@@ -157,8 +185,11 @@
     .subhead {
       flex: none;
       max-width: 800px;
-      max-height: 228px;
+      max-height: 280px;
       overflow: hidden;
+      display: -webkit-box;            /* over-long copy ends in an ellipsis, never a sliced line */
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
       font-family: var(--serif);
       font-weight: 500;
       font-size: 40px;
@@ -168,14 +199,14 @@
     }
     .subhead .hl { color: var(--accent); font-style: italic; }
 
-    /* ---------- footer: date ◆ handle, hinged on the centre axis ---------- */
+    /* ---------- footer: date ◆ handle ---------- */
     .foot {
       flex: none;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      max-width: 100%;
+      display: flex;
+      justify-content: center;
       align-items: center;
-      column-gap: 28px;
+      gap: 26px;
       font-family: var(--serif);
       font-style: italic;
       font-weight: 500;
@@ -183,16 +214,16 @@
       line-height: 1.2;
       color: var(--muted);
     }
-    .foot .date { text-align: right; justify-self: end; }
-    .foot .handle { text-align: left; justify-self: start; overflow-wrap: anywhere; }
+    .foot .date { flex: none; white-space: nowrap; }
+    .foot .handle { min-width: 0; overflow-wrap: anywhere; text-align: left; }
     .foot .lozenge {
-      width: 9px;
-      height: 9px;
+      flex: none;
+      width: 8px;
+      height: 8px;
       background: var(--accent);
       transform: rotate(45deg);
     }
-    /* only one of date / handle present: centre it, drop the hinge */
-    .foot:has(> [data-field][hidden]) { display: flex; justify-content: center; }
+    /* only one of date / handle present: drop the separator */
     .foot:has(> [data-field][hidden]) .lozenge { display: none; }
   </style>
 </head>
@@ -200,6 +231,7 @@
   <div id="card">
     <div class="atmos" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
+    <div class="mount" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
     <header class="crest">
       <div class="seal" aria-hidden="true">
@@ -216,7 +248,7 @@
       <div class="kicker-row" data-if="kicker">
         <i class="rule"></i><span class="kicker" data-field="kicker"></span><i class="rule"></i>
       </div>
-      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="140" data-fit-min="72"></h1>
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="124" data-fit-min="72"></h1>
       <div class="ornament" aria-hidden="true">
         <svg viewBox="0 0 260 20">
           <line x1="0" y1="10" x2="104" y2="10" stroke="var(--accent)" stroke-width="1"/>
@@ -240,29 +272,86 @@
   {
     "brand": "AI Brief",
     "kicker": "New Model",
-    "headline": "Four years. One model. It fits in your pocket.",
+    "headline": "Four years.\nOne model.\nIt fits in your pocket.",
     "highlight": "your pocket.",
-    "subhead": "Helix-3 from Nova Labs runs entirely offline on a phone, with reasoning that rivals cloud models ten times its size.",
+    "subhead": "Nova Labs' Helix-3 runs fully offline on a phone, and rivals cloud models ten times its size.",
     "date": "Nov 9, 2026",
     "handle": "@yourhandle"
   }
   </script>
   <script src="../../shared/card.js"></script>
   <script>
-    /* Monogram: use data.monogram if given, otherwise the brand's initials (max 2). */
-    Card.onRender(function (data, card) {
+    Card.onRender(async function (data, card) {
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      /* 1. Monogram: data.monogram if given, otherwise the brand's initials. */
       var seal = card.querySelector('.seal');
       var mark = card.querySelector('.seal-mark');
-      var src = String(data.monogram || '').trim();
-      if (!src) {
+      var mono = String(data.monogram || '').trim();
+      if (!mono) {
         var words = String(data.brand || '').trim().split(/\s+/).filter(Boolean);
-        if (words.length === 1 && words[0].length <= 3) src = words[0];
-        else src = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('');
+        mono = words.length === 1 && words[0].length <= 3
+          ? words[0]
+          : words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('');
       }
-      src = src.slice(0, 3);
-      mark.textContent = src;
-      seal.hidden = !src;
-      if (src.length > 2) mark.style.fontSize = '26px';
+      mono = mono.slice(0, 3);
+      mark.textContent = mono;
+      seal.hidden = !mono;
+      if (mono.length > 2) mark.style.fontSize = '26px';
+
+      /* 2. Typographer's quotes and apostrophes in the serif text (text nodes only). */
+      card.querySelectorAll('.headline, .subhead').forEach(function (el) {
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        var prevChar = '';
+        for (var n = walker.nextNode(); n; n = walker.nextNode()) {
+          if (n.previousSibling && n.previousSibling.nodeName === 'BR') prevChar = '';
+          var out = '';
+          for (var i = 0; i < n.data.length; i++) {
+            var c = n.data[i];
+            var open = !prevChar || /[\s(\[\u2014\u2013-]/.test(prevChar);
+            if (c === "'") c = open ? '\u2018' : '\u2019';
+            else if (c === '"') c = open ? '\u201C' : '\u201D';
+            out += c;
+            prevChar = c;
+          }
+          n.data = out;
+        }
+      });
+
+      /* 3. Very short headlines get to grow: a single line deserves more presence. */
+      var head = card.querySelector('.headline');
+      var plain = String(data.headline || '').replace(/\*\*/g, '');
+      if (plain.length <= 18 && plain.indexOf('\n') < 0) head.setAttribute('data-fit-max', '156');
+      var hls = [].concat(data.highlight || []).map(String);
+      if (hls.every(function (h) { return h.length <= 22; })) head.classList.add('hl-keep');
+
+      /* 4. Kicker: "A · B · C" becomes tags joined by gold lozenges. A label should sit on
+            one line, so ease the tracking (.34em -> .2em) first; if a tag list still won't fit,
+            drop trailing tags. A single long phrase is allowed to wrap (balanced). */
+      var kicker = card.querySelector('.kicker');
+      var ktext = String(data.kicker || '').trim();
+      if (!ktext) return;
+      var tags = ktext.split(/\s*[·•|]\s*/).filter(Boolean);
+      try { await document.fonts.load('500 26px Jost', ktext); } catch (e) { /* fallback font is fine */ }
+      var lineH = parseFloat(getComputedStyle(kicker).lineHeight);
+      function setTracking(ls) {
+        kicker.style.letterSpacing = ls + 'em';
+        kicker.style.paddingLeft = ls + 'em';
+        kicker.querySelectorAll('.sep').forEach(function (s) { s.style.marginLeft = (0.72 - ls).toFixed(2) + 'em'; });
+      }
+      function fitsOneLine() {
+        var ls = 0.34;
+        setTracking(ls);
+        while (kicker.offsetHeight > lineH * 1.5 && ls > 0.2) { ls = Math.round((ls - 0.02) * 100) / 100; setTracking(ls); }
+        return kicker.offsetHeight <= lineH * 1.5;
+      }
+      for (var keep = tags.length; keep >= 1; keep--) {
+        kicker.innerHTML = tags.slice(0, keep).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; })
+          .join('<span class="sep" aria-hidden="true"></span>');
+        if (fitsOneLine()) break;
+      }
     });
   </script>
 </body>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hazard: safety warning sign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800;900&family=Saira+Stencil+One&family=Barlow+Condensed:wght@500;600;700&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/base.css">
+  <style>
+    #card {
+      --bg: #FFD400;          /* hazard yellow */
+      --ink: #141414;         /* stencil black */
+      --paper: #FFF7D6;       /* off-white text on black */
+      --steel: #9a9a94;
+      --frame: 50px;          /* hazard-stripe border width */
+      --stripe: 34px;
+      background:
+        repeating-linear-gradient(-45deg, var(--ink) 0 var(--stripe), var(--bg) var(--stripe) calc(var(--stripe) * 2));
+      color: var(--ink);
+      font-family: 'Barlow Condensed', 'Arial Narrow', 'Liberation Sans Narrow', sans-serif;
+    }
+
+    /* ---------- sign plate ---------- */
+    .plate {
+      position: absolute;
+      inset: var(--frame);
+      background: var(--bg);
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 6px var(--ink),
+        inset 0 3px 0 rgba(255, 255, 255, .35),
+        inset 0 -4px 0 rgba(0, 0, 0, .10);
+    }
+    .bolt {
+      position: absolute;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: radial-gradient(circle at 36% 32%, #f7f7f2 0 12%, #c9c9c2 38%, #77776f 78%, #4a4a44 100%);
+      box-shadow: 0 2px 2px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(0, 0, 0, .35);
+    }
+    .bolt::before, .bolt::after {
+      content: ''; position: absolute; left: 50%; top: 50%;
+      width: 14px; height: 3px; margin: -1.5px 0 0 -7px; border-radius: 2px;
+      background: rgba(30, 30, 26, .75);
+      transform: rotate(var(--r, 20deg));
+    }
+    .bolt::after { transform: rotate(calc(var(--r, 20deg) + 90deg)); }
+    .bolt.tl { left: 18px; top: 18px; --r: 18deg; }
+    .bolt.tr { right: 18px; top: 18px; --r: 61deg; }
+    .bolt.bl { left: 18px; bottom: 18px; --r: 37deg; }
+    .bolt.br { right: 18px; bottom: 18px; --r: 8deg; }
+
+    /* ---------- content column ---------- */
+    .content {
+      position: absolute;
+      inset: 104px 104px 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* "HEADS UP" kicker plate: ANSI-style signal word with safety-alert symbol */
+    .kicker {
+      align-self: flex-start;
+      display: flex; align-items: center; gap: 16px;
+      max-width: 100%;
+      height: 78px;
+      padding: 0 30px 0 22px;
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 4px var(--ink), inset 0 0 0 6px var(--bg);
+      flex: none;
+    }
+    .kicker svg { width: 50px; height: 44px; flex: none; }
+    .kicker-text {
+      font-family: 'Saira Stencil One', 'Big Shoulders Stencil Display', Impact, sans-serif;
+      font-size: 44px; line-height: 1.6; letter-spacing: .07em;
+      text-transform: uppercase; white-space: nowrap;
+      overflow: hidden; min-width: 0;
+    }
+
+    .headline {
+      flex: 0 1 auto; min-height: 0; overflow: hidden;
+      margin-top: 34px;
+      font-family: 'Big Shoulders Stencil Display', 'Big Shoulders Stencil', Impact, 'Arial Narrow', sans-serif;
+      font-weight: 900;
+      font-size: 128px; line-height: .95; letter-spacing: .004em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      padding-bottom: .14em;   /* absorbs the font's descent so data-fit measures true overflow */
+      margin-bottom: -.14em;
+    }
+    /* highlight = stencil-cut black band sized to the cap height (font content area is 1.19em) */
+    .headline .hl {
+      color: var(--bg);
+      background: linear-gradient(transparent 9.5%, var(--ink) 9.5%, var(--ink) 88%, transparent 88%);
+      padding: 0 .1em;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }
+
+    .subhead {
+      flex: none;
+      margin-top: 26px;
+      max-width: 840px;
+      font-size: 39px; line-height: 1.2; font-weight: 500;
+      color: #1c1a12;
+    }
+
+    /* bottom zone: protective tips + the big warning sign */
+    .zone {
+      flex: none;
+      margin-top: auto;
+      padding-top: 36px;
+      display: flex; align-items: flex-end; gap: 40px;
+    }
+    .tips { flex: 1; min-width: 0; list-style: none; display: flex; flex-direction: column; gap: 22px; }
+    .tips li { display: flex; align-items: flex-start; gap: 18px; }
+    .tips svg { width: 52px; height: 52px; flex: none; margin-top: -2px; }
+    .tips span { font-size: 36px; line-height: 1.12; font-weight: 600; }
+
+    .sign { flex: none; width: 340px; height: 300px; filter: drop-shadow(0 6px 0 rgba(0,0,0,.12)); }
+
+    .footer {
+      flex: none;
+      margin-top: 34px;
+      display: flex; justify-content: space-between; align-items: baseline; gap: 32px;
+      font-size: 28px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .footer .source { min-width: 0; }
+    .footer .handle { text-align: right; white-space: nowrap; }
+
+    /* ---------- wear & tear (all decorative, above content) ---------- */
+    .wear { position: absolute; inset: 0; pointer-events: none; }
+    .grain {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='540' height='540'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.7 -.6'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+      mix-blend-mode: multiply; opacity: .28;
+    }
+    .grime {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.0045 .007' numOctaves='4' seed='4'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .3  0 0 0 0 0  0 0 0 2.2 -1.0'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+      mix-blend-mode: multiply; opacity: .35;
+    }
+    .chips {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='5' seed='9'/><feColorMatrix values='0 0 0 0 .97  0 0 0 0 .82  0 0 0 0 .2  0 0 0 18 -13.2'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
+      mix-blend-mode: lighten; opacity: .95;
+    }
+    .vignette {
+      background: radial-gradient(ellipse 80% 75% at 50% 45%, transparent 55%, rgba(110, 70, 0, .22) 100%);
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="plate">
+      <i class="bolt tl"></i><i class="bolt tr"></i><i class="bolt bl"></i><i class="bolt br"></i>
+    </div>
+
+    <div class="content">
+      <div class="kicker" data-if="kicker">
+        <svg viewBox="0 0 50 44" aria-hidden="true">
+          <path d="M25 3 L47 41 H3 Z" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M22.4 15.5 h5.2 l-.9 13.5 h-3.4 z" fill="#141414"/>
+          <circle cx="25" cy="34.2" r="2.7" fill="#141414"/>
+        </svg>
+        <span class="kicker-text" data-field="kicker" data-fit data-fit-min="26"></span>
+      </div>
+
+      <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="132" data-fit-min="64"></h1>
+
+      <p class="subhead" data-field="subhead"></p>
+
+      <div class="zone">
+        <ul class="tips" data-list="points">
+          <li>
+            <svg viewBox="0 0 52 52" aria-hidden="true">
+              <path d="M26 3 L45 10 V24 C45 36 37 44.5 26 49 C15 44.5 7 36 7 24 V10 Z" fill="#141414"/>
+              <path d="M16.5 26 L23 32.5 L35.5 19.5" fill="none" stroke="#FFD400" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span data-item></span>
+          </li>
+        </ul>
+        <svg class="sign" viewBox="0 0 340 300" aria-hidden="true">
+          <polygon points="170,16 12,286 328,286" fill="#141414" stroke="#141414" stroke-width="26" stroke-linejoin="round"/>
+          <polygon points="170,60 50.5,264 289.5,264" fill="none" stroke="#FFD400" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M152 108 Q152 96 164 96 H176 Q188 96 188 108 L181.5 196 Q181 204 173 204 H167 Q159 204 158.5 196 Z" fill="#FFD400"/>
+          <rect x="150" y="146" width="40" height="7" fill="#141414"/>
+          <circle cx="170" cy="232" r="15.5" fill="#FFD400"/>
+        </svg>
+      </div>
+
+      <div class="footer">
+        <span class="source" data-field="source"></span>
+        <span class="handle" data-field="handle"></span>
+      </div>
+    </div>
+
+    <div class="wear grime"></div>
+    <div class="wear grain"></div>
+    <div class="wear chips"></div>
+    <div class="wear vignette"></div>
+  </div>
+
+  <script type="application/json" id="card-data">
+  {
+    "kicker": "Heads up",
+    "headline": "The next scam call will sound exactly like someone you love",
+    "highlight": "someone you love",
+    "subhead": "AI can clone a voice from a short clip posted online. The good news: the fix is low-tech.",
+    "points": [
+      "Agree on a family safe word, and always ask for it",
+      "Hang up and call back on a number you already know",
+      "Never send money just because a call feels urgent"
+    ],
+    "cta": "Send this to your parents",
+    "source": "Source: Sample Consumer Safety Bulletin",
+    "handle": "@yourhandle"
+  }
+  </script>
+  <script src="../../shared/card.js"></script>
+</body>
+</html>

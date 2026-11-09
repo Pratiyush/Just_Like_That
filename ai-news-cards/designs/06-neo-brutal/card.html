@@ -10,194 +10,195 @@
   <link rel="stylesheet" href="../../shared/base.css">
   <style>
     #card {
-      --bg: #FF90E8;          /* bubblegum */
-      --ink: #000000;         /* borders, shadows, text */
-      --paper: #FFFFFF;       /* window body */
-      --yellow: #FFD60A;      /* sticker, highlight */
-      --blue: #3D5AFE;        /* title bar, CTA */
-      --on-blue: #FFFFFF;
+      --bg: #FF90E8;          /* bubblegum field */
+      --fg: #000000;          /* ink: borders, hard shadows, text */
+      --paper: #FFFFFF;       /* window body, chip */
+      --accent: #FFD60A;      /* sunshine yellow: sticker, highlight, flower */
+      --accent-2: #3D5AFE;    /* electric blue: title bar, CTA, caret */
+      --on-accent-2: #FFFFFF; /* text on the blue blocks */
       --bw: 6px;              /* border weight */
       --drop: 14px;           /* hard shadow offset */
 
       background-color: var(--bg);
-      /* flat dot grid, no gradients */
+      /* flat dot grid (SVG tile, no gradients) */
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='20' cy='20' r='2.4' fill='%23000' fill-opacity='.16'/></svg>");
-      background-position: 0 0;
-      color: var(--ink);
+      color: var(--fg);
       font-family: 'Space Grotesk', 'DejaVu Sans', system-ui, sans-serif;
       display: flex;
       flex-direction: column;
-      padding: 72px 72px 72px;
+      padding: 72px;
     }
 
-    /* ---------- decoration on the pink field ---------- */
-    .deco { position: absolute; pointer-events: none; }
-    .deco--flower { left: -92px; top: 640px; width: 220px; height: 220px; }
-    .deco--marks  { left: 664px; top: 56px; width: 92px; height: 92px; z-index: 3; }
+    /* ---------- background doodle (bleeds off the left edge, behind the window) ---------- */
+    .flower { position: absolute; left: -92px; top: 660px; width: 220px; height: 220px; pointer-events: none; }
+    .flower .petals { fill: var(--accent); stroke: var(--fg); }
+    .flower circle  { fill: var(--accent-2); stroke: var(--fg); }
+    .ink-stroke { stroke: var(--fg); }
 
     /* ---------- kicker chip ---------- */
-    .top { position: relative; z-index: 2; display: flex; align-items: center; height: 72px; padding-right: 330px; }
+    .top { position: relative; z-index: 2; flex: none; display: flex; align-items: center; min-height: 72px; padding-right: 350px; }
     .chip {
       display: inline-flex; align-items: center; gap: 14px;
-      max-width: 100%;
-      height: 68px; padding: 0 26px 0 18px;
+      max-width: 100%; min-height: 68px;
+      padding: 8px 26px 8px 18px;
       background: var(--paper);
-      border: var(--bw) solid var(--ink);
-      box-shadow: 7px 7px 0 var(--ink);
+      border: var(--bw) solid var(--fg);
+      box-shadow: 7px 7px 0 var(--fg);
     }
     .chip svg { flex: none; width: 34px; height: 34px; }
+    .chip-star { fill: var(--accent-2); stroke: var(--fg); }
     .chip-text {
       display: block; min-width: 0;
-      white-space: nowrap; overflow: hidden;
+      max-height: 64px; overflow: hidden;    /* one line, or two lines once shrunk to 26px */
       font-weight: 700; font-size: 30px; line-height: 1.2; letter-spacing: .1em; text-transform: uppercase;
+      text-wrap: balance;
     }
 
     /* ---------- the app window ---------- */
     .window {
       position: relative; z-index: 1;
       flex: 1; min-height: 0;
-      margin-top: 44px; margin-right: var(--drop);
+      margin-right: var(--drop);
       display: flex; flex-direction: column;
       background: var(--paper);
-      border: var(--bw) solid var(--ink);
+      border: var(--bw) solid var(--fg);
       border-radius: 18px;
-      box-shadow: var(--drop) var(--drop) 0 var(--ink);
+      box-shadow: var(--drop) var(--drop) 0 var(--fg);
       overflow: hidden;
     }
+    .top:not([hidden]) + .window { margin-top: 44px; }
     .titlebar {
       flex: none; height: 86px;
       display: flex; align-items: center; gap: 26px;
       padding: 0 28px;
-      background: var(--blue);
-      border-bottom: var(--bw) solid var(--ink);
-      color: var(--on-blue);
+      background: var(--accent-2);
+      border-bottom: var(--bw) solid var(--fg);
+      color: var(--on-accent-2);
     }
     .lights { display: flex; gap: 12px; flex: none; }
-    .lights i { display: block; width: 28px; height: 28px; border-radius: 50%; border: 4px solid var(--ink); }
+    .lights i { display: block; width: 28px; height: 28px; border-radius: 50%; border: 4px solid var(--fg); }
     .lights i:nth-child(1) { background: var(--bg); }
-    .lights i:nth-child(2) { background: var(--yellow); }
+    .lights i:nth-child(2) { background: var(--accent); }
     .lights i:nth-child(3) { background: var(--paper); }
     .wtitle {
       min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       font-weight: 700; font-size: 30px; letter-spacing: .02em;
-      padding-right: 200px;
+      margin-right: 210px;   /* the sticker sits over the right end of the bar */
     }
 
     .wbody {
       position: relative;
       flex: 1; min-height: 0;
-      display: flex; flex-direction: column;
-      padding: 54px 60px 56px 56px;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 46px 60px 48px 56px;
     }
+    /* Headline box takes its natural height and only shrinks when the window is full,
+       so short takes grow big and sit centred instead of floating at the top. */
     .headline {
-      flex: 1 1 auto; min-height: 0; overflow: hidden;
+      position: relative; z-index: 0;        /* own stacking context: .hl paints under the letters */
+      flex: 0 1 auto; min-height: 0; overflow: hidden;
       font-family: 'Bricolage Grotesque', 'Archivo Black', 'DejaVu Sans', sans-serif;
       font-weight: 800; font-variation-settings: 'opsz' 96;
-      font-size: 120px; line-height: 1.0; letter-spacing: -0.022em;
-      padding-bottom: .12em; /* room for the highlight's hard shadow */
+      font-size: 120px; line-height: 1.02; letter-spacing: -0.022em;
+      padding: .06em 0 .26em;                /* room for the highlight's border and hard shadow */
     }
     .headline .hl {
-      background: var(--yellow);
-      color: var(--ink);
+      position: relative; z-index: -1;       /* descenders from the line above stay on top */
+      background: var(--accent);
+      color: var(--fg);
       padding: 0 .12em;
       margin: 0 .02em;
-      border: .05em solid var(--ink);
-      box-shadow: .07em .07em 0 var(--ink);
+      border: .05em solid var(--fg);
+      box-shadow: .07em .07em 0 var(--fg);
       -webkit-box-decoration-break: clone;
       box-decoration-break: clone;
     }
-    /* blinking-cursor detail: the window is a text editor */
-    .headline::after {
-      content: '';
+    /* text-cursor detail: the window is an editor and the take was just typed.
+       JS glues it to the last word so it never wraps onto a line of its own. */
+    .headline .glue { white-space: nowrap; }
+    .headline .caret {
       display: inline-block;
       width: .09em; height: .78em;
-      margin-left: .08em;
+      margin-left: .07em;
       vertical-align: -0.04em;
-      background: var(--blue);
+      background: var(--accent-2);
     }
+
+    .grip { position: absolute; right: 16px; bottom: 16px; width: 30px; height: 30px; }
 
     .sub {
-      flex: none; margin-top: 40px;
-      display: flex; gap: 22px; align-items: flex-start;
-      padding-top: 34px;
-      border-top: var(--bw) solid var(--ink);
+      flex: none; margin-top: 32px;
+      padding-top: 28px;
+      border-top: var(--bw) solid var(--fg);
     }
     .subhead {
-      max-height: 152px; overflow: hidden;
+      max-height: 180px; overflow: hidden;   /* up to 3 lines at 37px, 4 lines at 34px */
       font-weight: 500; font-size: 37px; line-height: 1.3; letter-spacing: -0.005em;
+      text-wrap: pretty;
     }
 
-    /* ---------- footer: hand-drawn arrow + CTA button ---------- */
+    /* ---------- footer: hand-drawn arrow into the CTA button ---------- */
     .bottom {
       position: relative; z-index: 2;
-      flex: none; height: 148px; margin-top: 18px;
+      flex: none; height: 140px; margin-top: 16px;
       display: flex; align-items: flex-end; justify-content: flex-end; gap: 10px;
       padding-right: 10px; padding-bottom: 10px;
     }
-    .arrow { flex: 1 1 240px; min-width: 140px; max-width: 300px; height: 136px; align-self: flex-start; }
+    .arrow { flex: 1 1 240px; min-width: 140px; max-width: 300px; height: 130px; align-self: flex-start; }
     .cta {
       flex: 0 1 auto; min-width: 0; max-width: 760px;
       display: flex; align-items: center; gap: 18px;
-      height: 104px; padding: 0 30px 0 36px;
-      background: var(--blue); color: var(--on-blue);
-      border: var(--bw) solid var(--ink);
+      height: 104px; padding: 0 22px 0 40px;
+      background: var(--accent-2); color: var(--on-accent-2);
+      border: var(--bw) solid var(--fg);
       border-radius: 999px;
-      box-shadow: 10px 10px 0 var(--ink);
+      box-shadow: 10px 10px 0 var(--fg);
     }
     .cta-text {
-      min-width: 0; max-height: 92px; overflow: hidden;
+      min-width: 0; max-height: 84px; overflow: hidden;
       font-weight: 700; font-size: 36px; line-height: 1.12; letter-spacing: -0.005em;
       text-wrap: balance;
     }
     .cta-icon {
-      flex: none; width: 58px; height: 58px; border-radius: 50%;
-      background: var(--yellow); border: 4px solid var(--ink);
+      flex: none; width: 60px; height: 60px; border-radius: 50%;
+      background: var(--accent); border: 4px solid var(--fg);
       display: grid; place-items: center;
     }
     .cta-icon svg { width: 30px; height: 30px; }
 
     /* ---------- the sticker ---------- */
-    .sticker {
-      position: absolute; z-index: 3;
-      right: 74px; top: 64px;
-      width: 268px; height: 268px;
-      transform: rotate(12deg);
-    }
+    .sticker-wrap { position: absolute; z-index: 3; right: 68px; top: 58px; width: 290px; height: 290px; }
+    .marks { position: absolute; left: -84px; top: -18px; width: 92px; height: 92px; }
+    .sticker { position: absolute; inset: 0; transform: rotate(12deg); }
     .sticker svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .burst { fill: var(--accent); stroke: var(--fg); }
+    .burst-shadow { fill: var(--fg); }
     .sticker-text {
       position: absolute; left: 50%; top: 50%;
-      width: 176px; height: 124px;
+      width: 192px; height: 136px;
       transform: translate(-50%, -50%);
-      display: block; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center;
+      overflow: hidden;
       text-align: center;
       font-family: 'Archivo Black', 'Bricolage Grotesque', 'DejaVu Sans', sans-serif;
-      font-size: 48px; line-height: .98; letter-spacing: -0.01em; text-transform: uppercase;
-      color: var(--ink);
+      font-size: 52px; line-height: .98; letter-spacing: -0.005em; text-transform: uppercase;
+      color: var(--fg);
     }
   </style>
 </head>
 <body>
   <div id="card">
-    <!-- decoration (bleeds off the left edge, sits behind the window) -->
-    <svg class="deco deco--flower" viewBox="0 0 220 220" aria-hidden="true">
+    <svg class="flower" viewBox="0 0 220 220" aria-hidden="true">
       <g transform="translate(110 110)">
-        <g fill="#FFD60A" stroke="#000" stroke-width="6" stroke-linejoin="round" id="petals"></g>
-        <circle r="26" fill="#3D5AFE" stroke="#000" stroke-width="6"/>
-      </g>
-    </svg>
-    <!-- hand-drawn emphasis marks next to the sticker -->
-    <svg class="deco deco--marks" viewBox="0 0 92 92" aria-hidden="true">
-      <g fill="none" stroke="#000" stroke-width="7" stroke-linecap="round">
-        <path d="M70 52 L 38 44"/>
-        <path d="M74 36 L 50 14"/>
-        <path d="M86 28 L 80 4"/>
+        <g class="petals" stroke-width="6" stroke-linejoin="round"></g>
+        <circle r="26" stroke-width="6"/>
       </g>
     </svg>
 
     <header class="top" data-if="kicker">
       <div class="chip">
         <svg viewBox="0 0 34 34" aria-hidden="true">
-          <path d="M17 2.5 C18.6 12 22 15.4 31.5 17 C22 18.6 18.6 22 17 31.5 C15.4 22 12 18.6 2.5 17 C12 15.4 15.4 12 17 2.5 Z" fill="#3D5AFE" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M17 2.5 C18.6 12 22 15.4 31.5 17 C22 18.6 18.6 22 17 31.5 C15.4 22 12 18.6 2.5 17 C12 15.4 15.4 12 17 2.5 Z" class="chip-star" stroke-width="3" stroke-linejoin="round"/>
         </svg>
         <span class="chip-text" data-field="kicker" data-fit data-fit-max="30" data-fit-min="26"></span>
       </div>
@@ -209,17 +210,21 @@
         <span class="wtitle" data-field="handle"></span>
       </div>
       <div class="wbody">
-        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="128" data-fit-min="64"></h1>
+        <h1 class="headline" data-field="headline" data-highlight data-fit data-fit-max="200" data-fit-min="64"></h1>
         <div class="sub" data-if="subhead">
           <p class="subhead" data-field="subhead" data-fit data-fit-max="37" data-fit-min="34"></p>
         </div>
+        <!-- window resize grip -->
+        <svg class="grip" viewBox="0 0 30 30" aria-hidden="true">
+          <g class="ink-stroke" stroke-width="4" stroke-linecap="round"><path d="M27 7 L7 27"/><path d="M27 15 L15 27"/><path d="M27 23 L23 27"/></g>
+        </svg>
       </div>
     </section>
 
     <footer class="bottom" data-if="cta">
-      <!-- hand-drawn arrow: swoops out of the window and lands on the button -->
+      <!-- hand-drawn arrow: drops out of the window, loops once, lands on the button -->
       <svg class="arrow" viewBox="0 0 260 136" preserveAspectRatio="xMaxYMid meet" aria-hidden="true">
-        <g fill="none" stroke="#000" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <g class="ink-stroke" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 10 C 18 52, 34 96, 82 104 C 122 111, 140 78, 118 64 C 98 52, 82 84, 108 104 C 136 124, 188 118, 236 98"/>
           <path d="M214 80 L 239 97 L 212 116"/>
         </g>
@@ -227,17 +232,27 @@
       <div class="cta">
         <span class="cta-text" data-field="cta" data-fit data-fit-max="36" data-fit-min="28"></span>
         <span class="cta-icon" aria-hidden="true">
-          <svg viewBox="0 0 30 30"><path d="M5 15 H24 M16 6.5 L24.5 15 L16 23.5" fill="none" stroke="#000" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 30 30"><path class="ink-stroke" d="M5 15 H24 M16 6.5 L24.5 15 L16 23.5" fill="none" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
       </div>
     </footer>
 
-    <div class="sticker" data-if="sticker">
-      <svg viewBox="-150 -150 300 300" aria-hidden="true">
-        <path class="burst-shadow" fill="#000" transform="translate(10 10)"/>
-        <path class="burst" fill="#FFD60A" stroke="#000" stroke-width="6" stroke-linejoin="round"/>
+    <div class="sticker-wrap" data-if="sticker">
+      <!-- hand-drawn emphasis marks -->
+      <svg class="marks" viewBox="0 0 92 92" aria-hidden="true">
+        <g class="ink-stroke" fill="none" stroke-width="7" stroke-linecap="round">
+          <path d="M70 52 L 38 44"/>
+          <path d="M74 36 L 50 14"/>
+          <path d="M86 28 L 80 4"/>
+        </g>
       </svg>
-      <span class="sticker-text" data-field="sticker" data-fit data-fit-max="48" data-fit-min="26"></span>
+      <div class="sticker">
+        <svg viewBox="-150 -150 300 300" aria-hidden="true">
+          <path class="burst-shadow" transform="translate(10 10)"/>
+          <path class="burst" stroke-width="6" stroke-linejoin="round"/>
+        </svg>
+        <span class="sticker-text" data-field="sticker" data-fit data-fit-max="52" data-fit-min="24"></span>
+      </div>
     </div>
   </div>
 
@@ -255,18 +270,43 @@
   <script src="../../shared/card.js"></script>
   <script>
     Card.onRender(function (data, card) {
-      // Starburst sticker: 16 spikes, slightly irregular so it feels cut by hand.
-      var spikes = 16, R = 132, r = 108, d = '';
+      // Starburst sticker: 16 spikes, alternate tips a touch shorter so it looks hand-cut.
+      var spikes = 16, R = 134, r = 110, d = '';
       for (var i = 0; i < spikes * 2; i++) {
         var a = (Math.PI * i) / spikes - Math.PI / 2;
-        var rad = i % 2 ? r : R + (i % 4 === 0 ? 0 : -6);
+        var rad = i % 2 ? r : R - (i % 4 === 0 ? 0 : 7);
         d += (i ? 'L' : 'M') + (Math.cos(a) * rad).toFixed(1) + ' ' + (Math.sin(a) * rad).toFixed(1);
       }
       d += 'Z';
       card.querySelectorAll('.burst, .burst-shadow').forEach(function (p) { p.setAttribute('d', d); });
 
-      // Flower petals for the background doodle.
-      var petals = card.querySelector('#petals');
+      // Kicker: keep separators ("·", "|", "/") attached to the word before them when the chip wraps.
+      var chip = card.querySelector('.chip-text');
+      if (chip && !chip.hidden) chip.innerHTML = chip.innerHTML.replace(/ ([·•|\/–—]) /g, '&nbsp;$1 ');
+
+      // Caret: wrap the headline's last word + caret in a no-wrap span.
+      var h = card.querySelector('.headline');
+      if (h && !h.hidden && !h.querySelector('.caret')) {
+        var walker = document.createTreeWalker(h, NodeFilter.SHOW_TEXT), node, last = null;
+        while ((node = walker.nextNode())) if (node.nodeValue.trim()) last = node;
+        var caret = document.createElement('span');
+        caret.className = 'caret';
+        if (last) {
+          var txt = last.nodeValue.replace(/\s+$/, '');
+          var word = txt.match(/\S+$/)[0];
+          last.nodeValue = txt.slice(0, txt.length - word.length);
+          var glue = document.createElement('span');
+          glue.className = 'glue';
+          glue.textContent = word;
+          glue.appendChild(caret);
+          last.parentNode.insertBefore(glue, last.nextSibling);
+        } else {
+          h.appendChild(caret);
+        }
+      }
+
+      // Eight-petal flower doodle.
+      var petals = card.querySelector('.petals');
       if (petals && !petals.childElementCount) {
         for (var k = 0; k < 8; k++) {
           var e = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');

@@ -392,9 +392,9 @@
     "paper": "Prune to Remember: Learned Token Eviction for Long-Context Recall",
     "tldr": "Teach a small model to throw away most of what it reads, and it recalls long documents better than one 20× its size.",
     "points": [
-      "It discards **60%** of tokens before they ever reach memory",
-      "Recall on 1M-token documents: **91%** vs 74% for the 70B",
-      "Runs on a single laptop GPU with **9× less** memory"
+      "Drops **60%** of tokens before they reach memory",
+      "Recall on 1M-token docs: **91%** vs 74% for the 70B",
+      "Runs on one laptop GPU with **9× less** memory"
     ],
     "source": "Source: Nova Labs preprint",
     "date": "Nov 9, 2026",
@@ -646,11 +646,13 @@
         var out = list.filter(function (c) { return c >= min; });
         return out.length ? out : [Math.ceil(min)];
       }
-      function range(hi, lo, step) { var out = []; for (var v = hi; v >= lo; v -= step) out.push(v); return out; }
-      var side = range(470, 350, 10);
-      var wideC = range(600, 280, 10);
+      function range(from, to, step) { var out = []; for (var v = from; step > 0 ? v >= to : v <= to; v -= step) out.push(v); return out; }
+      // Side-by-side: start at 470 (room for the vertical schematic) and grow only as far as the findings need,
+      // so the headline keeps every spare pixel. Wide: the smallest zone that holds the findings.
+      var side = range(470, 600, -10).concat(range(460, 350, 10));
+      var wideC = range(280, 640, -10);
       var plans = hasPts ? [
-        { wide: false, tight: false, c: side, tries: [[88, 34], [72, 34]] },
+        { wide: false, tight: false, c: side, tries: [[112, 34], [100, 34], [88, 34], [72, 34]] },
         { wide: true,  tight: false, c: wideC, tries: [[88, 34], [72, 34], [72, 32]] },
         { wide: true,  tight: true,  c: wideC, tries: [[72, 32], [64, 32], [64, 30]] }
       ] : [

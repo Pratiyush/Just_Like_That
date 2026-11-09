@@ -478,6 +478,10 @@
 
       tightenKicker();
 
+      /* VS label: a longer word ("VERSUS", "OR") still sits inside the disc */
+      var vsText = vs.querySelector('.disc span');
+      for (var vf = 144; vf >= 48 && vsText.offsetWidth > 196; vf -= 6) vsText.style.fontSize = vf + 'px';
+
       /* headline size ladder: one line up to 112px, two up to 86px, three up to 74px, else down to the 64px floor */
       var hl = card.querySelector('.headline');
       if (hl && !hl.hidden) {

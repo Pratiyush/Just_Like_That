@@ -172,7 +172,7 @@ header h1 { font-size: clamp(44px, 8vw, 96px); font-weight: 800; letter-spacing:
 .num { font: 500 13px/1 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .design h3 { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
 .goal { font: 500 11.5px/1.3 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-.best { font-size: 14.5px; color: var(--muted); line-height: 1.45; }
+.best { font-size: 14.5px; color: var(--muted); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .tags { font-size: 13px; color: var(--muted); line-height: 1.5; }
 .tags b { color: var(--ink); font-weight: 600; }
 @media (max-width: 560px) {
@@ -259,7 +259,7 @@ dialog::backdrop { background: rgb(8 9 12 / .72); }
           <div class="title-row"><span class="num">${esc(d.num)}</span><h3>${esc(d.name)}</h3></div>
           <p class="goal">${esc(GOALS[d.goal])}</p>
           <p class="best">${esc(d.bestFor)}</p>
-          <p class="tags">${d.principles.map((p) => esc(p.name)).join(' · ')}</p>
+          <p class="tags">${d.principles.map((p) => esc(String(p.name).replace(/\s*\([^)]*\)/g, ''))).join(' · ')}</p>
         </div>
       </article>`
     )

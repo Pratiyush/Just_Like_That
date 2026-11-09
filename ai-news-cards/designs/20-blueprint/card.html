@@ -106,7 +106,6 @@
       text-wrap: balance;
       padding-bottom: 0.14em;   /* room for the highlight's dimension line under the last line */
     }
-    /* Highlight = a dimensioned feature: cyan lettering with a dimension line, extension lines and 45° drafting ticks. */
     /* Highlight = a dimensioned feature: cyan lettering over a dimension line with extension lines and 45° drafting ticks.
        Positions are in em from the top of the inline content area (Barlow Condensed: ascent 1.0em, so the baseline is at 1em). */
     .headline mark.hl {
@@ -241,7 +240,6 @@
     .sx-arrow { fill: var(--line); }
     .sx-mask  { fill: var(--bg); }
     .sx-label { font: italic 400 19px/1 var(--mono); fill: var(--line); }
-    .sx-cap   { font: 700 13px/1 var(--mono); letter-spacing: .14em; fill: var(--muted); }
 
     /* Findings as numbered notes, each tied to the schematic by a balloon + leader. */
     .points {
@@ -285,7 +283,6 @@
     .tb-proj svg { display: block; }
     .tb-proj .pj { fill: none; stroke: var(--line); stroke-width: 1.6; }
     .tb-proj .pj-c { fill: none; stroke: var(--line); stroke-width: .9; stroke-dasharray: 6 2 1.5 2; opacity: .8; }
-    .tb-proj span { font: 700 12px/1 var(--mono); letter-spacing: .16em; color: var(--muted); }
     .tb-r2 { flex-wrap: wrap; }
     .tb-r2 .tb-cell { padding-bottom: 40px; }     /* keeps the last line of text >= 72px from the bottom edge */
     .tb-date { flex: 0 0 auto; }
@@ -294,13 +291,11 @@
     .tb-r2.wrapped .tb-date { flex-grow: 1; padding-bottom: 12px; }
     .tb-r2.wrapped .tb-by { flex-basis: 100%; border-left: 0 !important; border-top: 1.5px solid rgba(205, 239, 255, .7); }
     .tb-by .tb-val { font: 700 26px/1.12 var(--mono); text-transform: none; letter-spacing: 0; }
-    .tb-src .tb-val { padding-right: 0; }
 
     /* Leaders overlay (built in JS). */
     .leaders { inset: 0; width: 1080px; height: 1350px; overflow: visible; }
     .ld-line { stroke: var(--accent); stroke-width: 1.6; fill: none; }
     .ld-dot  { fill: var(--accent); }
-    .ld-ring { fill: none; stroke: var(--accent); stroke-width: 1.4; }
   </style>
 </head>
 <body>
@@ -413,6 +408,7 @@
     /* Zone references in the sheet margin: 1–6 across, A–H down. */
     function drawZones(card) {
       var g = card.querySelector('.frame .zones');
+      g.innerHTML = '';
       var x0 = 36, y0 = 36, w = 1008, h = 1278, cols = 6, rows = 8;
       var cw = w / cols, rh = h / rows;
       for (var i = 0; i < cols; i++) {

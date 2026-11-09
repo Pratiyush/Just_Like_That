@@ -290,7 +290,7 @@
             var rects = range.getClientRects();
             for (var k = 0; k < rects.length; k++) {
               var r = rects[k];
-              if (r.width < 1 || r.top > clip.bottom - 4) continue;
+              if (r.width < 1 || r.bottom > clip.bottom + 2) continue;  /* clipped line */
               var cy = (r.top + r.bottom) / 2, line = null;
               for (var j = 0; j < lines.length; j++) {
                 if (Math.abs(lines[j].cy - cy) < r.height * 0.5) { line = lines[j]; break; }
@@ -395,6 +395,27 @@
         return path;
       }
 
+      /* Let a short myth grow, but only while it keeps the line count it has at the
+         nominal size (so a two-line myth never balloons into a narrow three-line column). */
+      function capMythGrowth(card) {
+        var fit = card.querySelector('.myth-fit'), copy = card.querySelector('.myth-copy');
+        if (!fit || !copy || copy.hidden) return;
+        if (!fit.hasAttribute('data-fit-cap')) fit.setAttribute('data-fit-cap', fit.getAttribute('data-fit-max'));
+        var cap = parseFloat(fit.getAttribute('data-fit-cap'));
+        var nominal = parseFloat(getComputedStyle(fit).fontSize);
+        var lines = function (size) {
+          fit.style.fontSize = size + 'px';
+          return Math.round(copy.offsetHeight / (size * 1.1));   /* 1.1 = .myth-copy line-height */
+        };
+        var base = lines(nominal), best = nominal;
+        for (var size = nominal * 1.02; size <= cap; size *= 1.02) {
+          if (lines(size) > base) break;
+          best = size;
+        }
+        fit.style.fontSize = '';
+        fit.setAttribute('data-fit-max', Math.floor(Math.min(cap, best)));
+      }
+
       /* Share the free height between MYTH and FACT so both panels scale together:
          find the largest common scale k (of each panel's nominal size, within its
          data-fit range) at which both fit, then give each panel what it needs at k. */
@@ -448,6 +469,7 @@
         await frame();
         try { await document.fonts.ready; } catch (e) { /* ignore */ }
 
+        capMythGrowth(card);
         balancePanels(card);
 
         /* Fit now so the hand-drawn strikes follow the final line breaks.

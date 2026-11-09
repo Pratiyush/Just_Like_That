@@ -172,7 +172,7 @@
       min-width: 0; min-height: 0;
       border-radius: var(--radius);
       background-color: var(--t-bg);
-      background-image: radial-gradient(90% 80% at 100% 0%, var(--glow), transparent 62%);
+      background-image: radial-gradient(85% 75% at 0% 0%, var(--glow), transparent 62%);   /* light from top-left, away from the index */
       color: var(--t-fg);
       padding: 28px 30px 30px 32px;
       display: flex;
@@ -254,7 +254,7 @@
 
     /* Palette by position (1st story = vivid blue, next to the hero) */
     .tile:nth-child(1) {
-      --t-bg: var(--blue); --t-fg: #FFFFFF; --t-sub: rgba(255, 255, 255, .86);
+      --t-bg: var(--blue); --t-fg: #FFFFFF; --t-sub: rgba(255, 255, 255, .93);
       --chip-bg: rgba(255, 255, 255, .16); --chip-fg: #FFFFFF;
       --glow: rgba(140, 170, 255, .55);
     }
@@ -420,7 +420,7 @@
     "highlight": "missed",
     "date": "Nov 3 – 9, 2026",
     "items": [
-      { "tag": "Open models", "title": "Helix-3 is free and beats paid models on 9 of 10 tests", "icon": "sparkle" },
+      { "tag": "Open models", "title": "Helix-3 is free and beats paid models on 9\u00a0of\u00a010 tests", "icon": "sparkle" },
       { "tag": "Pricing", "title": "Nova Labs cut API prices 80% overnight", "icon": "price" },
       { "tag": "Hardware", "title": "A $199 chip runs a 70B model on your laptop, offline", "icon": "chip" },
       { "tag": "Agents", "title": "One prompt now books your flight, hotel and dinner", "icon": "agent" },
@@ -513,14 +513,14 @@
       }
 
       /* Would this tile's title fit at the 34px floor (compact if needed)? Leaves no trace. */
-      function titleCanFit(tile) {
+      function titleCanFit(tile, stackedOnly) {
         var title = tile.querySelector('.title');
         if (title.hidden) return true;
         var wasCompact = tile.classList.contains('is-compact');
         tileSpec(tile);
         title.style.fontSize = '34px';
         var ok = fits(title);
-        if (!ok && !tile.classList.contains('is-compact')) {
+        if (!ok && !stackedOnly && !tile.classList.contains('is-compact')) {
           tile.classList.add('is-compact');
           ok = fits(title);
         }
@@ -596,25 +596,36 @@
           }
         }
 
-        /* Size each title to its tile (bigger tiles start bigger; short rows go compact),
-           then give tiles of the same shape the same size so the type scale stays calm. */
+        /* Size each title to its tile (bigger tiles start bigger; short rows go compact).
+           Tiles of the same shape share one header style and one title size, so the type
+           scale stays calm (Gestalt similarity). */
         var groups = {};
         tiles.forEach(function (tile) {
           var spec = tileSpec(tile);
           var title = tile.querySelector('.title');
-          if (title.hidden) return;
-          var size = largestFit(title, spec.max);
-          if (!fits(title) && !tile.classList.contains('is-compact')) {
-            tile.classList.add('is-compact');      /* long title: put icon + tag on one line */
-            size = largestFit(title, Math.min(spec.max, 40));
-          }
-          if (!fits(title)) clampLines(title);    /* absurdly long: end on a whole line with an ellipsis */
-          title.style.fontSize = '';
-          (groups[spec.kind] = groups[spec.kind] || []).push({ el: title, size: size });
+          var g = (groups[spec.kind] = groups[spec.kind] || { tiles: [], compact: false, max: spec.max });
+          g.tiles.push(tile);
+          if (!title.hidden && !titleCanFit(tile, true)) g.compact = true;
+          if (tile.classList.contains('is-compact')) g.compact = true;
         });
         Object.keys(groups).forEach(function (k) {
-          var min = Math.min.apply(null, groups[k].map(function (g) { return g.size; }));
-          groups[k].forEach(function (g) { g.el.setAttribute('data-fit-max', String(min)); });
+          var g = groups[k];
+          g.sizes = [];
+          g.tiles.forEach(function (tile) {
+            tile.classList.toggle('is-compact', g.compact);
+            var title = tile.querySelector('.title');
+            if (title.hidden) return;
+            var size = largestFit(title, g.compact ? Math.min(g.max, 40) : g.max);
+            if (!fits(title)) clampLines(title);  /* absurdly long: end on a whole line */
+            title.style.fontSize = '';
+            g.sizes.push({ el: title, size: size });
+          });
+        });
+        Object.keys(groups).forEach(function (k) {
+          var list = groups[k].sizes;
+          if (!list.length) return;
+          var min = Math.min.apply(null, list.map(function (x) { return x.size; }));
+          list.forEach(function (x) { x.el.setAttribute('data-fit-max', String(min)); });
         });
       });
     })();

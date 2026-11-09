@@ -1,0 +1,29 @@
+{
+  "id": "05-aurora-glass",
+  "name": "Aurora Glass",
+  "style": "Glassmorphism over a night-sky aurora: a deep indigo field lit by blurred violet, cyan and magenta blobs and a rayed aurora curtain, a frosted glass panel with a light-catching edge and inner top highlight, a glossy orb that sinks behind the glass, glass-pill takeaways, a glowing gradient keyword and fine film grain.",
+  "palette": ["#0A0628", "#7C3AED", "#22D3EE", "#F472B6", "#F7F5FF", "#2EE6FF", "#B4A6FF", "#FF8AD0"],
+  "fonts": ["Sora", "Manrope"],
+  "bestFor": "Product and model launches, new features and capability upgrades: news that should feel like the future just arrived.",
+  "principles": [
+    {
+      "name": "Aesthetic-usability effect (Kurosu & Kashimura, 1995)",
+      "how": "Beautiful interfaces are judged easier to use and more credible. The card borrows the polish of a premium product page: consistent 48 px radii, a gradient hairline edge that catches light top-left, an inner top highlight, a soft drop shadow and grain-smoothed gradients. A launch announced this way reads as trustworthy and easy to take in."
+    },
+    {
+      "name": "Awe drives sharing (Berger & Milkman, 2012)",
+      "how": "Awe is a high-arousal positive emotion, and content that evokes it is shared more. The aurora curtain, star field and glowing orb rising behind the glass frame the news as a sky-scale event. The glowing gradient keyword carries that feeling into the headline itself ('...made the cloud optional')."
+    },
+    {
+      "name": "Figure-ground (Gestalt; Wertheimer, 1923)",
+      "how": "The frosted panel blurs and darkens the busy aurora into calm ground so the white headline stands out as figure. Depth is layered sky, then orb, then glass, then text: the orb is crisp above the panel and frosted inside it, which proves the glass is in front. A script parks the orb on the panel's corner at any text length, and the takeaways sit in their own glass pills as a separate common region."
+    },
+    {
+      "name": "First-impression speed (Lindgaard et al., 2006)",
+      "how": "Visual appeal is judged in about 50 ms, before any word is read. The colour story (indigo, cyan, violet, magenta) and the single bright gradient word are designed to land in that first glance as 'premium, new, worth a look'. The gradient word is the only saturated text on the card, so the eye knows where to start."
+    }
+  ],
+  "hookFormula": "[Product] just made [thing everyone depends on] **[optional / obsolete / free]**",
+  "captionTip": "Open the caption with the most concrete chip (e.g. '40× smaller, and it runs offline') and close with 'Send this to the friend still paying for cloud AI': a send prompt that turns awe into DM shares.",
+  "fields": ["kicker", "headline", "highlight", "subhead", "points", "source", "date", "handle"]
+}

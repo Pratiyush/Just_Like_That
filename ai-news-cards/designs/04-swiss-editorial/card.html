@@ -239,10 +239,10 @@
         await document.fonts.ready;
       } catch (e) { /* fall back to whatever loaded */ }
 
-      // Long copy: if the headline can't hold 76 px with the full hero, switch to the compact hero.
+      // Long copy: if the headline can't hold 88 px with the full hero, switch to the compact hero.
       var head = card.querySelector('.headline');
       if (!head.hidden) {
-        head.style.fontSize = '76px';
+        head.style.fontSize = '88px';
         var tooLong = head.scrollHeight > head.clientHeight + 1;
         head.style.fontSize = '';
         card.classList.toggle('is-compact', tooLong);

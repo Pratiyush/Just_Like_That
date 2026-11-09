@@ -12,7 +12,7 @@
     #card {
       --bg: #C8553D;                       /* terracotta field */
       --fg: #F6E8D6;                       /* cream ink */
-      --shade: rgba(96, 24, 10, .30);      /* kiln shade: deepens the text zone to >= 4.5:1 against cream */
+      --shade: rgba(96, 24, 10, .34);      /* kiln shade: deepens the text zone to >= 4.5:1 against cream */
       --glow: rgba(255, 196, 160, .10);    /* light falling on the glyph corner */
       --glyph: #983723;                    /* second-ink brick for the oversized quote mark */
       --ink: #9C3A26;                      /* text inside the cream pill and monogram */
@@ -36,7 +36,7 @@
         radial-gradient(140% 82% at 0% 0%, rgba(96, 24, 10, 0) 18%, var(--shade) 50%);
     }
     .mottle {
-      opacity: .35;
+      opacity: .28;
       mix-blend-mode: multiply;
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.0075' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 .62  0 0 0 0 .30  0 0 0 0 .20  0 0 0 -1.2 .9'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>") 0 0 / 100% 100% no-repeat;
     }
@@ -233,8 +233,8 @@
       -webkit-line-clamp: 2;
       overflow: hidden;
     }
-    .meta .date { white-space: nowrap; }
-    .meta .source:not([hidden]) + .date::before { content: '\00B7'; margin: 0 .55em; }
+    .meta .date { white-space: nowrap; }  /* date first, so a long source is what gets clipped */
+    .meta .date:not([hidden]) + .source::before { content: '\00B7'; margin: 0 .55em; }
     .handle { flex: none; max-width: 52%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; letter-spacing: .01em; }
   </style>
 </head>
@@ -263,7 +263,7 @@
     </div>
 
     <footer class="foot">
-      <div class="meta"><span class="source" data-field="source"></span><span class="date" data-field="date"></span></div>
+      <div class="meta"><span class="date" data-field="date"></span><span class="source" data-field="source"></span></div>
       <span class="handle" data-field="handle"></span>
     </footer>
   </div>

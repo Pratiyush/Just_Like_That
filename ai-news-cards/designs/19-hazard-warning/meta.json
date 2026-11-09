@@ -1,0 +1,30 @@
+{
+  "id": "19-hazard-warning",
+  "name": "Hazard",
+  "style": "A worn industrial safety sign: a hazard-yellow plate bolted inside black diagonal-stripe tape, an ANSI-style 'HEADS UP' signal plate, a stencil-sprayed headline with a black cap-height highlight band, and shield-check tips beside a big chipped warning triangle.",
+  "palette": ["#FFD400", "#141414", "#C9C9C2"],
+  "fonts": ["Big Shoulders Stencil Display", "Saira Stencil One", "Barlow Condensed"],
+  "bestFor": "AI scams, deepfakes, voice cloning, privacy and security risks: any story where the reader can do something concrete to protect themselves or the people they care about.",
+  "principles": [
+    {
+      "name": "Negativity bias (Baumeister et al., 2001)",
+      "how": "Bad is stronger than good: a specific threat is noticed and processed faster than neutral news. The headline names the risk in concrete, personal terms ('the next scam call will sound exactly like someone you love'). The subhead then turns straight to agency ('the fix is low-tech'), so the card lands as alarming but useful, not as fear-mongering."
+    },
+    {
+      "name": "Loss aversion (Kahneman & Tversky, 1979)",
+      "how": "Losses loom larger than equal gains, so the card frames the story around what you could lose (money, and trust in a loved one's voice) rather than what you might gain. The tips are drawn as shields with check marks, protective actions that keep what you already have, which is the frame loss-averse readers act on."
+    },
+    {
+      "name": "Yellow/black as a pre-attentive warning signal (aposematism; Treisman & Gelade, 1980)",
+      "how": "Yellow-and-black is nature's warning livery (aposematism in wasps and other stinging or toxic animals) and the colour code of hazard signage, so it reads as 'danger' before any word is read. Colour and orientation are features the visual system detects pre-attentively, and the saturated yellow field plus the 45-degree stripe frame pops out of a feed of photos. The huge black triangle is the single shape that confirms the signal at thumbnail size."
+    },
+    {
+      "name": "Practical value drives sends (STEPPS: Berger, Contagious, 2013)",
+      "how": "People share useful information to help others. The card delivers three short, doable protective steps, then an explicit share prompt with a paper-plane icon ('Send this to your parents'), aimed at DM sends, which Instagram has said are a strong ranking signal for reaching non-followers."
+    }
+  ],
+  "hookFormula": "The next [scam / fake] will [sound / look] exactly like [someone or something you trust]",
+  "captionTip": "Repeat the tips as a numbered checklist in the caption so the post is worth saving, keep the tone calm and specific (skip words like 'terrifying'), and end with a named share ask: 'Send this to the person in your family who always picks up unknown numbers.'",
+  "fields": ["kicker", "headline", "highlight", "subhead", "points", "cta", "source", "handle"],
+  "notes": "points: 2-4 short tips read best (about 45 characters each balances onto two lines). cta is optional. If the headline would not fit at 64px, the card tightens spacing in three steps (the last step shrinks the sign). For content far too long for one card, it hides the cta and then the subhead rather than clip the headline, and logs a warning."
+}

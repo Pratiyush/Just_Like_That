@@ -149,7 +149,7 @@
     }
     .paper-title {
       flex: 1; min-width: 0;
-      max-height: 2.5em; overflow: hidden;
+      max-height: 3.65em; overflow: hidden;
       font: italic 500 34px/1.2 var(--text);
       color: var(--line);
       text-wrap: balance;
@@ -204,6 +204,13 @@
       grid-template-columns: 1fr auto;
       grid-template-rows: minmax(0, 1fr) auto;
       grid-template-areas: "schem schem" ". tb";
+    }
+    /* Wide mode (too much copy for the side-by-side layout): findings run full width,
+       the schematic tucks in beside the title block. */
+    #card.has-points.wide .lower {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-areas: "pts pts" "schem tb";
     }
     .schem { grid-area: schem; display: flex; flex-direction: column; min-height: 0; }
     #card.has-points .schem { padding-bottom: 40px; }
@@ -607,7 +614,15 @@
       row2.classList.remove('wrapped');
       if (!date.hidden && !by.hidden && by.offsetTop > date.offsetTop + 2) row2.classList.add('wrapped');
 
-      var cands = hasPts ? [470, 450, 430, 410, 390, 370, 350, 330, 310] : [380, 350, 320, 290, 260, 240];
+      function pick(cands, headSize, ptsSize) {
+        for (var i = 0; i < cands.length; i++) {
+          lower.style.flexBasis = cands[i] + 'px';
+          var hok = headOK(headSize), pok = ptsOK(ptsSize);
+          if (window.__DEBUG__) console.log('try', card.className, cands[i], headSize, ptsSize, hok, pok, head.scrollHeight, head.clientHeight, pts.scrollHeight, pts.clientHeight);
+          if (hok && pok) return cands[i];
+        }
+        return null;
+      }
       function headOK(size) {
         if (head.hidden) return true;
         head.style.fontSize = size + 'px';
@@ -618,20 +633,29 @@
         pts.style.fontSize = size + 'px';
         return pts.scrollHeight <= pts.clientHeight + 1;
       }
-      function pick(headSize, ptsSize) {
-        for (var i = 0; i < cands.length; i++) {
-          lower.style.flexBasis = cands[i] + 'px';
-          if (headOK(headSize) && ptsOK(ptsSize)) return cands[i];
-        }
-        return null;
+      var tbH = card.querySelector('.tb').offsetHeight;
+      function atLeast(list, min) {
+        var out = list.filter(function (c) { return c >= min; });
+        return out.length ? out : [Math.ceil(min)];
       }
-      var choice = null;
-      var tries = [[88, 34], [76, 34], [76, 32], [64, 32], [64, 30]];
-      for (var pass = 0; pass < 2 && choice === null; pass++) {
-        if (pass === 1) card.classList.add('tight');
-        for (var t = 0; t < tries.length && choice === null; t++) choice = pick(tries[t][0], tries[t][1]);
+      var side = [470, 450, 430, 410, 390, 370, 350];
+      var wideC = [560, 530, 500, 470, 440, 410, 380, 350, 320, 290];
+      var plans = hasPts ? [
+        { wide: false, tight: false, c: side, tries: [[88, 34], [72, 34]] },
+        { wide: true,  tight: false, c: wideC, tries: [[88, 34], [72, 34], [72, 32]] },
+        { wide: true,  tight: true,  c: wideC, tries: [[72, 32], [64, 32], [64, 30]] }
+      ] : [
+        { wide: false, tight: false, c: atLeast([400, 370, 340, 310, 280], tbH + 170), tries: [[88, 34], [72, 34], [64, 34]] },
+        { wide: false, tight: true,  c: atLeast([340, 310, 280, 250], tbH + 130), tries: [[64, 34]] }
+      ];
+      var choice = null, plan;
+      for (var k = 0; k < plans.length && choice === null; k++) {
+        plan = plans[k];
+        card.classList.toggle('wide', plan.wide);
+        card.classList.toggle('tight', plan.tight);
+        for (var t = 0; t < plan.tries.length && choice === null; t++) choice = pick(plan.c, plan.tries[t][0], plan.tries[t][1]);
       }
-      if (choice === null) choice = cands[cands.length - 1];
+      if (choice === null) choice = plan.c[plan.c.length - 1];
       lower.style.flexBasis = choice + 'px';
       head.style.fontSize = '';
       pts.style.fontSize = '';
@@ -687,9 +711,9 @@
       var pts = card.querySelector('.points');
       if (pts && !pts.hidden) pts.style.justifyContent = 'space-evenly';
       var box = card.querySelector('.schem-box');
-      var vertical = card.classList.contains('has-points');
+      var vertical = card.classList.contains('has-points') && !card.classList.contains('wide');
       var anchors = drawSchematic(box, vertical);
-      drawLeaders(card, anchors, rel(box, card, s), s);
+      if (vertical) drawLeaders(card, anchors, rel(box, card, s), s);
     });
   })();
   </script>

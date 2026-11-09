@@ -13,6 +13,7 @@
       --orange: #FF6B35;
       --pink: #FF2E63;
       --violet: #7B2CBF;
+      --sun: #FFC45C;
       --ink: #1C0631;
       --fg: #FFFFFF;
       --box: #FFFFFF;
@@ -25,8 +26,13 @@
     .sky {
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 650px 560px at 1110px 1150px, #FF8B3D 0%, var(--orange) 44%, var(--pink) 67%, rgba(255, 46, 99, 0) 94%),
-        linear-gradient(172deg, #5A1EA3 0%, var(--violet) 32%, #A02AAE 70%, #BC2A96 100%);
+        radial-gradient(ellipse 650px 560px at 1110px 1150px,
+          color-mix(in srgb, var(--orange) 80%, var(--sun)) 0%, var(--orange) 44%, var(--pink) 67%,
+          color-mix(in srgb, var(--pink) 0%, transparent) 94%),
+        linear-gradient(172deg,
+          color-mix(in srgb, var(--violet) 72%, #1A0B4A) 0%, var(--violet) 32%,
+          color-mix(in srgb, var(--violet) 70%, var(--pink)) 70%,
+          color-mix(in srgb, var(--violet) 55%, var(--pink)) 100%);
     }
     .grain {
       position: absolute; inset: 0;
@@ -63,8 +69,8 @@
       padding: 14px 26px 14px 20px;
       border: 2px solid rgba(255, 255, 255, .6);
       border-radius: 999px;
-      font: 600 24px/1.1 'Unbounded', 'Inter', sans-serif;
-      letter-spacing: .06em; text-transform: uppercase;
+      font: 600 26px/1.15 'Unbounded', 'Inter', sans-serif;
+      letter-spacing: .05em; text-transform: uppercase;
       min-width: 0;
     }
     .kicker svg { width: 26px; height: 26px; flex: none; }
@@ -81,30 +87,41 @@
     .main {
       flex: 1; min-height: 0;
       display: flex; flex-direction: column;
-      padding: 60px 0 40px;
+      padding: 52px 0 40px;
     }
     .headline {
-      flex: 0 1 auto; min-height: 0; max-height: 610px; overflow: hidden;
-      font: 800 112px/1.04 'Unbounded', 'Inter', sans-serif;
+      flex: 0 1 auto; min-height: 0; max-height: 620px; overflow: hidden;   /* ends above the sun */
+      font: 800 112px/1.05 'Unbounded', 'Inter', sans-serif;
       letter-spacing: -.035em;
-      padding-bottom: .14em;
+      padding-bottom: .1em;
       text-shadow: 0 .03em .25em rgba(48, 6, 84, .28);
     }
+    /* Highlight: a white box with dark text and a hard offset shadow.
+       Multi-word highlights may wrap, so the box is painted with trimmed gradients
+       (an inline background would overlap the neighbouring lines). */
     .headline .hl {
-      background: var(--box);
+      background: none;
       color: var(--ink);
       text-shadow: none;
-      padding: 0 .14em .02em;
+      padding: 0 .16em 0 .13em;
       margin: 0 .02em;
-      border-radius: .06em;
       -webkit-box-decoration-break: clone; box-decoration-break: clone;
-      box-shadow: .07em .07em 0 rgba(28, 6, 49, .9);
+      background-image: linear-gradient(var(--box), var(--box)), linear-gradient(var(--ink), var(--ink));
+      background-size: calc(100% - .065em) 1.04em, calc(100% - .065em) 1.04em;
+      background-position: 0 .12em, .065em .185em;
+      background-repeat: no-repeat;
     }
+    .headline .hl .nw { white-space: nowrap; }
+    /* A single-word highlight becomes a tilted sticker. */
     .headline .hl.solo {
       display: inline-block;
       transform: rotate(-2deg);
       line-height: 1.06;
+      padding: 0 .14em .02em;
       margin: .06em .02em .1em;
+      border-radius: .06em;
+      background: var(--box);
+      box-shadow: .065em .065em 0 var(--ink);
     }
     .subhead {
       flex: none;
@@ -167,12 +184,12 @@
       <defs>
         <linearGradient id="sunFill" x1="0" y1="240" x2="0" y2="600" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="#FFF3CF"/>
-          <stop offset=".5" stop-color="#FFC45C"/>
-          <stop offset="1" stop-color="#FF8A3A"/>
+          <stop offset=".5" style="stop-color: var(--sun)"/>
+          <stop offset="1" style="stop-color: color-mix(in srgb, var(--orange) 75%, var(--sun))"/>
         </linearGradient>
         <linearGradient id="reflect" x1="0" y1="600" x2="0" y2="800" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#FFC45C"/>
-          <stop offset="1" stop-color="#FF6B35"/>
+          <stop offset="0" style="stop-color: var(--sun)"/>
+          <stop offset="1" style="stop-color: var(--orange)"/>
         </linearGradient>
         <clipPath id="sky"><rect width="1200" height="600"/></clipPath>
         <linearGradient id="ringFade" x1="0" y1="160" x2="0" y2="330" gradientUnits="userSpaceOnUse">
@@ -273,8 +290,18 @@
         }
       }
       // A single-word highlight gets the tilted "sticker" treatment.
+      // Multi-word highlights wrap between words only (never at a hyphen).
       card.querySelectorAll('.headline .hl').forEach(function (m) {
-        if (!/\s/.test(m.textContent.trim())) m.classList.add('solo');
+        var words = m.textContent.trim().split(/\s+/);
+        if (words.length < 2) { m.classList.add('solo'); return; }
+        m.textContent = '';
+        words.forEach(function (w, i) {
+          var span = document.createElement('span');
+          span.className = 'nw';
+          span.textContent = w;
+          m.appendChild(span);
+          if (i < words.length - 1) m.appendChild(document.createTextNode(' '));
+        });
       });
       // Subhead: 38px, stepping down to 34px (the body minimum) before the headline has to give up space.
       var sub = card.querySelector('.subhead');

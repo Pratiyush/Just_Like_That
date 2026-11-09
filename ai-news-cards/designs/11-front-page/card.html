@@ -125,7 +125,7 @@
     #card.ed-compact .edrow { grid-template-columns: auto minmax(0, 1fr); }
     #card.ed-compact .ed-left { display: none; }
     #card.ed-compact .ed-date { text-align: left; letter-spacing: .1em; }
-    #card.ed-compact .ed-date::before { display: none; }
+    #card.ed-compact .ed-date::before, #card.ed-compact .ed-date::after { display: none; }
 
     /* ---------- kicker ---------- */
     .kicker-row {
@@ -193,8 +193,8 @@
       padding-top: 18px;
       border-top: 1.5px solid var(--fg);
       display: grid;
-      grid-template-columns: 258px minmax(0, 1fr);
-      column-gap: 22px;
+      grid-template-columns: 264px minmax(0, 1fr);
+      column-gap: 20px;
     }
     #card.tight .lower { height: 340px; }
     #card.xtight .lower { height: 296px; }
@@ -230,7 +230,7 @@
     .cols {
       position: relative;
       display: flex; flex-direction: column; min-height: 0;
-      padding-left: 22px;
+      padding-left: 20px;
       border-left: 1.5px solid var(--fg);
     }
     .body {
@@ -311,7 +311,11 @@
     }
     .stamp-line { display: block; height: 7px; margin: 2px 4px 0; border-top: 3px solid currentColor; border-bottom: 1.5px solid currentColor; }
     /* when the brand needs the full width, the stamp lands on the photo instead */
-    #card.brand-wide .stamp { top: auto; right: auto; left: 92px; bottom: var(--stamp-bottom, 230px); transform: rotate(-9deg) scale(.86); transform-origin: left bottom; }
+    #card.brand-wide .stamp {   /* full-width masthead: the stamp lands on the photo's lower corner instead */
+      top: auto; right: auto;
+      left: var(--stamp-left, 200px); bottom: var(--stamp-bottom, 230px);
+      transform: rotate(-9deg) scale(.66); transform-origin: right bottom;
+    }
     #card.no-photo .stamp { display: none; }
   </style>
 </head>
@@ -388,7 +392,7 @@
     "highlight": "Its Own Successor",
     "subhead": "Helix-3 wrote, trained and tested its replacement with zero human code. The new model beat it on all 14 benchmarks.",
     "body": "**Nova City —** Nova Labs engineers came in Monday to find their jobs already done. Told only to “build a better version of yourself,” Helix-3 wrote 41,000 lines of training code, ran 2,300 experiments and shipped its own successor. No human touched a line. “We’re still reading the logs,” one researcher said. What it changed on day three, nobody can explain.",
-    "caption": "**Helix-4**, the first model no human wrote.",
+    "caption": "**Helix-4**, the model no human wrote.",
     "cta": "Continued on slide 2",
     "source": "Source: Nova Labs technical report",
     "price": "Price: One Token",
@@ -407,9 +411,9 @@
     /* Paint a tonal "photograph" on a canvas (grey = ink density), later re-screened as halftone dots.
        Drawn in a 300 x 320 design space, scaled to the photo's height and centred horizontally. */
     function paintScene(g, w, h) {
-      var S = h / 320, cx = w / 2;
+      var S = h / 330, cx = w / 2;
       function X(v) { return cx + v * S; }       // design x (0 = centre) -> px
-      function Y(v) { return v * S; }            // design y -> px
+      function Y(v) { return (v + 8) * S; }      // design y -> px (small top margin)
       var hcY = 150;                              // head centre (design units)
 
       // backdrop: pale studio sky, sunburst behind the head, press-photo vignette
@@ -667,7 +671,8 @@
       // With a full-width masthead the stamp lands on the lower part of the photo.
       var photo = card.querySelector('.photo');
       var cr = card.getBoundingClientRect(), pr = photo.getBoundingClientRect();
-      card.style.setProperty('--stamp-bottom', Math.round(cr.bottom - pr.bottom + 18) + 'px');
+      card.style.setProperty('--stamp-bottom', Math.round(cr.bottom - pr.bottom + 20) + 'px');
+      card.style.setProperty('--stamp-left', Math.round(pr.right - cr.left - stamp.offsetWidth - 8) + 'px');
     });
   })();
   </script>

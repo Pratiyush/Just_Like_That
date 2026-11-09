@@ -251,8 +251,8 @@
       <footer class="foot" data-if="cta">
         <div class="ribbon-wrap">
           <svg class="ribbon-arrow" viewBox="0 0 128 74" aria-hidden="true">
-            <path stroke-width="3.4" d="M6 58 C 22 62, 40 58, 50 44 C 58 32, 52 18, 42 22 C 31 27, 40 46, 60 50 C 80 54, 100 48, 118 40"/>
-            <path stroke-width="3.4" d="M103 31 L 119 39.5 L 106 52"/>
+            <path stroke-width="3.6" d="M8 10 C 10 34, 22 52, 44 56 C 66 60, 90 54, 116 44"/>
+            <path stroke-width="3.6" d="M100 33.5 L 117.5 43.5 L 103.5 57"/>
           </svg>
           <div class="ribbon-shadow">
             <div class="ribbon">
@@ -271,10 +271,10 @@
       <path stroke-width="3" d="M29 65 L28 47 Q31.5 41 35 47 Q38.5 53 42 46.5 L42.5 65"/>
       <path stroke-width="3.4" d="M35 -2 L35.6 -11 M11 6 L4.5 0 M59.5 6 L66 -0.5 M-1 31 L-9.5 30.5 M71 31 L79.5 30"/>
     </svg>
-    <svg class="doodle sparks" width="70" height="70" viewBox="0 0 70 70" aria-hidden="true" hidden>
-      <path stroke-width="4" d="M12 40 L4 46"/>
-      <path stroke-width="4" d="M24 22 L18 8"/>
-      <path stroke-width="4" d="M42 26 L54 14"/>
+    <svg class="doodle sparks" width="56" height="76" viewBox="0 0 56 76" aria-hidden="true" hidden>
+      <path stroke-width="4.2" d="M10 20 L27 5"/>
+      <path stroke-width="4.2" d="M15 38.5 L44 37"/>
+      <path stroke-width="4.2" d="M11 57 L28 71"/>
     </svg>
   </div>
 
@@ -340,7 +340,7 @@
     }
 
     /* A chisel-tip highlighter stroke, drawn at real pixel size so the ends never stretch. */
-    function swipeSVG(w, h, color, rand) {
+    function swipeSVG(w, h, color, rand, twoPass) {
       var slant = Math.min(h * 0.34, w * 0.18), j = h * 0.07;
       var steps = Math.max(3, Math.round(w / 70)), top = [], bot = [], i;
       for (i = 0; i <= steps; i++) top.push([slant + (w - slant) * (i / steps), j + (rand() - 0.5) * j * 1.6]);
@@ -356,6 +356,12 @@
         '<path d="M' + r1(w - slant * 0.2) + ' ' + r1(j) + ' L' + r1(w - h * 0.42) + ' ' + r1(j) + ' L' + r1(w - slant - h * 0.42) + ' ' + r1(h - j) + ' L' + r1(w - slant) + ' ' + r1(h - j) + 'Z" fill="' + color + '" opacity=".6"/>' +
         '<path d="M' + r1(slant + 6) + ' ' + r1(h * 0.36) + ' L' + r1(w - slant - 6) + ' ' + r1(h * 0.33) + '" stroke="#fff" stroke-opacity=".22" stroke-width="' + r1(Math.max(1.5, h * 0.05)) + '" fill="none"/>' +
         '<path d="M' + r1(slant + 4) + ' ' + r1(h * 0.7) + ' L' + r1(w - slant - 10) + ' ' + r1(h * 0.72) + '" stroke="#fff" stroke-opacity=".16" stroke-width="' + r1(Math.max(1.2, h * 0.035)) + '" fill="none"/>';
+      if (twoPass) {   /* a second, shorter stroke: overlaps darken like real highlighter ink */
+        var a = w * (0.03 + rand() * 0.05), b = w * (0.9 + rand() * 0.07), y0 = h * 0.2, y1 = h * 0.98;
+        s.innerHTML += '<path d="M' + r1(a + slant) + ' ' + r1(y0) + ' L' + r1(b) + ' ' + r1(y0 + h * 0.03) +
+          ' L' + r1(b - slant) + ' ' + r1(y1) + ' L' + r1(a) + ' ' + r1(y1 - h * 0.02) + 'Z" fill="' + color +
+          '" opacity=".55" style="mix-blend-mode:multiply"/>';
+      }
       return s;
     }
 
@@ -470,7 +476,7 @@
       var pick = null;
       recs.forEach(function (r) { if (!pick && r.lc[2] === 1 && r.lc[0] >= 38 && r.hs >= 76) pick = r; });
       recs.forEach(function (r) { if (!pick && r.lc[0] >= 40) pick = r; });
-      recs.forEach(function (r) { if (!pick || r.lc[0] > pick.lc[0]) pick = pick && pick.lc[0] >= 40 ? pick : r; });
+      if (!pick) recs.forEach(function (r) { if (!pick || r.lc[0] > pick.lc[0]) pick = r; });
       if (h && !h.hidden) {
         h.style.maxHeight = (pick ? pick.maxH : 470) + 'px';
         h.style.fontSize = '';
@@ -523,7 +529,7 @@
           var left = (r.left - c.left) / s, top = (r.top - c.top) / s, w = r.width / s, h = r.height / s;
           var padX = fs * (big ? 0.14 : 0.12);
           var y0 = top + h * (big ? 0.31 : 0.38), y1 = top + h * (big ? 0.91 : 0.92);
-          var sv = swipeSVG(w + padX * 2, y1 - y0, color, rand);
+          var sv = swipeSVG(w + padX * 2, y1 - y0, color, rand, big);
           sv.style.left = r1(left - padX) + 'px';
           sv.style.top = r1(y0) + 'px';
           sv.style.transform = 'rotate(' + r1((rand() - 0.6) * (big ? 1.4 : 1.8)) + 'deg)';
@@ -533,10 +539,10 @@
       });
       /* emphasis sparks at the end of the headline highlight */
       var sparks = card.querySelector('.sparks');
-      if (last && last.right + 40 < 1040) {
+      if (last && last.right + 60 < 1066) {
         sparks.removeAttribute('hidden');
         sparks.style.left = r1(last.right + 4) + 'px';
-        sparks.style.top = r1(last.top + last.fs * 0.22 - 40) + 'px';
+        sparks.style.top = r1(last.top + (last.bottom - last.top) * 0.56 - 38) + 'px';
       } else sparks.setAttribute('hidden', '');
     }
 

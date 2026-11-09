@@ -182,10 +182,16 @@
 
     /* ---------- wear & tear (decorative) ---------- */
     .wear { position: absolute; inset: 0; pointer-events: none; }
-    /* paint chips: black paint flaking off the stripes and the plate edge (sits under the text) */
+    /* paint chips: the black stripe paint flaking off to show the base colour (theme-aware: uses --bg) */
     .chips {
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='5' seed='9'/><feColorMatrix values='0 0 0 0 .97  0 0 0 0 .82  0 0 0 0 .2  0 0 0 18 -13.2'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
-      mix-blend-mode: lighten;
+      background: var(--bg);
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='5' seed='9'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -13.2'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='.09' numOctaves='5' seed='9'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -13.2'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
+    }
+    /* pale scuffs on the painted plate */
+    .scuffs {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.07' numOctaves='5' seed='31'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 .9  0 0 0 16 -11.6'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+      opacity: .45;
     }
     .grime {
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.0045 .007' numOctaves='4' seed='4'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .3  0 0 0 0 0  0 0 0 2.2 -1.0'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
@@ -206,6 +212,7 @@
     <div class="plate">
       <i class="bolt tl"></i><i class="bolt tr"></i><i class="bolt bl"></i><i class="bolt br"></i>
     </div>
+    <div class="wear scuffs"></div>
     <div class="wear chips"></div>
 
     <div class="content">
@@ -233,7 +240,7 @@
               <span data-item></span>
             </li>
           </ul>
-          <div class="cta worn-light" data-if="cta">
+          <div class="cta" data-if="cta">
             <svg viewBox="0 0 32 32" aria-hidden="true">
               <path d="M28.5 3.5 L14 18 M28.5 3.5 L19.5 28.5 L14 18 L3.5 12.5 Z" fill="none" style="stroke: var(--ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
             </svg>
@@ -265,11 +272,11 @@
     "kicker": "Heads up",
     "headline": "The next scam call will sound exactly like someone you love",
     "highlight": "someone you love",
-    "subhead": "AI can clone a voice from a short clip posted online. The good news: **the fix is low-tech.**",
+    "subhead": "AI can clone a voice from one short clip posted online.\nThe good news: **the fix is low-tech.**",
     "points": [
-      "Agree on a family safe word, and always ask for it",
-      "Hang up and call back on a number you already know",
-      "Never send money just because a call feels urgent"
+      "Set a family safe word. Ask for it every time.",
+      "Hang up and call back on a number you know.",
+      "Never send money because a call feels urgent."
     ],
     "cta": "Send this to your parents",
     "source": "Source: Sample Consumer Safety Bulletin",

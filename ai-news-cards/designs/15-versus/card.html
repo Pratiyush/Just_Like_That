@@ -163,7 +163,6 @@
     }
     .left .corner::before { margin: 0 14px 0 2px; }
     .right .corner::after { margin: 0 2px 0 14px; }
-    .right .corner { letter-spacing: .22em; margin-right: -.22em; }
 
     .name {
       width: 100%;
@@ -181,6 +180,7 @@
     .tag {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
       overflow: hidden;
+      width: fit-content;
       margin-top: calc(12px * var(--sc, 1));
       padding: 6px 14px 7px;
       border: 3px solid currentColor;
@@ -205,6 +205,7 @@
       border-top: 3px solid rgba(255,255,255,.45);
     }
     .right .stat { border-top-color: rgba(0,0,0,.38); }
+    .right .stat-label { margin-right: -.12em; }        /* optical: drop trailing tracking at the edge */
     .stat-label {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
       overflow: hidden;
@@ -219,7 +220,7 @@
     .stat-val {
       display: block; min-width: 0; flex: 0 1 auto;
       white-space: nowrap; overflow: hidden;
-      font-weight: 800; font-size: 76px; line-height: 1.1;
+      font-weight: 800; font-size: 68px; line-height: 1.1;
       letter-spacing: -.005em;
       font-variant-numeric: tabular-nums lining-nums;
     }
@@ -551,7 +552,7 @@
         for (var k = 0; k < scales.length; k++) {
           card.style.setProperty('--sc', scales[k]);
           fitNames(Math.round(120 * scales[k]));
-          fitValues(Math.round(76 * scales[k]));
+          fitValues(Math.round(68 * scales[k]));
           alignRows();
           if (!tight()) break search;
         }
@@ -570,9 +571,10 @@
       var ar = arena.getBoundingClientRect();
       var tops = [], bots = [];
       sides.forEach(function (s) {
-        var tag = s.querySelector('.tag');
-        var head = tag && !tag.hidden ? tag : s.querySelector('.name');
-        if (head) tops.push(head.getBoundingClientRect().bottom - ar.top);
+        ['.corner', '.name', '.tag'].forEach(function (sel) {
+          var el = s.querySelector(sel);
+          if (el && el.offsetHeight) tops.push(el.getBoundingClientRect().bottom - ar.top);
+        });
         var st = s.querySelector('.stats');
         if (st && !st.hidden) bots.push(st.getBoundingClientRect().bottom - ar.top);
       });
@@ -581,7 +583,7 @@
       var vsTop = Math.round((topY + botY) / 2);
       vs.style.setProperty('--vs-top', vsTop + 'px');
       /* shrink the badge if the lane is short (burst is 400px; let spikes kiss the edges) */
-      var room = Math.min(vsTop - topY + 40, ar.height - vsTop + 40) * 2;
+      var room = Math.min(vsTop - topY + 12, ar.height - vsTop + 22) * 2;
       vs.style.setProperty('--vs-sc', Math.max(0.6, Math.min(1, room / 400)).toFixed(3));
 
       /* diagonal split through the badge centre */
